@@ -1,0 +1,58 @@
+erDiagram
+    RAW_API_RESPONSES ||--o{ RAW_SOURCE_RECORDS : contains
+    RAW_INGESTION_RUNS ||--o{ RAW_API_RESPONSES : captures
+    UNIVERSITIES ||--o{ PROGRAM_VERSIONS : hosts
+    CITIES ||--o{ PROGRAM_VERSIONS : locates
+    PROGRAM_GROUPS ||--o{ PROGRAM_VERSIONS : categorizes
+    PROGRAM_VERSIONS ||--o{ PROGRAM_CONDITIONS : has
+    CONDITIONS ||--o{ PROGRAM_CONDITIONS : defines
+    PROGRAM_VERSIONS o|--o{ NET_RESULTS : "optional verified same-year linkage"
+    UNIVERSITIES {
+      bigint universite_id PK
+      text universite_adi
+    }
+    PROGRAM_GROUPS {
+      bigint birim_grup_id PK
+      text puan_turu PK
+      text birim_grup_adi
+    }
+    CITIES {
+      bigint il_kodu PK
+      text il_adi
+    }
+    PROGRAM_VERSIONS {
+      bigint program_version_id PK
+      bigint kilavuz_kodu
+      int yil
+      bigint universite_id FK
+      bigint birim_grup_id FK
+      text puan_turu FK
+      bigint il_kodu FK
+    }
+    NET_RESULTS {
+      bigint net_result_id PK
+      bigint kilavuz_kodu
+      int yil
+      text puan_turu
+      bigint program_version_id FK
+    }
+    CONDITIONS {
+      text condition_code PK
+    }
+    PROGRAM_CONDITIONS {
+      bigint program_version_id FK
+      text condition_code FK
+    }
+    RAW_INGESTION_RUNS {
+      bigint ingestion_run_id PK
+    }
+    RAW_API_RESPONSES {
+      bigint api_response_id PK
+      bigint ingestion_run_id FK
+      jsonb payload
+    }
+    RAW_SOURCE_RECORDS {
+      bigint source_record_id PK
+      bigint api_response_id FK
+      jsonb record
+    }

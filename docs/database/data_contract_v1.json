@@ -1,0 +1,1975 @@
+{
+  "contract_version": "1.0.0-draft",
+  "generated_at_utc": "2026-10-08T21:33:11.294234+00:00",
+  "scope": "Public response-based logical model; five known endpoint families only; does not describe YOK physical DB.",
+  "sources": [
+    "forensics_summary.json",
+    "net_duplicate_groups.csv",
+    "collection_coverage.csv",
+    "normalized_schema.json (prior upload)"
+  ],
+  "coverage": {
+    "program_rows": 21491,
+    "net_rows_raw": 63063,
+    "lookup_rows": {
+      "universities": 228,
+      "program_groups": 611,
+      "cities": 83
+    },
+    "program_pages": 217,
+    "net_pages": 632,
+    "by_endpoint_and_score": [
+      {
+        "table": "programs",
+        "score_type": "SAY",
+        "files": "58",
+        "loaded_rows": "5744",
+        "reported_total_pages": "58",
+        "reported_total_elements": "5744",
+        "missing_page_count": "0",
+        "missing_pages_preview": "[]",
+        "saw_last": "True",
+        "bad_json_pages": "0",
+        "row_total_matches": "yes",
+        "complete_by_page_count": "yes",
+        "issue": ""
+      },
+      {
+        "table": "programs",
+        "score_type": "EA",
+        "files": "39",
+        "loaded_rows": "3900",
+        "reported_total_pages": "39",
+        "reported_total_elements": "3900",
+        "missing_page_count": "0",
+        "missing_pages_preview": "[]",
+        "saw_last": "True",
+        "bad_json_pages": "0",
+        "row_total_matches": "yes",
+        "complete_by_page_count": "yes",
+        "issue": ""
+      },
+      {
+        "table": "programs",
+        "score_type": "SÖZ",
+        "files": "20",
+        "loaded_rows": "1914",
+        "reported_total_pages": "20",
+        "reported_total_elements": "1914",
+        "missing_page_count": "0",
+        "missing_pages_preview": "[]",
+        "saw_last": "True",
+        "bad_json_pages": "0",
+        "row_total_matches": "yes",
+        "complete_by_page_count": "yes",
+        "issue": ""
+      },
+      {
+        "table": "programs",
+        "score_type": "DİL",
+        "files": "7",
+        "loaded_rows": "679",
+        "reported_total_pages": "7",
+        "reported_total_elements": "679",
+        "missing_page_count": "0",
+        "missing_pages_preview": "[]",
+        "saw_last": "True",
+        "bad_json_pages": "0",
+        "row_total_matches": "yes",
+        "complete_by_page_count": "yes",
+        "issue": ""
+      },
+      {
+        "table": "programs",
+        "score_type": "TYT",
+        "files": "93",
+        "loaded_rows": "9254",
+        "reported_total_pages": "93",
+        "reported_total_elements": "9254",
+        "missing_page_count": "0",
+        "missing_pages_preview": "[]",
+        "saw_last": "True",
+        "bad_json_pages": "0",
+        "row_total_matches": "yes",
+        "complete_by_page_count": "yes",
+        "issue": ""
+      },
+      {
+        "table": "net_results",
+        "score_type": "SAY",
+        "files": "155",
+        "loaded_rows": "15436",
+        "reported_total_pages": "155",
+        "reported_total_elements": "15436",
+        "missing_page_count": "0",
+        "missing_pages_preview": "[]",
+        "saw_last": "True",
+        "bad_json_pages": "0",
+        "row_total_matches": "yes",
+        "complete_by_page_count": "yes",
+        "issue": ""
+      },
+      {
+        "table": "net_results",
+        "score_type": "EA",
+        "files": "113",
+        "loaded_rows": "11284",
+        "reported_total_pages": "113",
+        "reported_total_elements": "11284",
+        "missing_page_count": "0",
+        "missing_pages_preview": "[]",
+        "saw_last": "True",
+        "bad_json_pages": "0",
+        "row_total_matches": "yes",
+        "complete_by_page_count": "yes",
+        "issue": ""
+      },
+      {
+        "table": "net_results",
+        "score_type": "SÖZ",
+        "files": "59",
+        "loaded_rows": "5895",
+        "reported_total_pages": "59",
+        "reported_total_elements": "5895",
+        "missing_page_count": "0",
+        "missing_pages_preview": "[]",
+        "saw_last": "True",
+        "bad_json_pages": "0",
+        "row_total_matches": "yes",
+        "complete_by_page_count": "yes",
+        "issue": ""
+      },
+      {
+        "table": "net_results",
+        "score_type": "DİL",
+        "files": "20",
+        "loaded_rows": "1975",
+        "reported_total_pages": "20",
+        "reported_total_elements": "1975",
+        "missing_page_count": "0",
+        "missing_pages_preview": "[]",
+        "saw_last": "True",
+        "bad_json_pages": "0",
+        "row_total_matches": "yes",
+        "complete_by_page_count": "yes",
+        "issue": ""
+      },
+      {
+        "table": "net_results",
+        "score_type": "TYT",
+        "files": "285",
+        "loaded_rows": "28473",
+        "reported_total_pages": "285",
+        "reported_total_elements": "28473",
+        "missing_page_count": "0",
+        "missing_pages_preview": "[]",
+        "saw_last": "True",
+        "bad_json_pages": "0",
+        "row_total_matches": "yes",
+        "complete_by_page_count": "yes",
+        "issue": ""
+      }
+    ],
+    "complete_for_queried_pages": true,
+    "limitation": "No proof of completeness for unknown endpoints, unpublished years or changed server state."
+  },
+  "duplicate_audit": {
+    "repeating_code_year_groups": 88,
+    "raw_excess_rows": 88,
+    "identical_payload_pairs": 71,
+    "identical_same_page": 70,
+    "identical_cross_page": 1,
+    "distinct_payload_pairs": 17,
+    "distinct_pairs_all_separate_score_types": true,
+    "distinct_score_type_pairs": {
+      "EA+SAY": 5,
+      "SAY+TYT": 8,
+      "EA+TYT": 1,
+      "EA+SÖZ": 3
+    },
+    "net_rows_after_exact_payload_dedup_estimate": 62992,
+    "suggested_core_unique": [
+      "kilavuzKodu",
+      "yil",
+      "puanTuru"
+    ],
+    "status": "candidate: exact triple uniqueness must be rechecked across all raw rows before migration and per ingestion run"
+  },
+  "tables": {
+    "universities": {
+      "layer": "core",
+      "primary_key": [
+        "universiteId"
+      ],
+      "cardinality": "228 unique lookup rows",
+      "enforcement": "supported by collected batch"
+    },
+    "cities": {
+      "layer": "core",
+      "primary_key": [
+        "ilKodu"
+      ],
+      "cardinality": "83 unique lookup rows",
+      "enforcement": "supported by collected batch"
+    },
+    "program_groups": {
+      "layer": "core",
+      "primary_key": [
+        "birimGrupId",
+        "puanTuru"
+      ],
+      "cardinality": "611 unique lookup rows",
+      "enforcement": "supported by collected batch"
+    },
+    "program_versions": {
+      "layer": "core",
+      "source": "programs",
+      "primary_key": [
+        "program_version_id (surrogate)"
+      ],
+      "natural_key": [
+        "kilavuzKodu",
+        "yil"
+      ],
+      "enforcement": "unique observed for year 2026; verify annually"
+    },
+    "net_results": {
+      "layer": "core",
+      "source": "net_results",
+      "primary_key": [
+        "net_result_id (surrogate)"
+      ],
+      "natural_key_candidate": [
+        "kilavuzKodu",
+        "yil",
+        "puanTuru"
+      ],
+      "enforcement": "deduplicate 71 same-payload repeats before insert; reject conflicting same-triple records to quarantine"
+    }
+  },
+  "relationships": [
+    {
+      "child": "program_versions",
+      "columns": [
+        "universite_id"
+      ],
+      "parent": "universities",
+      "ref_columns": [
+        "universite_id"
+      ],
+      "status": "batch-verified",
+      "enforce_fk": true
+    },
+    {
+      "child": "program_versions",
+      "columns": [
+        "il_kodu"
+      ],
+      "parent": "cities",
+      "ref_columns": [
+        "il_kodu"
+      ],
+      "status": "batch-verified for non-null codes",
+      "enforce_fk": true
+    },
+    {
+      "child": "program_versions",
+      "columns": [
+        "birim_grup_id",
+        "puan_turu"
+      ],
+      "parent": "program_groups",
+      "ref_columns": [
+        "birim_grup_id",
+        "puan_turu"
+      ],
+      "status": "batch-verified for non-null group id",
+      "enforce_fk": true
+    },
+    {
+      "child": "net_results",
+      "columns": [
+        "kilavuz_kodu",
+        "yil"
+      ],
+      "parent": "program_versions",
+      "ref_columns": [
+        "kilavuz_kodu",
+        "yil"
+      ],
+      "status": "unverifiable: net years 2023-25 vs program versions 2026",
+      "enforce_fk": false
+    },
+    {
+      "child": "net_results",
+      "columns": [
+        "universite_id"
+      ],
+      "parent": "universities",
+      "ref_columns": [
+        "universite_id"
+      ],
+      "status": "unresolved orphan rows in historic net data",
+      "enforce_fk": false
+    },
+    {
+      "child": "net_results",
+      "columns": [
+        "birim_grup_id",
+        "puan_turu"
+      ],
+      "parent": "program_groups",
+      "ref_columns": [
+        "birim_grup_id",
+        "puan_turu"
+      ],
+      "status": "unresolved orphans in historic net data",
+      "enforce_fk": false
+    }
+  ],
+  "year_rules": {
+    "programs_yil": "2026 observed only",
+    "net_results_yil": [
+      2023,
+      2024,
+      2025
+    ],
+    "year_offset_1_2_3": "UNVERIFIED; do not load as year - suffix into canonical historical metrics until verified",
+    "source_updated_at": "retain immutable snapshots and original year separately"
+  },
+  "ingestion_rules": [
+    "Store every API page and row unchanged with capture timestamp, score type, endpoint, page, and source hash in raw.",
+    "Load source rows into typed staging; do not create foreign keys in staging.",
+    "For net rows with same (code,year,score), if payload identical retain one canonical row and log all source record IDs.",
+    "If same (code,year,score) maps to distinct payloads, quarantine; never arbitrate without a resolution policy.",
+    "Rows with same (code,year) but different score types are separate canonical records.",
+    "Do not require historic net rows to match 2026 program versions.",
+    "Retain original conditions array and unknown fields in jsonb; preserve non-matching historical IDs.",
+    "Use a transaction for core upserts and do not overwrite historical snapshots or the raw source."
+  ],
+  "observed_field_metadata": {
+    "universities": [
+      {
+        "table": "universities",
+        "api_field": "universiteAdi",
+        "sql_column": "universite_adi",
+        "observed_types": {
+          "string": 228
+        },
+        "rows": 228,
+        "present": 228,
+        "missing": 0,
+        "nonnull": 228,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "universities",
+        "api_field": "universiteId",
+        "sql_column": "universite_id",
+        "observed_types": {
+          "integer": 228
+        },
+        "rows": 228,
+        "present": 228,
+        "missing": 0,
+        "nonnull": 228,
+        "sql_type": "BIGINT"
+      }
+    ],
+    "program_groups": [
+      {
+        "table": "program_groups",
+        "api_field": "birimGrupAdi",
+        "sql_column": "birim_grup_adi",
+        "observed_types": {
+          "string": 611
+        },
+        "rows": 611,
+        "present": 611,
+        "missing": 0,
+        "nonnull": 611,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "program_groups",
+        "api_field": "birimGrupId",
+        "sql_column": "birim_grup_id",
+        "observed_types": {
+          "integer": 611
+        },
+        "rows": 611,
+        "present": 611,
+        "missing": 0,
+        "nonnull": 611,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "program_groups",
+        "api_field": "puanTuru",
+        "sql_column": "puan_turu",
+        "observed_types": {
+          "string": 611
+        },
+        "rows": 611,
+        "present": 611,
+        "missing": 0,
+        "nonnull": 611,
+        "sql_type": "TEXT"
+      }
+    ],
+    "cities": [
+      {
+        "table": "cities",
+        "api_field": "ilAdi",
+        "sql_column": "il_adi",
+        "observed_types": {
+          "string": 83
+        },
+        "rows": 83,
+        "present": 83,
+        "missing": 0,
+        "nonnull": 83,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "cities",
+        "api_field": "ilKodu",
+        "sql_column": "il_kodu",
+        "observed_types": {
+          "integer": 83
+        },
+        "rows": 83,
+        "present": 83,
+        "missing": 0,
+        "nonnull": 83,
+        "sql_type": "BIGINT"
+      }
+    ],
+    "programs": [
+      {
+        "table": "programs",
+        "api_field": "abayp",
+        "sql_column": "abayp",
+        "observed_types": {
+          "string": 87
+        },
+        "rows": 21491,
+        "present": 87,
+        "missing": 21404,
+        "nonnull": 87,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "programs",
+        "api_field": "akreditasyon",
+        "sql_column": "akreditasyon",
+        "observed_types": {
+          "string": 3915
+        },
+        "rows": 21491,
+        "present": 3915,
+        "missing": 17576,
+        "nonnull": 3915,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "programs",
+        "api_field": "akreditasyonAck",
+        "sql_column": "akreditasyon_ack",
+        "observed_types": {
+          "string": 3840
+        },
+        "rows": 21491,
+        "present": 3840,
+        "missing": 17651,
+        "nonnull": 3840,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "programs",
+        "api_field": "arGor",
+        "sql_column": "ar_gor",
+        "observed_types": {
+          "integer": 7445
+        },
+        "rows": 21491,
+        "present": 7445,
+        "missing": 14046,
+        "nonnull": 7445,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "programs",
+        "api_field": "basariSirasi",
+        "sql_column": "basari_sirasi",
+        "observed_types": {
+          "integer": 18249
+        },
+        "rows": 21491,
+        "present": 18249,
+        "missing": 3242,
+        "nonnull": 18249,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "programs",
+        "api_field": "basariSirasi1",
+        "sql_column": "basari_sirasi1",
+        "observed_types": {
+          "integer": 17293
+        },
+        "rows": 21491,
+        "present": 17293,
+        "missing": 4198,
+        "nonnull": 17293,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "programs",
+        "api_field": "basariSirasi2",
+        "sql_column": "basari_sirasi2",
+        "observed_types": {
+          "integer": 16895
+        },
+        "rows": 21491,
+        "present": 16895,
+        "missing": 4596,
+        "nonnull": 16895,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "programs",
+        "api_field": "basariSirasi3",
+        "sql_column": "basari_sirasi3",
+        "observed_types": {
+          "integer": 16443
+        },
+        "rows": 21491,
+        "present": 16443,
+        "missing": 5048,
+        "nonnull": 16443,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "programs",
+        "api_field": "birimAdi",
+        "sql_column": "birim_adi",
+        "observed_types": {
+          "string": 21491
+        },
+        "rows": 21491,
+        "present": 21491,
+        "missing": 0,
+        "nonnull": 21491,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "programs",
+        "api_field": "birimEkTuru",
+        "sql_column": "birim_ek_turu",
+        "observed_types": {
+          "string": 688
+        },
+        "rows": 21491,
+        "present": 688,
+        "missing": 20803,
+        "nonnull": 688,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "programs",
+        "api_field": "birimGrupAdi",
+        "sql_column": "birim_grup_adi",
+        "observed_types": {
+          "string": 21491
+        },
+        "rows": 21491,
+        "present": 21491,
+        "missing": 0,
+        "nonnull": 21491,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "programs",
+        "api_field": "birimGrupId",
+        "sql_column": "birim_grup_id",
+        "observed_types": {
+          "integer": 21419
+        },
+        "rows": 21491,
+        "present": 21419,
+        "missing": 72,
+        "nonnull": 21419,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "programs",
+        "api_field": "birimHiyerarsi",
+        "sql_column": "birim_hiyerarsi",
+        "observed_types": {
+          "string": 21324
+        },
+        "rows": 21491,
+        "present": 21324,
+        "missing": 167,
+        "nonnull": 21324,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "programs",
+        "api_field": "birimId",
+        "sql_column": "birim_id",
+        "observed_types": {
+          "integer": 21324
+        },
+        "rows": 21491,
+        "present": 21324,
+        "missing": 167,
+        "nonnull": 21324,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "programs",
+        "api_field": "birimTuruAdi",
+        "sql_column": "birim_turu_adi",
+        "observed_types": {
+          "string": 21491
+        },
+        "rows": 21491,
+        "present": 21491,
+        "missing": 0,
+        "nonnull": 21491,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "programs",
+        "api_field": "birimTuruId",
+        "sql_column": "birim_turu_id",
+        "observed_types": {
+          "integer": 21491
+        },
+        "rows": 21491,
+        "present": 21491,
+        "missing": 0,
+        "nonnull": 21491,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "programs",
+        "api_field": "bursOraniAdi",
+        "sql_column": "burs_orani_adi",
+        "observed_types": {
+          "string": 9570
+        },
+        "rows": 21491,
+        "present": 9570,
+        "missing": 11921,
+        "nonnull": 9570,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "programs",
+        "api_field": "bursOraniId",
+        "sql_column": "burs_orani_id",
+        "observed_types": {
+          "integer": 21491
+        },
+        "rows": 21491,
+        "present": 21491,
+        "missing": 0,
+        "nonnull": 21491,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "programs",
+        "api_field": "doc",
+        "sql_column": "doc",
+        "observed_types": {
+          "integer": 7960
+        },
+        "rows": 21491,
+        "present": 7960,
+        "missing": 13531,
+        "nonnull": 7960,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "programs",
+        "api_field": "donem",
+        "sql_column": "donem",
+        "observed_types": {
+          "string": 21491
+        },
+        "rows": 21491,
+        "present": 21491,
+        "missing": 0,
+        "nonnull": 21491,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "programs",
+        "api_field": "dou",
+        "sql_column": "dou",
+        "observed_types": {
+          "integer": 11882
+        },
+        "rows": 21491,
+        "present": 11882,
+        "missing": 9609,
+        "nonnull": 11882,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "programs",
+        "api_field": "dprmY",
+        "sql_column": "dprm_y",
+        "observed_types": {
+          "integer": 4344
+        },
+        "rows": 21491,
+        "present": 4344,
+        "missing": 17147,
+        "nonnull": 4344,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "programs",
+        "api_field": "dus",
+        "sql_column": "dus",
+        "observed_types": {
+          "string": 83
+        },
+        "rows": 21491,
+        "present": 83,
+        "missing": 21408,
+        "nonnull": 83,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "programs",
+        "api_field": "eskiBirimId",
+        "sql_column": "eski_birim_id",
+        "observed_types": {
+          "integer": 386
+        },
+        "rows": 21491,
+        "present": 386,
+        "missing": 21105,
+        "nonnull": 386,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "programs",
+        "api_field": "eskiKilavuzKodu",
+        "sql_column": "eski_kilavuz_kodu",
+        "observed_types": {
+          "integer": 1366
+        },
+        "rows": 21491,
+        "present": 1366,
+        "missing": 20125,
+        "nonnull": 1366,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "programs",
+        "api_field": "fymkAdi",
+        "sql_column": "fymk_adi",
+        "observed_types": {
+          "string": 21491
+        },
+        "rows": 21491,
+        "present": 21491,
+        "missing": 0,
+        "nonnull": 21491,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "programs",
+        "api_field": "fymkId",
+        "sql_column": "fymk_id",
+        "observed_types": {
+          "integer": 21491
+        },
+        "rows": 21491,
+        "present": 21491,
+        "missing": 0,
+        "nonnull": 21491,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "programs",
+        "api_field": "fymkIlAdi",
+        "sql_column": "fymk_il_adi",
+        "observed_types": {
+          "string": 21324
+        },
+        "rows": 21491,
+        "present": 21324,
+        "missing": 167,
+        "nonnull": 21324,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "programs",
+        "api_field": "fymkIlKodu",
+        "sql_column": "fymk_il_kodu",
+        "observed_types": {
+          "integer": 21324
+        },
+        "rows": 21491,
+        "present": 21324,
+        "missing": 167,
+        "nonnull": 21324,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "programs",
+        "api_field": "fymkIlceAdi",
+        "sql_column": "fymk_ilce_adi",
+        "observed_types": {
+          "string": 21322
+        },
+        "rows": 21491,
+        "present": 21322,
+        "missing": 169,
+        "nonnull": 21322,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "programs",
+        "api_field": "fymkIlceKodu",
+        "sql_column": "fymk_ilce_kodu",
+        "observed_types": {
+          "integer": 21322
+        },
+        "rows": 21491,
+        "present": 21322,
+        "missing": 169,
+        "nonnull": 21322,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "programs",
+        "api_field": "gk1",
+        "sql_column": "gk1",
+        "observed_types": {
+          "integer": 19858
+        },
+        "rows": 21491,
+        "present": 19858,
+        "missing": 1633,
+        "nonnull": 19858,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "programs",
+        "api_field": "gk2",
+        "sql_column": "gk2",
+        "observed_types": {
+          "integer": 18168
+        },
+        "rows": 21491,
+        "present": 18168,
+        "missing": 3323,
+        "nonnull": 18168,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "programs",
+        "api_field": "gk3",
+        "sql_column": "gk3",
+        "observed_types": {
+          "integer": 16714
+        },
+        "rows": 21491,
+        "present": 16714,
+        "missing": 4777,
+        "nonnull": 16714,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "programs",
+        "api_field": "gkY",
+        "sql_column": "gk_y",
+        "observed_types": {
+          "integer": 21491
+        },
+        "rows": 21491,
+        "present": 21491,
+        "missing": 0,
+        "nonnull": 21491,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "programs",
+        "api_field": "ilAdi",
+        "sql_column": "il_adi",
+        "observed_types": {
+          "string": 21324
+        },
+        "rows": 21491,
+        "present": 21324,
+        "missing": 167,
+        "nonnull": 21324,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "programs",
+        "api_field": "ilKodu",
+        "sql_column": "il_kodu",
+        "observed_types": {
+          "integer": 21324
+        },
+        "rows": 21491,
+        "present": 21324,
+        "missing": 167,
+        "nonnull": 21324,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "programs",
+        "api_field": "ilceAdi",
+        "sql_column": "ilce_adi",
+        "observed_types": {
+          "string": 21322
+        },
+        "rows": 21491,
+        "present": 21322,
+        "missing": 169,
+        "nonnull": 21322,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "programs",
+        "api_field": "ilceKodu",
+        "sql_column": "ilce_kodu",
+        "observed_types": {
+          "integer": 21322
+        },
+        "rows": 21491,
+        "present": 21322,
+        "missing": 169,
+        "nonnull": 21322,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "programs",
+        "api_field": "kilAciklama",
+        "sql_column": "kil_aciklama",
+        "observed_types": {
+          "string": 21320
+        },
+        "rows": 21491,
+        "present": 21320,
+        "missing": 171,
+        "nonnull": 21320,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "programs",
+        "api_field": "kilavuzKodu",
+        "sql_column": "kilavuz_kodu",
+        "observed_types": {
+          "integer": 21491
+        },
+        "rows": 21491,
+        "present": 21491,
+        "missing": 0,
+        "nonnull": 21491,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "programs",
+        "api_field": "kontenjan",
+        "sql_column": "kontenjan",
+        "observed_types": {
+          "integer": 21491
+        },
+        "rows": 21491,
+        "present": 21491,
+        "missing": 0,
+        "nonnull": 21491,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "programs",
+        "api_field": "kontenjanMeb",
+        "sql_column": "kontenjan_meb",
+        "observed_types": {
+          "integer": 716
+        },
+        "rows": 21491,
+        "present": 716,
+        "missing": 20775,
+        "nonnull": 716,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "programs",
+        "api_field": "kontenjanObs",
+        "sql_column": "kontenjan_obs",
+        "observed_types": {
+          "integer": 11250
+        },
+        "rows": 21491,
+        "present": 11250,
+        "missing": 10241,
+        "nonnull": 11250,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "programs",
+        "api_field": "kontenjanSgy",
+        "sql_column": "kontenjan_sgy",
+        "observed_types": {
+          "integer": 3174
+        },
+        "rows": 21491,
+        "present": 3174,
+        "missing": 18317,
+        "nonnull": 3174,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "programs",
+        "api_field": "kontenjanY34",
+        "sql_column": "kontenjan_y34",
+        "observed_types": {
+          "integer": 6975
+        },
+        "rows": 21491,
+        "present": 6975,
+        "missing": 14516,
+        "nonnull": 6975,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "programs",
+        "api_field": "kosul",
+        "sql_column": "kosul",
+        "observed_types": {
+          "string": 14008
+        },
+        "rows": 21491,
+        "present": 14008,
+        "missing": 7483,
+        "nonnull": 14008,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "programs",
+        "api_field": "kosulList",
+        "sql_column": "kosul_list",
+        "observed_types": {
+          "array": 14008
+        },
+        "rows": 21491,
+        "present": 14008,
+        "missing": 7483,
+        "nonnull": 14008,
+        "sql_type": "JSONB"
+      },
+      {
+        "table": "programs",
+        "api_field": "kpss1",
+        "sql_column": "kpss1",
+        "observed_types": {
+          "string": 6347
+        },
+        "rows": 21491,
+        "present": 6347,
+        "missing": 15144,
+        "nonnull": 6347,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "programs",
+        "api_field": "minBasariSirasi",
+        "sql_column": "min_basari_sirasi",
+        "observed_types": {
+          "string": 3741
+        },
+        "rows": 21491,
+        "present": 3741,
+        "missing": 17750,
+        "nonnull": 3741,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "programs",
+        "api_field": "minBasariSirasiKosul",
+        "sql_column": "min_basari_sirasi_kosul",
+        "observed_types": {
+          "string": 3741
+        },
+        "rows": 21491,
+        "present": 3741,
+        "missing": 17750,
+        "nonnull": 3741,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "programs",
+        "api_field": "minPuan",
+        "sql_column": "min_puan",
+        "observed_types": {
+          "number": 18249
+        },
+        "rows": 21491,
+        "present": 18249,
+        "missing": 3242,
+        "nonnull": 18249,
+        "sql_type": "DOUBLE PRECISION"
+      },
+      {
+        "table": "programs",
+        "api_field": "minPuan1",
+        "sql_column": "min_puan1",
+        "observed_types": {
+          "string": 21491
+        },
+        "rows": 21491,
+        "present": 21491,
+        "missing": 0,
+        "nonnull": 21491,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "programs",
+        "api_field": "minPuan2",
+        "sql_column": "min_puan2",
+        "observed_types": {
+          "string": 20242
+        },
+        "rows": 21491,
+        "present": 20242,
+        "missing": 1249,
+        "nonnull": 20242,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "programs",
+        "api_field": "minPuan3",
+        "sql_column": "min_puan3",
+        "observed_types": {
+          "string": 18896
+        },
+        "rows": 21491,
+        "present": 18896,
+        "missing": 2595,
+        "nonnull": 18896,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "programs",
+        "api_field": "obkY",
+        "sql_column": "obk_y",
+        "observed_types": {
+          "integer": 11250
+        },
+        "rows": 21491,
+        "present": 11250,
+        "missing": 10241,
+        "nonnull": 11250,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "programs",
+        "api_field": "ogrGor",
+        "sql_column": "ogr_gor",
+        "observed_types": {
+          "integer": 114
+        },
+        "rows": 21491,
+        "present": 114,
+        "missing": 21377,
+        "nonnull": 114,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "programs",
+        "api_field": "ogrenimDiliAdi",
+        "sql_column": "ogrenim_dili_adi",
+        "observed_types": {
+          "string": 21360
+        },
+        "rows": 21491,
+        "present": 21360,
+        "missing": 131,
+        "nonnull": 21360,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "programs",
+        "api_field": "ogrenimDiliId",
+        "sql_column": "ogrenim_dili_id",
+        "observed_types": {
+          "integer": 21491
+        },
+        "rows": 21491,
+        "present": 21491,
+        "missing": 0,
+        "nonnull": 21491,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "programs",
+        "api_field": "ogrenimSuresi",
+        "sql_column": "ogrenim_suresi",
+        "observed_types": {
+          "integer": 21491
+        },
+        "rows": 21491,
+        "present": 21491,
+        "missing": 0,
+        "nonnull": 21491,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "programs",
+        "api_field": "ogrenimTuruAdi",
+        "sql_column": "ogrenim_turu_adi",
+        "observed_types": {
+          "string": 21491
+        },
+        "rows": 21491,
+        "present": 21491,
+        "missing": 0,
+        "nonnull": 21491,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "programs",
+        "api_field": "ogrenimTuruId",
+        "sql_column": "ogrenim_turu_id",
+        "observed_types": {
+          "integer": 21491
+        },
+        "rows": 21491,
+        "present": 21491,
+        "missing": 0,
+        "nonnull": 21491,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "programs",
+        "api_field": "osymKilavuzId",
+        "sql_column": "osym_kilavuz_id",
+        "observed_types": {
+          "integer": 21491
+        },
+        "rows": 21491,
+        "present": 21491,
+        "missing": 0,
+        "nonnull": 21491,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "programs",
+        "api_field": "prof",
+        "sql_column": "prof",
+        "observed_types": {
+          "integer": 7667
+        },
+        "rows": 21491,
+        "present": 7667,
+        "missing": 13824,
+        "nonnull": 7667,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "programs",
+        "api_field": "puanTuru",
+        "sql_column": "puan_turu",
+        "observed_types": {
+          "string": 21491
+        },
+        "rows": 21491,
+        "present": 21491,
+        "missing": 0,
+        "nonnull": 21491,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "programs",
+        "api_field": "sgyY",
+        "sql_column": "sgy_y",
+        "observed_types": {
+          "integer": 3174
+        },
+        "rows": 21491,
+        "present": 3174,
+        "missing": 18317,
+        "nonnull": 3174,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "programs",
+        "api_field": "sinav",
+        "sql_column": "sinav",
+        "observed_types": {
+          "string": 21491
+        },
+        "rows": 21491,
+        "present": 21491,
+        "missing": 0,
+        "nonnull": 21491,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "programs",
+        "api_field": "tabloTuru",
+        "sql_column": "tablo_turu",
+        "observed_types": {
+          "string": 21491
+        },
+        "rows": 21491,
+        "present": 21491,
+        "missing": 0,
+        "nonnull": 21491,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "programs",
+        "api_field": "tamBursBirimId",
+        "sql_column": "tam_burs_birim_id",
+        "observed_types": {
+          "integer": 9439
+        },
+        "rows": 21491,
+        "present": 9439,
+        "missing": 12052,
+        "nonnull": 9439,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "programs",
+        "api_field": "tusktp",
+        "sql_column": "tusktp",
+        "observed_types": {
+          "string": 100
+        },
+        "rows": 21491,
+        "present": 100,
+        "missing": 21391,
+        "nonnull": 100,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "programs",
+        "api_field": "tustt1",
+        "sql_column": "tustt1",
+        "observed_types": {
+          "string": 100
+        },
+        "rows": 21491,
+        "present": 100,
+        "missing": 21391,
+        "nonnull": 100,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "programs",
+        "api_field": "tustt2",
+        "sql_column": "tustt2",
+        "observed_types": {
+          "string": 16
+        },
+        "rows": 21491,
+        "present": 16,
+        "missing": 21475,
+        "nonnull": 16,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "programs",
+        "api_field": "tyc",
+        "sql_column": "tyc",
+        "observed_types": {
+          "string": 2364
+        },
+        "rows": 21491,
+        "present": 2364,
+        "missing": 19127,
+        "nonnull": 2364,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "programs",
+        "api_field": "ucret",
+        "sql_column": "ucret",
+        "observed_types": {
+          "integer": 9212
+        },
+        "rows": 21491,
+        "present": 9212,
+        "missing": 12279,
+        "nonnull": 9212,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "programs",
+        "api_field": "uniAkreditasyon",
+        "sql_column": "uni_akreditasyon",
+        "observed_types": {
+          "string": 15599
+        },
+        "rows": 21491,
+        "present": 15599,
+        "missing": 5892,
+        "nonnull": 15599,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "programs",
+        "api_field": "uniIlAdi",
+        "sql_column": "uni_il_adi",
+        "observed_types": {
+          "string": 21324
+        },
+        "rows": 21491,
+        "present": 21324,
+        "missing": 167,
+        "nonnull": 21324,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "programs",
+        "api_field": "uniIlKodu",
+        "sql_column": "uni_il_kodu",
+        "observed_types": {
+          "integer": 21324
+        },
+        "rows": 21491,
+        "present": 21324,
+        "missing": 167,
+        "nonnull": 21324,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "programs",
+        "api_field": "uniIlceAdi",
+        "sql_column": "uni_ilce_adi",
+        "observed_types": {
+          "string": 21322
+        },
+        "rows": 21491,
+        "present": 21322,
+        "missing": 169,
+        "nonnull": 21322,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "programs",
+        "api_field": "uniIlceKodu",
+        "sql_column": "uni_ilce_kodu",
+        "observed_types": {
+          "integer": 21322
+        },
+        "rows": 21491,
+        "present": 21322,
+        "missing": 169,
+        "nonnull": 21322,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "programs",
+        "api_field": "uniKilAciklama",
+        "sql_column": "uni_kil_aciklama",
+        "observed_types": {
+          "string": 21320
+        },
+        "rows": 21491,
+        "present": 21320,
+        "missing": 171,
+        "nonnull": 21320,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "programs",
+        "api_field": "universiteAdi",
+        "sql_column": "universite_adi",
+        "observed_types": {
+          "string": 21491
+        },
+        "rows": 21491,
+        "present": 21491,
+        "missing": 0,
+        "nonnull": 21491,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "programs",
+        "api_field": "universiteId",
+        "sql_column": "universite_id",
+        "observed_types": {
+          "integer": 21491
+        },
+        "rows": 21491,
+        "present": 21491,
+        "missing": 0,
+        "nonnull": 21491,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "programs",
+        "api_field": "universiteTuru",
+        "sql_column": "universite_turu",
+        "observed_types": {
+          "string": 21491
+        },
+        "rows": 21491,
+        "present": 21491,
+        "missing": 0,
+        "nonnull": 21491,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "programs",
+        "api_field": "uygulamaliEgitimModeli",
+        "sql_column": "uygulamali_egitim_modeli",
+        "observed_types": {
+          "string": 2614
+        },
+        "rows": 21491,
+        "present": 2614,
+        "missing": 18877,
+        "nonnull": 2614,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "programs",
+        "api_field": "y34",
+        "sql_column": "y34",
+        "observed_types": {
+          "integer": 2631
+        },
+        "rows": 21491,
+        "present": 2631,
+        "missing": 18860,
+        "nonnull": 2631,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "programs",
+        "api_field": "yil",
+        "sql_column": "yil",
+        "observed_types": {
+          "integer": 21491
+        },
+        "rows": 21491,
+        "present": 21491,
+        "missing": 0,
+        "nonnull": 21491,
+        "sql_type": "BIGINT"
+      }
+    ],
+    "net_results": [
+      {
+        "table": "net_results",
+        "api_field": "aytBioNet",
+        "sql_column": "ayt_bio_net",
+        "observed_types": {
+          "number": 15436
+        },
+        "rows": 63063,
+        "present": 15436,
+        "missing": 47627,
+        "nonnull": 15436,
+        "sql_type": "DOUBLE PRECISION"
+      },
+      {
+        "table": "net_results",
+        "api_field": "aytCog1Net",
+        "sql_column": "ayt_cog1_net",
+        "observed_types": {
+          "number": 17179
+        },
+        "rows": 63063,
+        "present": 17179,
+        "missing": 45884,
+        "nonnull": 17179,
+        "sql_type": "DOUBLE PRECISION"
+      },
+      {
+        "table": "net_results",
+        "api_field": "aytCog2Net",
+        "sql_column": "ayt_cog2_net",
+        "observed_types": {
+          "number": 5895
+        },
+        "rows": 63063,
+        "present": 5895,
+        "missing": 57168,
+        "nonnull": 5895,
+        "sql_type": "DOUBLE PRECISION"
+      },
+      {
+        "table": "net_results",
+        "api_field": "aytDinNet",
+        "sql_column": "ayt_din_net",
+        "observed_types": {
+          "number": 5895
+        },
+        "rows": 63063,
+        "present": 5895,
+        "missing": 57168,
+        "nonnull": 5895,
+        "sql_type": "DOUBLE PRECISION"
+      },
+      {
+        "table": "net_results",
+        "api_field": "aytFelNet",
+        "sql_column": "ayt_fel_net",
+        "observed_types": {
+          "number": 5895
+        },
+        "rows": 63063,
+        "present": 5895,
+        "missing": 57168,
+        "nonnull": 5895,
+        "sql_type": "DOUBLE PRECISION"
+      },
+      {
+        "table": "net_results",
+        "api_field": "aytFizNet",
+        "sql_column": "ayt_fiz_net",
+        "observed_types": {
+          "number": 15436
+        },
+        "rows": 63063,
+        "present": 15436,
+        "missing": 47627,
+        "nonnull": 15436,
+        "sql_type": "DOUBLE PRECISION"
+      },
+      {
+        "table": "net_results",
+        "api_field": "aytKimNet",
+        "sql_column": "ayt_kim_net",
+        "observed_types": {
+          "number": 15436
+        },
+        "rows": 63063,
+        "present": 15436,
+        "missing": 47627,
+        "nonnull": 15436,
+        "sql_type": "DOUBLE PRECISION"
+      },
+      {
+        "table": "net_results",
+        "api_field": "aytMatNet",
+        "sql_column": "ayt_mat_net",
+        "observed_types": {
+          "number": 26720
+        },
+        "rows": 63063,
+        "present": 26720,
+        "missing": 36343,
+        "nonnull": 26720,
+        "sql_type": "DOUBLE PRECISION"
+      },
+      {
+        "table": "net_results",
+        "api_field": "aytTdeNet",
+        "sql_column": "ayt_tde_net",
+        "observed_types": {
+          "number": 17179
+        },
+        "rows": 63063,
+        "present": 17179,
+        "missing": 45884,
+        "nonnull": 17179,
+        "sql_type": "DOUBLE PRECISION"
+      },
+      {
+        "table": "net_results",
+        "api_field": "aytTrh1Net",
+        "sql_column": "ayt_trh1_net",
+        "observed_types": {
+          "number": 17179
+        },
+        "rows": 63063,
+        "present": 17179,
+        "missing": 45884,
+        "nonnull": 17179,
+        "sql_type": "DOUBLE PRECISION"
+      },
+      {
+        "table": "net_results",
+        "api_field": "aytTrh2Net",
+        "sql_column": "ayt_trh2_net",
+        "observed_types": {
+          "number": 5895
+        },
+        "rows": 63063,
+        "present": 5895,
+        "missing": 57168,
+        "nonnull": 5895,
+        "sql_type": "DOUBLE PRECISION"
+      },
+      {
+        "table": "net_results",
+        "api_field": "birimAdi",
+        "sql_column": "birim_adi",
+        "observed_types": {
+          "string": 63063
+        },
+        "rows": 63063,
+        "present": 63063,
+        "missing": 0,
+        "nonnull": 63063,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "net_results",
+        "api_field": "birimGrupAdi",
+        "sql_column": "birim_grup_adi",
+        "observed_types": {
+          "string": 63063
+        },
+        "rows": 63063,
+        "present": 63063,
+        "missing": 0,
+        "nonnull": 63063,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "net_results",
+        "api_field": "birimGrupId",
+        "sql_column": "birim_grup_id",
+        "observed_types": {
+          "integer": 62761
+        },
+        "rows": 63063,
+        "present": 62761,
+        "missing": 302,
+        "nonnull": 62761,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "net_results",
+        "api_field": "birimId",
+        "sql_column": "birim_id",
+        "observed_types": {
+          "integer": 62705
+        },
+        "rows": 63063,
+        "present": 62705,
+        "missing": 358,
+        "nonnull": 62705,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "net_results",
+        "api_field": "birimTuruAdi",
+        "sql_column": "birim_turu_adi",
+        "observed_types": {
+          "string": 63063
+        },
+        "rows": 63063,
+        "present": 63063,
+        "missing": 0,
+        "nonnull": 63063,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "net_results",
+        "api_field": "birimTuruId",
+        "sql_column": "birim_turu_id",
+        "observed_types": {
+          "integer": 63063
+        },
+        "rows": 63063,
+        "present": 63063,
+        "missing": 0,
+        "nonnull": 63063,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "net_results",
+        "api_field": "katsayi",
+        "sql_column": "katsayi",
+        "observed_types": {
+          "number": 63045
+        },
+        "rows": 63063,
+        "present": 63045,
+        "missing": 18,
+        "nonnull": 63045,
+        "sql_type": "DOUBLE PRECISION"
+      },
+      {
+        "table": "net_results",
+        "api_field": "kilavuzKodu",
+        "sql_column": "kilavuz_kodu",
+        "observed_types": {
+          "integer": 63063
+        },
+        "rows": 63063,
+        "present": 63063,
+        "missing": 0,
+        "nonnull": 63063,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "net_results",
+        "api_field": "obp",
+        "sql_column": "obp",
+        "observed_types": {
+          "number": 63063
+        },
+        "rows": 63063,
+        "present": 63063,
+        "missing": 0,
+        "nonnull": 63063,
+        "sql_type": "DOUBLE PRECISION"
+      },
+      {
+        "table": "net_results",
+        "api_field": "puanTuru",
+        "sql_column": "puan_turu",
+        "observed_types": {
+          "string": 63063
+        },
+        "rows": 63063,
+        "present": 63063,
+        "missing": 0,
+        "nonnull": 63063,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "net_results",
+        "api_field": "tabanPuan",
+        "sql_column": "taban_puan",
+        "observed_types": {
+          "number": 63045
+        },
+        "rows": 63063,
+        "present": 63045,
+        "missing": 18,
+        "nonnull": 63045,
+        "sql_type": "DOUBLE PRECISION"
+      },
+      {
+        "table": "net_results",
+        "api_field": "tytFenNet",
+        "sql_column": "tyt_fen_net",
+        "observed_types": {
+          "number": 55265
+        },
+        "rows": 63063,
+        "present": 55265,
+        "missing": 7798,
+        "nonnull": 55265,
+        "sql_type": "DOUBLE PRECISION"
+      },
+      {
+        "table": "net_results",
+        "api_field": "tytMatNet",
+        "sql_column": "tyt_mat_net",
+        "observed_types": {
+          "number": 60875
+        },
+        "rows": 63063,
+        "present": 60875,
+        "missing": 2188,
+        "nonnull": 60875,
+        "sql_type": "DOUBLE PRECISION"
+      },
+      {
+        "table": "net_results",
+        "api_field": "tytSosNet",
+        "sql_column": "tyt_sos_net",
+        "observed_types": {
+          "number": 62579
+        },
+        "rows": 63063,
+        "present": 62579,
+        "missing": 484,
+        "nonnull": 62579,
+        "sql_type": "DOUBLE PRECISION"
+      },
+      {
+        "table": "net_results",
+        "api_field": "tytTrkNet",
+        "sql_column": "tyt_trk_net",
+        "observed_types": {
+          "number": 63022
+        },
+        "rows": 63063,
+        "present": 63022,
+        "missing": 41,
+        "nonnull": 63022,
+        "sql_type": "DOUBLE PRECISION"
+      },
+      {
+        "table": "net_results",
+        "api_field": "universiteAdi",
+        "sql_column": "universite_adi",
+        "observed_types": {
+          "string": 63063
+        },
+        "rows": 63063,
+        "present": 63063,
+        "missing": 0,
+        "nonnull": 63063,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "net_results",
+        "api_field": "universiteId",
+        "sql_column": "universite_id",
+        "observed_types": {
+          "integer": 62781
+        },
+        "rows": 63063,
+        "present": 62781,
+        "missing": 282,
+        "nonnull": 62781,
+        "sql_type": "BIGINT"
+      },
+      {
+        "table": "net_results",
+        "api_field": "universiteTuru",
+        "sql_column": "universite_turu",
+        "observed_types": {
+          "string": 63063
+        },
+        "rows": 63063,
+        "present": 63063,
+        "missing": 0,
+        "nonnull": 63063,
+        "sql_type": "TEXT"
+      },
+      {
+        "table": "net_results",
+        "api_field": "ydtYdilNet",
+        "sql_column": "ydt_ydil_net",
+        "observed_types": {
+          "number": 1975
+        },
+        "rows": 63063,
+        "present": 1975,
+        "missing": 61088,
+        "nonnull": 1975,
+        "sql_type": "DOUBLE PRECISION"
+      },
+      {
+        "table": "net_results",
+        "api_field": "yil",
+        "sql_column": "yil",
+        "observed_types": {
+          "integer": 63063
+        },
+        "rows": 63063,
+        "present": 63063,
+        "missing": 0,
+        "nonnull": 63063,
+        "sql_type": "BIGINT"
+      }
+    ]
+  },
+  "status": "draft: ready for batch-level tests, not production approval"
+}

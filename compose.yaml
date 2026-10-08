@@ -1,0 +1,29 @@
+name: yokatlas-intelligence
+services:
+  postgres:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: yokatlas_intelligence
+      POSTGRES_USER: atlas_owner
+      POSTGRES_PASSWORD: ${POSTGRES_ADMIN_PASSWORD:?Run scripts/database/setup.ps1 to create .env}
+      ATLAS_INGEST_PASSWORD: ${ATLAS_INGEST_PASSWORD:?Missing ATLAS_INGEST_PASSWORD}
+      ATLAS_API_PASSWORD: ${ATLAS_API_PASSWORD:?Missing ATLAS_API_PASSWORD}
+      ATLAS_ANALYTICS_PASSWORD: ${ATLAS_ANALYTICS_PASSWORD:?Missing ATLAS_ANALYTICS_PASSWORD}
+      TZ: Europe/Istanbul
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5433}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init/10-bootstrap.sh:/docker-entrypoint-initdb.d/10-bootstrap.sh:ro
+      - ./database/migrations:/opt/atlas/migrations:ro
+      - ./database/checks:/opt/atlas/checks:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U atlas_owner -d yokatlas_intelligence"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+      start_period: 20s
+    shm_size: 256mb
+volumes:
+  postgres_data:
