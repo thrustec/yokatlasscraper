@@ -1,0 +1,11 @@
+﻿child_table,child_fields,parent_table,parent_fields,confidence,source_field_exists,target_field_exists,parent_key_unique_in_sample,observed_child_rows,observed_parent_rows,source_distinct,target_distinct,matched,coverage,sql_foreign_key_created,reason
+programs,universiteId,universities,universiteId,unverified,True,True,False,0,0,0,0,0,,False,"Name-based candidate; sampled cross-table overlap, not an official DB foreign key"
+programs,birimGrupId,program_groups,birimGrupId,unverified,True,True,False,0,0,0,0,0,,False,"Name-based candidate; sampled cross-table overlap, not an official DB foreign key"
+programs,ilKodu,cities,ilKodu,unverified,True,True,False,0,0,0,0,0,,False,"Name-based candidate; sampled cross-table overlap, not an official DB foreign key"
+net_results,universiteId,universities,universiteId,unverified,True,True,False,0,0,0,0,0,,False,"Name-based candidate; sampled cross-table overlap, not an official DB foreign key"
+net_results,birimGrupId,program_groups,birimGrupId,unverified,True,True,False,0,0,0,0,0,,False,"Name-based candidate; sampled cross-table overlap, not an official DB foreign key"
+net_results,kilavuzKodu,programs,kilavuzKodu,unverified,True,True,False,0,0,0,0,0,,False,"Name-based candidate; sampled cross-table overlap, not an official DB foreign key"
+net_results,birimId,programs,birimId,unverified,True,True,False,0,0,0,0,0,,False,"Name-based candidate; sampled cross-table overlap, not an official DB foreign key"
+net_results,kilavuzKodu+yil,programs,kilavuzKodu+yil,year_sensitive_unverified,True,True,False,0,0,0,0,0,,False,"Name-based candidate; sampled cross-table overlap, not an official DB foreign key"
+program_conditions,kilavuz_kodu,programs,kilavuzKodu,derived_model,,,,,,,,,,True,
+program_conditions,condition_code,conditions,condition_code,derived_model,,,,,,,,,,True,

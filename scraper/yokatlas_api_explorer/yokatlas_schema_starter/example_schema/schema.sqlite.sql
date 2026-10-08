@@ -1,0 +1,168 @@
+-- YOK Atlas inferred schema. API-derived columns are preserved; unverified FKs are NOT enforced.
+-- Raw program rows may refer to a current year while net rows refer to a different year.
+PRAGMA foreign_keys=ON;
+
+CREATE TABLE IF NOT EXISTS "universities" (
+  "_id" INTEGER PRIMARY KEY AUTOINCREMENT,
+  "universite_adi" TEXT,
+  "universite_id" INTEGER,
+  "_source_year" INTEGER,
+  "_fetched_at" TEXT,
+  "_raw_json" TEXT
+);
+
+CREATE TABLE IF NOT EXISTS "program_groups" (
+  "_id" INTEGER PRIMARY KEY AUTOINCREMENT,
+  "birim_grup_adi" TEXT,
+  "birim_grup_id" INTEGER,
+  "puan_turu" TEXT,
+  "_source_year" INTEGER,
+  "_fetched_at" TEXT,
+  "_raw_json" TEXT
+);
+
+CREATE TABLE IF NOT EXISTS "cities" (
+  "_id" INTEGER PRIMARY KEY AUTOINCREMENT,
+  "il_adi" TEXT,
+  "il_kodu" INTEGER,
+  "_source_year" INTEGER,
+  "_fetched_at" TEXT,
+  "_raw_json" TEXT
+);
+
+CREATE TABLE IF NOT EXISTS "programs" (
+  "_id" INTEGER PRIMARY KEY AUTOINCREMENT,
+  "abayp" TEXT,
+  "akreditasyon" TEXT,
+  "akreditasyon_ack" TEXT,
+  "ar_gor" INTEGER,
+  "basari_sirasi" INTEGER,
+  "basari_sirasi1" INTEGER,
+  "basari_sirasi2" INTEGER,
+  "basari_sirasi3" INTEGER,
+  "birim_adi" TEXT,
+  "birim_ek_turu" TEXT,
+  "birim_grup_adi" TEXT,
+  "birim_grup_id" INTEGER,
+  "birim_hiyerarsi" TEXT,
+  "birim_id" INTEGER,
+  "birim_turu_adi" TEXT,
+  "birim_turu_id" INTEGER,
+  "burs_orani_adi" TEXT,
+  "burs_orani_id" INTEGER,
+  "doc" INTEGER,
+  "donem" TEXT,
+  "dou" INTEGER,
+  "dprm_y" INTEGER,
+  "eski_birim_id" INTEGER,
+  "eski_kilavuz_kodu" INTEGER,
+  "fymk_adi" TEXT,
+  "fymk_id" INTEGER,
+  "fymk_il_adi" TEXT,
+  "fymk_il_kodu" INTEGER,
+  "fymk_ilce_adi" TEXT,
+  "fymk_ilce_kodu" INTEGER,
+  "gk1" INTEGER,
+  "gk2" INTEGER,
+  "gk3" INTEGER,
+  "gk_y" INTEGER,
+  "il_adi" TEXT,
+  "il_kodu" INTEGER,
+  "ilce_adi" TEXT,
+  "ilce_kodu" INTEGER,
+  "kil_aciklama" TEXT,
+  "kilavuz_kodu" INTEGER,
+  "kontenjan" INTEGER,
+  "kontenjan_meb" INTEGER,
+  "kontenjan_obs" INTEGER,
+  "kontenjan_sgy" INTEGER,
+  "kontenjan_y34" INTEGER,
+  "kosul" TEXT,
+  "kosul_list" TEXT,
+  "kpss1" TEXT,
+  "min_basari_sirasi" TEXT,
+  "min_basari_sirasi_kosul" TEXT,
+  "min_puan" REAL,
+  "min_puan1" TEXT,
+  "min_puan2" TEXT,
+  "min_puan3" TEXT,
+  "obk_y" INTEGER,
+  "ogrenim_dili_adi" TEXT,
+  "ogrenim_dili_id" INTEGER,
+  "ogrenim_suresi" INTEGER,
+  "ogrenim_turu_adi" TEXT,
+  "ogrenim_turu_id" INTEGER,
+  "osym_kilavuz_id" INTEGER,
+  "prof" INTEGER,
+  "puan_turu" TEXT,
+  "sgy_y" INTEGER,
+  "sinav" TEXT,
+  "tablo_turu" TEXT,
+  "tam_burs_birim_id" INTEGER,
+  "tusktp" TEXT,
+  "tustt1" TEXT,
+  "tyc" TEXT,
+  "ucret" INTEGER,
+  "uni_akreditasyon" TEXT,
+  "uni_il_adi" TEXT,
+  "uni_il_kodu" INTEGER,
+  "uni_ilce_adi" TEXT,
+  "uni_ilce_kodu" INTEGER,
+  "uni_kil_aciklama" TEXT,
+  "universite_adi" TEXT,
+  "universite_id" INTEGER,
+  "universite_turu" TEXT,
+  "uygulamali_egitim_modeli" TEXT,
+  "y34" INTEGER,
+  "yil" INTEGER,
+  "_source_year" INTEGER,
+  "_fetched_at" TEXT,
+  "_raw_json" TEXT
+);
+
+CREATE TABLE IF NOT EXISTS "net_results" (
+  "_id" INTEGER PRIMARY KEY AUTOINCREMENT,
+  "ayt_bio_net" REAL,
+  "ayt_cog1_net" REAL,
+  "ayt_cog2_net" REAL,
+  "ayt_din_net" REAL,
+  "ayt_fel_net" REAL,
+  "ayt_fiz_net" REAL,
+  "ayt_kim_net" REAL,
+  "ayt_mat_net" REAL,
+  "ayt_tde_net" REAL,
+  "ayt_trh1_net" REAL,
+  "ayt_trh2_net" REAL,
+  "birim_adi" TEXT,
+  "birim_grup_adi" TEXT,
+  "birim_grup_id" INTEGER,
+  "birim_id" INTEGER,
+  "birim_turu_adi" TEXT,
+  "birim_turu_id" INTEGER,
+  "katsayi" REAL,
+  "kilavuz_kodu" INTEGER,
+  "obp" REAL,
+  "puan_turu" TEXT,
+  "taban_puan" REAL,
+  "tyt_fen_net" REAL,
+  "tyt_mat_net" REAL,
+  "tyt_sos_net" REAL,
+  "tyt_trk_net" REAL,
+  "universite_adi" TEXT,
+  "universite_id" INTEGER,
+  "universite_turu" TEXT,
+  "ydt_ydil_net" REAL,
+  "yil" INTEGER,
+  "_source_year" INTEGER,
+  "_fetched_at" TEXT,
+  "_raw_json" TEXT
+);
+
+CREATE TABLE IF NOT EXISTS "conditions" (condition_code TEXT PRIMARY KEY, condition_text TEXT);
+CREATE TABLE IF NOT EXISTS "program_conditions" (kilavuz_kodu INTEGER NOT NULL, condition_code TEXT NOT NULL, source_year INTEGER, condition_text TEXT, PRIMARY KEY(kilavuz_kodu,condition_code,source_year));
+CREATE TABLE IF NOT EXISTS "historical_program_statistics" (kilavuz_kodu INTEGER, base_year INTEGER, year_offset INTEGER, source_field TEXT, value_raw TEXT, PRIMARY KEY(kilavuz_kodu,base_year,year_offset,source_field));
+CREATE TABLE IF NOT EXISTS "raw_api_snapshots" (snapshot_id TEXT PRIMARY KEY, endpoint TEXT, request_json TEXT, response_json TEXT, fetched_at TEXT, sha256 TEXT);
+CREATE TABLE IF NOT EXISTS "etl_runs" (run_id TEXT PRIMARY KEY, started_at TEXT, finished_at TEXT, status TEXT, source_version TEXT);
+CREATE INDEX IF NOT EXISTS idx_program_university ON programs(universite_id);
+CREATE INDEX IF NOT EXISTS idx_net_program_year ON net_results(kilavuz_kodu, yil);
+CREATE INDEX IF NOT EXISTS idx_program_condition_code ON program_conditions(condition_code);

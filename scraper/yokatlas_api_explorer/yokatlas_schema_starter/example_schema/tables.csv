@@ -1,0 +1,6 @@
+﻿table,source_endpoint,observed_columns,loaded_sample_rows,primary_key_candidate,key_evidence,status
+universities,universiteler,2,0,universiteId,"{'observed': 0, 'non_null': 0, 'distinct': 0, 'uniqueness': None, 'duplicates': None}",observed_endpoint_entity
+program_groups,program_gruplari,3,0,birimGrupId,"{'observed': 0, 'non_null': 0, 'distinct': 0, 'uniqueness': None, 'duplicates': None}",observed_endpoint_entity
+cities,iller,2,0,ilKodu,"{'observed': 0, 'non_null': 0, 'distinct': 0, 'uniqueness': None, 'duplicates': None}",observed_endpoint_entity
+programs,program_arama,83,0,kilavuzKodu,"{'observed': 0, 'non_null': 0, 'distinct': 0, 'uniqueness': None, 'duplicates': None}",observed_endpoint_entity
+net_results,net_arama,31,0,,,observed_endpoint_entity

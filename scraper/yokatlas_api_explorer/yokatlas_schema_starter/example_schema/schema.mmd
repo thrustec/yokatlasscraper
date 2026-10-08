@@ -1,0 +1,174 @@
+erDiagram
+    UNIVERSITIES {
+        string universite_adi
+        int universite_id PK
+    }
+    PROGRAM_GROUPS {
+        string birim_grup_adi
+        int birim_grup_id PK
+        string puan_turu
+    }
+    CITIES {
+        string il_adi
+        int il_kodu PK
+    }
+    PROGRAMS {
+        string abayp
+        string akreditasyon
+        string akreditasyon_ack
+        int ar_gor
+        int basari_sirasi
+        int basari_sirasi1
+        int basari_sirasi2
+        int basari_sirasi3
+        string birim_adi
+        string birim_ek_turu
+        string birim_grup_adi
+        int birim_grup_id
+        string birim_hiyerarsi
+        int birim_id
+        string birim_turu_adi
+        int birim_turu_id
+        string burs_orani_adi
+        int burs_orani_id
+        int doc
+        string donem
+        int dou
+        int dprm_y
+        int eski_birim_id
+        int eski_kilavuz_kodu
+        string fymk_adi
+        int fymk_id
+        string fymk_il_adi
+        int fymk_il_kodu
+        string fymk_ilce_adi
+        int fymk_ilce_kodu
+        int gk1
+        int gk2
+        int gk3
+        int gk_y
+        string il_adi
+        int il_kodu
+        string ilce_adi
+        int ilce_kodu
+        string kil_aciklama
+        int kilavuz_kodu PK
+        int kontenjan
+        int kontenjan_meb
+        int kontenjan_obs
+        int kontenjan_sgy
+        int kontenjan_y34
+        string kosul
+        string kosul_list
+        string kpss1
+        string min_basari_sirasi
+        string min_basari_sirasi_kosul
+        float min_puan
+        string min_puan1
+        string min_puan2
+        string min_puan3
+        int obk_y
+        string ogrenim_dili_adi
+        int ogrenim_dili_id
+        int ogrenim_suresi
+        string ogrenim_turu_adi
+        int ogrenim_turu_id
+        int osym_kilavuz_id
+        int prof
+        string puan_turu
+        int sgy_y
+        string sinav
+        string tablo_turu
+        int tam_burs_birim_id
+        string tusktp
+        string tustt1
+        string tyc
+        int ucret
+        string uni_akreditasyon
+        string uni_il_adi
+        int uni_il_kodu
+        string uni_ilce_adi
+        int uni_ilce_kodu
+        string uni_kil_aciklama
+        string universite_adi
+        int universite_id
+        string universite_turu
+        string uygulamali_egitim_modeli
+        int y34
+        int yil
+    }
+    NET_RESULTS {
+        float ayt_bio_net
+        float ayt_cog1_net
+        float ayt_cog2_net
+        float ayt_din_net
+        float ayt_fel_net
+        float ayt_fiz_net
+        float ayt_kim_net
+        float ayt_mat_net
+        float ayt_tde_net
+        float ayt_trh1_net
+        float ayt_trh2_net
+        string birim_adi
+        string birim_grup_adi
+        int birim_grup_id
+        int birim_id
+        string birim_turu_adi
+        int birim_turu_id
+        float katsayi
+        int kilavuz_kodu
+        float obp
+        string puan_turu
+        float taban_puan
+        float tyt_fen_net
+        float tyt_mat_net
+        float tyt_sos_net
+        float tyt_trk_net
+        string universite_adi
+        int universite_id
+        string universite_turu
+        float ydt_ydil_net
+        int yil
+    }
+    PROGRAM_CONDITIONS {
+        string kilavuz_kodu
+        string condition_code
+        string source_year
+        string condition_text
+    }
+    CONDITIONS {
+        string condition_code
+        string condition_text
+    }
+    RAW_API_SNAPSHOTS {
+        string snapshot_id
+        string endpoint
+        string request_json
+        string response_json
+        string fetched_at
+        string sha256
+    }
+    ETL_RUNS {
+        string run_id
+        string started_at
+        string finished_at
+        string status
+        string source_version
+    }
+    HISTORICAL_PROGRAM_STATISTICS {
+        string kilavuz_kodu
+        string base_year
+        string year_offset
+        string source_field
+        string value_raw
+    }
+    UNIVERSITIES ||--o{ PROGRAMS : "universiteId candidate"
+    PROGRAM_GROUPS ||--o{ PROGRAMS : "birimGrupId candidate"
+    CITIES ||--o{ PROGRAMS : "ilKodu candidate"
+    UNIVERSITIES ||--o{ NET_RESULTS : "universiteId candidate"
+    PROGRAM_GROUPS ||--o{ NET_RESULTS : "birimGrupId candidate"
+    PROGRAMS ||--o{ NET_RESULTS : "kilavuzKodu candidate"
+    PROGRAMS ||--o{ NET_RESULTS : "birimId candidate"
+    PROGRAMS ||--o{ NET_RESULTS : "kilavuzKodu+yil candidate"
+    PROGRAMS ||--o{ PROGRAM_CONDITIONS : "kilavuz_kodu candidate"
+    CONDITIONS ||--o{ PROGRAM_CONDITIONS : "condition_code candidate"
