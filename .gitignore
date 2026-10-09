@@ -32,3 +32,29 @@ logs/
 Thumbs.db
 .idea/
 .local-backups/
+# YOK Atlas Explorer generated data
+**/outputs/
+**/complete_data/
+**/raw_data/
+**/samples/
+
+# Generated discovery and forensic reports
+**/yokatlas_discovery/
+**/yokatlas_full/
+**/yokatlas_forensics/
+**/schema_analysis/
+
+# Database exports
+*.dump
+*.backup
+*.sqlite
+*.sqlite3
+*.db
+
+# Large data exports
+*.parquet
+*.jsonl
+*.ndjson
+
+# Local backups
+.local-backups/
