@@ -1,0 +1,227 @@
+Null display is "[NULL]".
+=== 1. Data counts per layer ===
+       table_name        |   n   
+-------------------------+-------
+ core.cities             |    83
+ core.conditions         |   194
+ core.net_results        | 62992
+ core.program_conditions | 50432
+ core.program_groups     |   611
+ core.program_versions   | 21491
+ core.universities       |   228
+ raw.source_records      | 85476
+ staging.cities          |    83
+ staging.net_results     | 63063
+ staging.program_groups  |   611
+ staging.programs        | 21491
+ staging.universities    |   228
+(13 rows)
+
+=== 2. Raw source entities / endpoints ===
+ source_entity  | records 
+----------------+---------
+ net_results    |   63063
+ programs       |   21491
+ program_groups |     611
+ universities   |     228
+ cities         |      83
+(5 rows)
+
+                 endpoint                  | method | responses |          first_seen           |           last_seen           
+-------------------------------------------+--------+-----------+-------------------------------+-------------------------------
+ /api/netler/search                        | POST   |       632 | 2026-10-09 00:57:45.813928+03 | 2026-10-09 01:01:09.406709+03
+ /api/tercih-kilavuz/search                | POST   |       217 | 2026-10-09 00:53:16.23501+03  | 2026-10-09 00:57:45.040292+03
+ /api/tercih-kilavuz/universite-iller      | GET    |         1 | 2026-10-09 00:53:16.03102+03  | 2026-10-09 00:53:16.03102+03
+ /api/tercih-kilavuz/universiteler         | GET    |         1 | 2026-10-09 00:53:13.647122+03 | 2026-10-09 00:53:13.647122+03
+ /api/tercih-kilavuz/universite-programlar | GET    |         1 | 2026-10-09 00:53:14.303175+03 | 2026-10-09 00:53:14.303175+03
+(5 rows)
+
+=== 3. Primary/unique/foreign key definitions ===
+ schema_name |     table_name      |                         constraint_name                         | constraint_type |                                           definition                                            
+-------------+---------------------+-----------------------------------------------------------------+-----------------+-------------------------------------------------------------------------------------------------
+ core        | cities              | cities_source_record_id_fkey                                    | f               | FOREIGN KEY (source_record_id) REFERENCES raw.source_records(source_record_id)
+ core        | cities              | cities_pkey                                                     | p               | PRIMARY KEY (il_kodu)
+ core        | conditions          | conditions_pkey                                                 | p               | PRIMARY KEY (condition_code)
+ core        | net_results         | net_results_program_version_id_fkey                             | f               | FOREIGN KEY (program_version_id) REFERENCES core.program_versions(program_version_id)
+ core        | net_results         | net_results_source_record_id_fkey                               | f               | FOREIGN KEY (source_record_id) REFERENCES raw.source_records(source_record_id)
+ core        | net_results         | net_results_pkey                                                | p               | PRIMARY KEY (net_result_id)
+ core        | net_results         | net_results_kilavuz_kodu_yil_puan_turu_key                      | u               | UNIQUE (kilavuz_kodu, yil, puan_turu)
+ core        | program_conditions  | program_conditions_condition_code_fkey                          | f               | FOREIGN KEY (condition_code) REFERENCES core.conditions(condition_code)
+ core        | program_conditions  | program_conditions_program_version_id_fkey                      | f               | FOREIGN KEY (program_version_id) REFERENCES core.program_versions(program_version_id)
+ core        | program_conditions  | program_conditions_pkey                                         | p               | PRIMARY KEY (program_version_id, condition_code)
+ core        | program_groups      | program_groups_source_record_id_fkey                            | f               | FOREIGN KEY (source_record_id) REFERENCES raw.source_records(source_record_id)
+ core        | program_groups      | program_groups_pkey                                             | p               | PRIMARY KEY (birim_grup_id, puan_turu)
+ core        | program_versions    | program_versions_birim_grup_id_puan_turu_fkey                   | f               | FOREIGN KEY (birim_grup_id, puan_turu) REFERENCES core.program_groups(birim_grup_id, puan_turu)
+ core        | program_versions    | program_versions_il_kodu_fkey                                   | f               | FOREIGN KEY (il_kodu) REFERENCES core.cities(il_kodu)
+ core        | program_versions    | program_versions_source_record_id_fkey                          | f               | FOREIGN KEY (source_record_id) REFERENCES raw.source_records(source_record_id)
+ core        | program_versions    | program_versions_universite_id_fkey                             | f               | FOREIGN KEY (universite_id) REFERENCES core.universities(universite_id)
+ core        | program_versions    | program_versions_pkey                                           | p               | PRIMARY KEY (program_version_id)
+ core        | program_versions    | program_versions_kilavuz_kodu_yil_key                           | u               | UNIQUE (kilavuz_kodu, yil)
+ core        | universities        | universities_source_record_id_fkey                              | f               | FOREIGN KEY (source_record_id) REFERENCES raw.source_records(source_record_id)
+ core        | universities        | universities_pkey                                               | p               | PRIMARY KEY (universite_id)
+ quality     | data_quality_checks | data_quality_checks_ingestion_run_id_fkey                       | f               | FOREIGN KEY (ingestion_run_id) REFERENCES raw.ingestion_runs(ingestion_run_id)
+ quality     | data_quality_checks | data_quality_checks_pkey                                        | p               | PRIMARY KEY (check_id)
+ quality     | quarantined_records | quarantined_records_ingestion_run_id_fkey                       | f               | FOREIGN KEY (ingestion_run_id) REFERENCES raw.ingestion_runs(ingestion_run_id)
+ quality     | quarantined_records | quarantined_records_pkey                                        | p               | PRIMARY KEY (quarantine_id)
+ raw         | api_responses       | api_responses_ingestion_run_id_fkey                             | f               | FOREIGN KEY (ingestion_run_id) REFERENCES raw.ingestion_runs(ingestion_run_id)
+ raw         | api_responses       | api_responses_pkey                                              | p               | PRIMARY KEY (api_response_id)
+ raw         | ingestion_runs      | ingestion_runs_pkey                                             | p               | PRIMARY KEY (ingestion_run_id)
+ raw         | source_records      | source_records_api_response_id_fkey                             | f               | FOREIGN KEY (api_response_id) REFERENCES raw.api_responses(api_response_id)
+ raw         | source_records      | source_records_pkey                                             | p               | PRIMARY KEY (source_record_id)
+ raw         | source_records      | source_records_api_response_id_source_entity_source_array_i_key | u               | UNIQUE (api_response_id, source_entity, source_array_index)
+ staging     | cities              | cities_source_record_id_fkey                                    | f               | FOREIGN KEY (source_record_id) REFERENCES raw.source_records(source_record_id)
+ staging     | cities              | cities_pkey                                                     | p               | PRIMARY KEY (staging_id)
+ staging     | cities              | cities_source_record_id_key                                     | u               | UNIQUE (source_record_id)
+ staging     | net_results         | net_results_source_record_id_fkey                               | f               | FOREIGN KEY (source_record_id) REFERENCES raw.source_records(source_record_id)
+ staging     | net_results         | net_results_pkey                                                | p               | PRIMARY KEY (staging_id)
+ staging     | net_results         | net_results_source_record_id_key                                | u               | UNIQUE (source_record_id)
+ staging     | program_groups      | program_groups_source_record_id_fkey                            | f               | FOREIGN KEY (source_record_id) REFERENCES raw.source_records(source_record_id)
+ staging     | program_groups      | program_groups_pkey                                             | p               | PRIMARY KEY (staging_id)
+ staging     | program_groups      | program_groups_source_record_id_key                             | u               | UNIQUE (source_record_id)
+ staging     | programs            | programs_source_record_id_fkey                                  | f               | FOREIGN KEY (source_record_id) REFERENCES raw.source_records(source_record_id)
+ staging     | programs            | programs_pkey                                                   | p               | PRIMARY KEY (staging_id)
+ staging     | programs            | programs_source_record_id_key                                   | u               | UNIQUE (source_record_id)
+ staging     | universities        | universities_source_record_id_fkey                              | f               | FOREIGN KEY (source_record_id) REFERENCES raw.source_records(source_record_id)
+ staging     | universities        | universities_pkey                                               | p               | PRIMARY KEY (staging_id)
+ staging     | universities        | universities_source_record_id_key                               | u               | UNIQUE (source_record_id)
+(45 rows)
+
+=== 4. Duplicate natural keys ===
+            entity             | total_rows | distinct_keys | extra_rows 
+-------------------------------+------------+---------------+------------
+ program_groups (group,score)  |        611 |           611 |          0
+ programs (code,year)          |      21491 |         21491 |          0
+ net_results (code,year,score) |      63063 |         62992 |         71
+(3 rows)
+
+=== 5. Duplicate net payload conflicts ===
+ duplicated_key_groups | extra_rows | conflicting_key_groups 
+-----------------------+------------+------------------------
+                    71 |         71 |                      0
+(1 row)
+
+=== 6. Referential coverage and lineage ===
+ programs | missing_source | missing_university | missing_city | missing_group 
+----------+----------------+--------------------+--------------+---------------
+    21491 |              0 |                  0 |            0 |             0
+(1 row)
+
+ nets  | missing_source | no_program_version_link | no_university_lookup 
+-------+----------------+-------------------------+----------------------
+ 62992 |              0 |                   62992 |                  278
+(1 row)
+
+=== 7. Raw-staging integrity ===
+   entity    | checked | no_raw_record | different_payload 
+-------------+---------+---------------+-------------------
+ programs    |   21491 |             0 |                 0
+ net_results |   63063 |             0 |                 0
+(2 rows)
+
+=== 8. Source fields absent from typed staging columns (sample across all rows) ===
+   entity    |          key           
+-------------+------------------------
+ net_results | aytBioNet
+ net_results | aytCog1Net
+ net_results | aytCog2Net
+ net_results | aytDinNet
+ net_results | aytFelNet
+ net_results | aytFizNet
+ net_results | aytKimNet
+ net_results | aytMatNet
+ net_results | aytTdeNet
+ net_results | aytTrh1Net
+ net_results | aytTrh2Net
+ net_results | birimAdi
+ net_results | birimGrupAdi
+ net_results | birimGrupId
+ net_results | birimId
+ net_results | birimTuruAdi
+ net_results | birimTuruId
+ net_results | kilavuzKodu
+ net_results | puanTuru
+ net_results | tabanPuan
+ net_results | tytFenNet
+ net_results | tytMatNet
+ net_results | tytSosNet
+ net_results | tytTrkNet
+ net_results | universiteAdi
+ net_results | universiteId
+ net_results | universiteTuru
+ net_results | ydtYdilNet
+ programs    | akreditasyonAck
+ programs    | arGor
+ programs    | basariSirasi
+ programs    | basariSirasi1
+ programs    | basariSirasi2
+ programs    | basariSirasi3
+ programs    | birimAdi
+ programs    | birimEkTuru
+ programs    | birimGrupAdi
+ programs    | birimGrupId
+ programs    | birimHiyerarsi
+ programs    | birimId
+ programs    | birimTuruAdi
+ programs    | birimTuruId
+ programs    | bursOraniAdi
+ programs    | bursOraniId
+ programs    | dprmY
+ programs    | eskiBirimId
+ programs    | eskiKilavuzKodu
+ programs    | fymkAdi
+ programs    | fymkId
+ programs    | fymkIlAdi
+ programs    | fymkIlceAdi
+ programs    | fymkIlceKodu
+ programs    | fymkIlKodu
+ programs    | gkY
+ programs    | ilAdi
+ programs    | ilceAdi
+ programs    | ilceKodu
+ programs    | ilKodu
+ programs    | kilAciklama
+ programs    | kilavuzKodu
+ programs    | kontenjanMeb
+ programs    | kontenjanObs
+ programs    | kontenjanSgy
+ programs    | kontenjanY34
+ programs    | kosulList
+ programs    | minBasariSirasi
+ programs    | minBasariSirasiKosul
+ programs    | minPuan
+ programs    | minPuan1
+ programs    | minPuan2
+ programs    | minPuan3
+ programs    | obkY
+ programs    | ogrenimDiliAdi
+ programs    | ogrenimDiliId
+ programs    | ogrenimSuresi
+ programs    | ogrenimTuruAdi
+ programs    | ogrenimTuruId
+ programs    | ogrGor
+ programs    | osymKilavuzId
+ programs    | puanTuru
+ programs    | sgyY
+ programs    | tabloTuru
+ programs    | tamBursBirimId
+ programs    | uniAkreditasyon
+ programs    | uniIlAdi
+ programs    | uniIlceAdi
+ programs    | uniIlceKodu
+ programs    | uniIlKodu
+ programs    | uniKilAciklama
+ programs    | universiteAdi
+ programs    | universiteId
+ programs    | universiteTuru
+ programs    | uygulamaliEgitimModeli
+(93 rows)
+
+=== 9. Snapshot year coverage ===
+       entity        | yil  | count 
+---------------------+------+-------
+ staging.net_results | 2023 | 21342
+ staging.net_results | 2024 | 20900
+ staging.net_results | 2025 | 20821
+ staging.programs    | 2026 | 21491
+(4 rows)
+
