@@ -1,0 +1,2 @@
+"""YÖK Atlas source adapter."""
+
