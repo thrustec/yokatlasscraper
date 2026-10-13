@@ -1,0 +1,46 @@
+{
+  "algorithm": "exact-json-v2",
+  "status": "normative design vectors; encoder runtime not implemented",
+  "vectors": [
+    {
+      "input_json": "{\"n\":1.00}",
+      "canonical_json": "{\"n\":1e0}",
+      "canonical_sha256": "1499d8ce7727c52f249d9b8cd88eae2162f228881be4d8e91720e482848b5153"
+    },
+    {
+      "input_json": "{\"n\":1000}",
+      "canonical_json": "{\"n\":1e3}",
+      "canonical_sha256": "9481a2ca39ef6a74fdb85d3d6d34af5aa6badae4d3f6ab0e6606de0c7ed48344"
+    },
+    {
+      "input_json": "{\"n\":0.100}",
+      "canonical_json": "{\"n\":1e-1}",
+      "canonical_sha256": "9d017be2273aa5e8a2d8d738b2eed3f34ac61e343ab8cb1159b35f5e94ef13ca"
+    },
+    {
+      "input_json": "{\"n\":-0.00}",
+      "canonical_json": "{\"n\":0}",
+      "canonical_sha256": "f3013f933b9fb80ab6d995e7ad9da36f683837ba1d81e950c943d40111eac2f0"
+    },
+    {
+      "input_json": "{\"n\":-12.30}",
+      "canonical_json": "{\"n\":-123e-1}",
+      "canonical_sha256": "3c6f4f1a7706502a0fd1465eb27314414a63c264eb64bbb53cc8fac35ca52d24"
+    },
+    {
+      "input_json": "{\"n\":123456789012345678901234567890.1234500}",
+      "canonical_json": "{\"n\":12345678901234567890123456789012345e-5}",
+      "canonical_sha256": "3aa31aa90b0c31617c6e6ce7f2fd52b30238e9535169c342c08792263657bd21"
+    },
+    {
+      "input_json": "{\"ş\":\"İzmir\",\"a\":[true,null,1000]}",
+      "canonical_json": "{\"a\":[true,null,1e3],\"ş\":\"İzmir\"}",
+      "canonical_sha256": "95f48512f8e09b1784c9c62dd84d8972289ec0b171840cf9b7dbf608d3a32870"
+    }
+  ],
+  "must_reject_input_json": [
+    "{\"n\":NaN}",
+    "{\"n\":Infinity}",
+    "{\"a\":1,\"a\":2}"
+  ]
+}

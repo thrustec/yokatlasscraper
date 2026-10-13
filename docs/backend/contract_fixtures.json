@@ -1,0 +1,302 @@
+{
+  "description": "Synthetic schema fixtures, not source data or live endpoint results.",
+  "cases": [
+    {
+      "name": "run-create",
+      "schema": "CreateIngestion",
+      "valid": true,
+      "payload": {
+        "source_system": "yokatlas",
+        "scraper_version": "fixture-v1"
+      }
+    },
+    {
+      "name": "run-create-unknown-metadata",
+      "schema": "CreateIngestion",
+      "valid": false,
+      "payload": {
+        "source_system": "yokatlas",
+        "scraper_version": "fixture-v1",
+        "role": "admin"
+      }
+    },
+    {
+      "name": "response-byte-input",
+      "schema": "StoreResponse",
+      "valid": true,
+      "payload": {
+        "request": {
+          "method": "POST",
+          "endpoint": "/api/tercih-kilavuz/search",
+          "body": {
+            "filters": {},
+            "page": 0
+          }
+        },
+        "captured_at": "2026-10-13T12:00:00Z",
+        "response": {
+          "http_status": 200,
+          "body_base64": "eyJjb250ZW50IjpbXX0=",
+          "body_sha256": "8d5706cde045094a27e62ca6e2450d5961a1af1ef704c626199cb1aec16b908f"
+        }
+      }
+    },
+    {
+      "name": "response-invalid-hash",
+      "schema": "StoreResponse",
+      "valid": false,
+      "payload": {
+        "request": {
+          "method": "POST",
+          "endpoint": "/api/tercih-kilavuz/search"
+        },
+        "captured_at": "2026-10-13T12:00:00Z",
+        "response": {
+          "http_status": 200,
+          "body_base64": "eyJjb250ZW50IjpbXX0=",
+          "body_sha256": "not-a-hash"
+        }
+      }
+    },
+    {
+      "name": "run-failed-requires-code",
+      "schema": "CompleteIngestion",
+      "valid": false,
+      "payload": {
+        "outcome": "failed"
+      }
+    },
+    {
+      "name": "run-failed",
+      "schema": "CompleteIngestion",
+      "valid": true,
+      "payload": {
+        "outcome": "failed",
+        "error_code": "SOURCE_HTTP_ERROR"
+      }
+    },
+    {
+      "name": "unpublished-coverage",
+      "schema": "CoverageEnvelope",
+      "valid": true,
+      "payload": {
+        "data": {
+          "state": "empty",
+          "publication_id": null,
+          "published_at": null,
+          "entities": [
+            {
+              "entity": "universities",
+              "row_count": null,
+              "available_years": []
+            }
+          ],
+          "warnings": [
+            {
+              "code": "DATA_NOT_PUBLISHED",
+              "message": "No approved publication."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "metadata-body-forbidden-raw-field",
+      "schema": "CoverageEnvelope",
+      "valid": false,
+      "payload": {
+        "data": {
+          "state": "empty",
+          "publication_id": null,
+          "published_at": null,
+          "entities": [],
+          "warnings": [],
+          "raw_payload": {}
+        }
+      }
+    },
+    {
+      "name": "retry-preview",
+      "schema": "RetryJob",
+      "valid": true,
+      "payload": {
+        "reason": "contract fixture"
+      }
+    },
+    {
+      "name": "retry-apply-requires-plan",
+      "schema": "RetryJob",
+      "valid": false,
+      "payload": {
+        "reason": "contract fixture",
+        "dry_run": false
+      }
+    },
+    {
+      "name": "publish-preview",
+      "schema": "Publish",
+      "valid": true,
+      "payload": {
+        "candidate_publication_id": "00000000-0000-4000-8000-000000000001"
+      }
+    },
+    {
+      "name": "publish-apply-requires-plan",
+      "schema": "Publish",
+      "valid": false,
+      "payload": {
+        "candidate_publication_id": "00000000-0000-4000-8000-000000000001",
+        "dry_run": false
+      }
+    },
+    {
+      "name": "job-success-requires-attestation",
+      "schema": "CompleteJob",
+      "valid": false,
+      "payload": {
+        "outcome": "succeeded"
+      }
+    },
+    {
+      "name": "bigint-string",
+      "schema": "Int64String",
+      "valid": true,
+      "payload": "9007199254740993"
+    },
+    {
+      "name": "bigint-number-forbidden",
+      "schema": "Int64String",
+      "valid": false,
+      "payload": 9007199254740993
+    },
+    {
+      "name": "job-success-attestation-shape",
+      "schema": "CompleteJob",
+      "valid": true,
+      "payload": {
+        "outcome": "succeeded",
+        "validation": {
+          "contract_revision": "fixture-v1",
+          "checked_at": "2026-10-13T12:00:00Z",
+          "passed": true,
+          "check_codes": [
+            "FIXTURE_SHAPE_CHECK"
+          ],
+          "coverage": [
+            {
+              "entity": "universities",
+              "row_count": "0",
+              "available_years": []
+            },
+            {
+              "entity": "cities",
+              "row_count": "0",
+              "available_years": []
+            },
+            {
+              "entity": "program_groups",
+              "row_count": "0",
+              "available_years": []
+            },
+            {
+              "entity": "program_versions",
+              "row_count": "0",
+              "available_years": []
+            },
+            {
+              "entity": "net_results",
+              "row_count": "0",
+              "available_years": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "job-attestation-duplicate-coverage",
+      "schema": "CompleteJob",
+      "valid": false,
+      "payload": {
+        "outcome": "succeeded",
+        "validation": {
+          "contract_revision": "fixture-v1",
+          "checked_at": "2026-10-13T12:00:00Z",
+          "passed": true,
+          "check_codes": [
+            "FIXTURE_SHAPE_CHECK"
+          ],
+          "coverage": [
+            {
+              "entity": "universities",
+              "row_count": "0",
+              "available_years": []
+            },
+            {
+              "entity": "universities",
+              "row_count": "0",
+              "available_years": []
+            },
+            {
+              "entity": "program_groups",
+              "row_count": "0",
+              "available_years": []
+            },
+            {
+              "entity": "program_versions",
+              "row_count": "0",
+              "available_years": []
+            },
+            {
+              "entity": "net_results",
+              "row_count": "0",
+              "available_years": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "job-success-with-failed-attestation",
+      "schema": "CompleteJob",
+      "valid": false,
+      "payload": {
+        "outcome": "succeeded",
+        "validation": {
+          "contract_revision": "fixture-v1",
+          "checked_at": "2026-10-13T12:00:00Z",
+          "passed": false,
+          "check_codes": [
+            "FIXTURE_SHAPE_CHECK"
+          ],
+          "coverage": [
+            {
+              "entity": "universities",
+              "row_count": "0",
+              "available_years": []
+            },
+            {
+              "entity": "cities",
+              "row_count": "0",
+              "available_years": []
+            },
+            {
+              "entity": "program_groups",
+              "row_count": "0",
+              "available_years": []
+            },
+            {
+              "entity": "program_versions",
+              "row_count": "0",
+              "available_years": []
+            },
+            {
+              "entity": "net_results",
+              "row_count": "0",
+              "available_years": []
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

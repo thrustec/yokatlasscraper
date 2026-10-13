@@ -1,0 +1,4904 @@
+openapi: 3.1.0
+info:
+  title: YÖK Atlas Intelligence backend platform
+  version: 0.1.0-draft
+  description: Phase 1 design only. Public read was selected by the owner; no endpoint is implemented by this artifact.
+    Metadata/grants and ETL DB exception require approval.
+servers:
+- url: http://localhost:8000
+  description: Planned local API, not a currently running service.
+tags:
+- name: health
+- name: catalog
+- name: ingestion
+- name: jobs
+- name: worker
+- name: operations
+paths:
+  /health/live:
+    get:
+      operationId: live
+      summary: Process liveness
+      description: Process liveness
+      tags:
+      - health
+      security: []
+      parameters: []
+      responses:
+        '200':
+          description: Process alive.
+          headers:
+            X-Request-ID: &id001
+              description: Server correlation UUID; no secret information.
+              schema: &id008
+                type: string
+                format: uuid
+            Cache-Control: &id002
+              description: Public reads max-age=60 first-cut; private and errors no-store.
+              schema:
+                type: string
+                maxLength: 128
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+        '500':
+          description: Sanitized unexpected internal error.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+      x-implementation-status: planned
+      x-implementation-phase: 2
+      x-actors:
+      - anonymous reader
+      x-required-scopes: []
+      x-object-authorization: No protected object.
+      x-data-layer: health
+      x-transaction: No SQL writes.
+      x-idempotency: Not a mutation receipt key; read or claim protocol.
+      x-observability: Request ID, operation, authorized actor/source, duration and safe outcome; never body/secret.
+      x-tests:
+        normal: live-normal
+        invalid: live-invalid
+        auth: live-anonymous-and-no-sensitive-fields
+        repeat: live-repeat-read-or-claim
+        concurrent: live-concurrent
+  /health/ready:
+    get:
+      operationId: ready
+      summary: Enabled dependencies readiness
+      description: Readiness checks enabled pools/schema contract; empty business publication is a separate availability
+        state.
+      tags:
+      - health
+      security: []
+      parameters: []
+      responses:
+        '200':
+          description: Enabled dependencies ready.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+        '500':
+          description: Sanitized unexpected internal error.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '503':
+          description: Dependency/capability/publication gate unavailable.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: &id004
+              description: Seconds before retry with the same mutation key.
+              schema:
+                type: integer
+                minimum: 1
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+      x-implementation-status: planned
+      x-implementation-phase: 2
+      x-actors:
+      - anonymous reader
+      x-required-scopes: []
+      x-object-authorization: No protected object.
+      x-data-layer: health
+      x-transaction: No SQL writes.
+      x-idempotency: Not a mutation receipt key; read or claim protocol.
+      x-observability: Request ID, operation, authorized actor/source, duration and safe outcome; never body/secret.
+      x-tests:
+        normal: ready-normal
+        invalid: ready-invalid
+        auth: ready-anonymous-and-no-sensitive-fields
+        repeat: ready-repeat-read-or-claim
+        concurrent: ready-concurrent
+  /v1/universities:
+    get:
+      operationId: listUniversities
+      summary: List api.universities
+      description: Curated api.universities projection. No RAW/remaining_fields or fabricated metric. Empty uncovered
+        year returns warning; gate unavailable returns 503.
+      tags:
+      - catalog
+      security: []
+      parameters:
+      - $ref: '#/components/parameters/Limit'
+      - $ref: '#/components/parameters/Cursor'
+      - $ref: '#/components/parameters/Query'
+      - $ref: '#/components/parameters/IfNoneMatch'
+      responses:
+        '200':
+          description: Published read-model rows with year, nullability, pagination and coverage.
+          headers:
+            X-Request-ID: *id001
+            ETag: &id003
+              description: Publication/query/DTO revision validator.
+              schema:
+                type: string
+                maxLength: 256
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UniversityList'
+        '304':
+          description: Unchanged only after ready/gate/authorization checks.
+          headers:
+            X-Request-ID: *id001
+            ETag: *id003
+            Cache-Control: *id002
+        '400':
+          description: Malformed cursor/header or ambiguous credentials.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: Input/schema/hash/pipeline semantics invalid.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: Rate limit exceeded.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '500':
+          description: Sanitized unexpected internal error.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '503':
+          description: Dependency/capability/publication gate unavailable.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+      x-implementation-status: planned
+      x-implementation-phase: 3
+      x-actors:
+      - anonymous reader
+      x-required-scopes: []
+      x-object-authorization: No protected object.
+      x-data-layer: catalog
+      x-transaction: READ COMMITTED + nonblocking shared transaction publication gate; state, rows and count under
+        the same gate.
+      x-idempotency: Not a mutation receipt key; read or claim protocol.
+      x-observability: Request ID, operation, authorized actor/source, duration and safe outcome; never body/secret.
+      x-tests:
+        normal: listUniversities-normal
+        invalid: listUniversities-invalid
+        auth: listUniversities-anonymous-and-no-sensitive-fields
+        repeat: listUniversities-repeat-read-or-claim
+        concurrent: listUniversities-concurrent
+  /v1/cities:
+    get:
+      operationId: listCities
+      summary: List api.cities
+      description: Curated api.cities projection. No RAW/remaining_fields or fabricated metric. Empty uncovered
+        year returns warning; gate unavailable returns 503.
+      tags:
+      - catalog
+      security: []
+      parameters:
+      - $ref: '#/components/parameters/Limit'
+      - $ref: '#/components/parameters/Cursor'
+      - $ref: '#/components/parameters/Query'
+      - $ref: '#/components/parameters/IfNoneMatch'
+      responses:
+        '200':
+          description: Published read-model rows with year, nullability, pagination and coverage.
+          headers:
+            X-Request-ID: *id001
+            ETag: *id003
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CityList'
+        '304':
+          description: Unchanged only after ready/gate/authorization checks.
+          headers:
+            X-Request-ID: *id001
+            ETag: *id003
+            Cache-Control: *id002
+        '400':
+          description: Malformed cursor/header or ambiguous credentials.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: Input/schema/hash/pipeline semantics invalid.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: Rate limit exceeded.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '500':
+          description: Sanitized unexpected internal error.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '503':
+          description: Dependency/capability/publication gate unavailable.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+      x-implementation-status: planned
+      x-implementation-phase: 3
+      x-actors:
+      - anonymous reader
+      x-required-scopes: []
+      x-object-authorization: No protected object.
+      x-data-layer: catalog
+      x-transaction: READ COMMITTED + nonblocking shared transaction publication gate; state, rows and count under
+        the same gate.
+      x-idempotency: Not a mutation receipt key; read or claim protocol.
+      x-observability: Request ID, operation, authorized actor/source, duration and safe outcome; never body/secret.
+      x-tests:
+        normal: listCities-normal
+        invalid: listCities-invalid
+        auth: listCities-anonymous-and-no-sensitive-fields
+        repeat: listCities-repeat-read-or-claim
+        concurrent: listCities-concurrent
+  /v1/program-groups:
+    get:
+      operationId: listProgramGroups
+      summary: List api.program_groups
+      description: Curated api.program_groups projection. No RAW/remaining_fields or fabricated metric. Empty uncovered
+        year returns warning; gate unavailable returns 503.
+      tags:
+      - catalog
+      security: []
+      parameters:
+      - $ref: '#/components/parameters/Limit'
+      - $ref: '#/components/parameters/Cursor'
+      - $ref: '#/components/parameters/Query'
+      - $ref: '#/components/parameters/Score'
+      - $ref: '#/components/parameters/IfNoneMatch'
+      responses:
+        '200':
+          description: Published read-model rows with year, nullability, pagination and coverage.
+          headers:
+            X-Request-ID: *id001
+            ETag: *id003
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProgramGroupList'
+        '304':
+          description: Unchanged only after ready/gate/authorization checks.
+          headers:
+            X-Request-ID: *id001
+            ETag: *id003
+            Cache-Control: *id002
+        '400':
+          description: Malformed cursor/header or ambiguous credentials.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: Input/schema/hash/pipeline semantics invalid.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: Rate limit exceeded.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '500':
+          description: Sanitized unexpected internal error.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '503':
+          description: Dependency/capability/publication gate unavailable.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+      x-implementation-status: planned
+      x-implementation-phase: 3
+      x-actors:
+      - anonymous reader
+      x-required-scopes: []
+      x-object-authorization: No protected object.
+      x-data-layer: catalog
+      x-transaction: READ COMMITTED + nonblocking shared transaction publication gate; state, rows and count under
+        the same gate.
+      x-idempotency: Not a mutation receipt key; read or claim protocol.
+      x-observability: Request ID, operation, authorized actor/source, duration and safe outcome; never body/secret.
+      x-tests:
+        normal: listProgramGroups-normal
+        invalid: listProgramGroups-invalid
+        auth: listProgramGroups-anonymous-and-no-sensitive-fields
+        repeat: listProgramGroups-repeat-read-or-claim
+        concurrent: listProgramGroups-concurrent
+  /v1/programs:
+    get:
+      operationId: listPrograms
+      summary: List api.program_catalog
+      description: Curated api.program_catalog projection. No RAW/remaining_fields or fabricated metric. Empty uncovered
+        year returns warning; gate unavailable returns 503.
+      tags:
+      - catalog
+      security: []
+      parameters:
+      - $ref: '#/components/parameters/Limit'
+      - $ref: '#/components/parameters/Cursor'
+      - $ref: '#/components/parameters/Year'
+      - $ref: '#/components/parameters/Score'
+      - $ref: '#/components/parameters/UniversityId'
+      - $ref: '#/components/parameters/CityId'
+      - $ref: '#/components/parameters/GroupId'
+      - $ref: '#/components/parameters/Query'
+      - name: sort
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - id_asc
+          - rank_asc
+          - score_desc
+          - quota_desc
+          default: id_asc
+        description: ''
+      - $ref: '#/components/parameters/IfNoneMatch'
+      responses:
+        '200':
+          description: Published read-model rows with year, nullability, pagination and coverage.
+          headers:
+            X-Request-ID: *id001
+            ETag: *id003
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProgramList'
+        '304':
+          description: Unchanged only after ready/gate/authorization checks.
+          headers:
+            X-Request-ID: *id001
+            ETag: *id003
+            Cache-Control: *id002
+        '400':
+          description: Malformed cursor/header or ambiguous credentials.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: Input/schema/hash/pipeline semantics invalid.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: Rate limit exceeded.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '500':
+          description: Sanitized unexpected internal error.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '503':
+          description: Dependency/capability/publication gate unavailable.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+      x-implementation-status: planned
+      x-implementation-phase: 3
+      x-actors:
+      - anonymous reader
+      x-required-scopes: []
+      x-object-authorization: No protected object.
+      x-data-layer: catalog
+      x-transaction: READ COMMITTED + nonblocking shared transaction publication gate; state, rows and count under
+        the same gate.
+      x-idempotency: Not a mutation receipt key; read or claim protocol.
+      x-observability: Request ID, operation, authorized actor/source, duration and safe outcome; never body/secret.
+      x-tests:
+        normal: listPrograms-normal
+        invalid: listPrograms-invalid
+        auth: listPrograms-anonymous-and-no-sensitive-fields
+        repeat: listPrograms-repeat-read-or-claim
+        concurrent: listPrograms-concurrent
+  /v1/net-results:
+    get:
+      operationId: listNetResults
+      summary: List api.net_results
+      description: Curated api.net_results projection. No RAW/remaining_fields or fabricated metric. Empty uncovered
+        year returns warning; gate unavailable returns 503.
+      tags:
+      - catalog
+      security: []
+      parameters:
+      - $ref: '#/components/parameters/Limit'
+      - $ref: '#/components/parameters/Cursor'
+      - $ref: '#/components/parameters/Year'
+      - $ref: '#/components/parameters/Score'
+      - $ref: '#/components/parameters/UniversityId'
+      - name: kilavuz_kodu
+        in: query
+        required: false
+        schema:
+          $ref: '#/components/schemas/Int64String'
+        description: ''
+      - $ref: '#/components/parameters/IfNoneMatch'
+      responses:
+        '200':
+          description: Published read-model rows with year, nullability, pagination and coverage.
+          headers:
+            X-Request-ID: *id001
+            ETag: *id003
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NetResultList'
+        '304':
+          description: Unchanged only after ready/gate/authorization checks.
+          headers:
+            X-Request-ID: *id001
+            ETag: *id003
+            Cache-Control: *id002
+        '400':
+          description: Malformed cursor/header or ambiguous credentials.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: Input/schema/hash/pipeline semantics invalid.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: Rate limit exceeded.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '500':
+          description: Sanitized unexpected internal error.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '503':
+          description: Dependency/capability/publication gate unavailable.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+      x-implementation-status: planned
+      x-implementation-phase: 3
+      x-actors:
+      - anonymous reader
+      x-required-scopes: []
+      x-object-authorization: No protected object.
+      x-data-layer: catalog
+      x-transaction: READ COMMITTED + nonblocking shared transaction publication gate; state, rows and count under
+        the same gate.
+      x-idempotency: Not a mutation receipt key; read or claim protocol.
+      x-observability: Request ID, operation, authorized actor/source, duration and safe outcome; never body/secret.
+      x-tests:
+        normal: listNetResults-normal
+        invalid: listNetResults-invalid
+        auth: listNetResults-anonymous-and-no-sensitive-fields
+        repeat: listNetResults-repeat-read-or-claim
+        concurrent: listNetResults-concurrent
+  /v1/summaries/programs:
+    get:
+      operationId: programSummary
+      summary: List api.program_year_summary
+      description: Curated api.program_year_summary projection. No RAW/remaining_fields or fabricated metric. Empty
+        uncovered year returns warning; gate unavailable returns 503.
+      tags:
+      - catalog
+      security: []
+      parameters:
+      - $ref: '#/components/parameters/Limit'
+      - $ref: '#/components/parameters/Cursor'
+      - $ref: '#/components/parameters/OptionalYear'
+      - $ref: '#/components/parameters/Score'
+      - $ref: '#/components/parameters/IfNoneMatch'
+      responses:
+        '200':
+          description: Published read-model rows with year, nullability, pagination and coverage.
+          headers:
+            X-Request-ID: *id001
+            ETag: *id003
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProgramYearSummaryList'
+        '304':
+          description: Unchanged only after ready/gate/authorization checks.
+          headers:
+            X-Request-ID: *id001
+            ETag: *id003
+            Cache-Control: *id002
+        '400':
+          description: Malformed cursor/header or ambiguous credentials.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: Input/schema/hash/pipeline semantics invalid.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: Rate limit exceeded.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '500':
+          description: Sanitized unexpected internal error.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '503':
+          description: Dependency/capability/publication gate unavailable.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+      x-implementation-status: planned
+      x-implementation-phase: 3
+      x-actors:
+      - anonymous reader
+      x-required-scopes: []
+      x-object-authorization: No protected object.
+      x-data-layer: catalog
+      x-transaction: READ COMMITTED + nonblocking shared transaction publication gate; state, rows and count under
+        the same gate.
+      x-idempotency: Not a mutation receipt key; read or claim protocol.
+      x-observability: Request ID, operation, authorized actor/source, duration and safe outcome; never body/secret.
+      x-tests:
+        normal: programSummary-normal
+        invalid: programSummary-invalid
+        auth: programSummary-anonymous-and-no-sensitive-fields
+        repeat: programSummary-repeat-read-or-claim
+        concurrent: programSummary-concurrent
+  /v1/summaries/net-results:
+    get:
+      operationId: netSummary
+      summary: List api.net_year_summary
+      description: Curated api.net_year_summary projection. No RAW/remaining_fields or fabricated metric. Empty
+        uncovered year returns warning; gate unavailable returns 503.
+      tags:
+      - catalog
+      security: []
+      parameters:
+      - $ref: '#/components/parameters/Limit'
+      - $ref: '#/components/parameters/Cursor'
+      - $ref: '#/components/parameters/OptionalYear'
+      - $ref: '#/components/parameters/Score'
+      - $ref: '#/components/parameters/IfNoneMatch'
+      responses:
+        '200':
+          description: Published read-model rows with year, nullability, pagination and coverage.
+          headers:
+            X-Request-ID: *id001
+            ETag: *id003
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NetYearSummaryList'
+        '304':
+          description: Unchanged only after ready/gate/authorization checks.
+          headers:
+            X-Request-ID: *id001
+            ETag: *id003
+            Cache-Control: *id002
+        '400':
+          description: Malformed cursor/header or ambiguous credentials.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: Input/schema/hash/pipeline semantics invalid.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: Rate limit exceeded.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '500':
+          description: Sanitized unexpected internal error.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '503':
+          description: Dependency/capability/publication gate unavailable.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+      x-implementation-status: planned
+      x-implementation-phase: 3
+      x-actors:
+      - anonymous reader
+      x-required-scopes: []
+      x-object-authorization: No protected object.
+      x-data-layer: catalog
+      x-transaction: READ COMMITTED + nonblocking shared transaction publication gate; state, rows and count under
+        the same gate.
+      x-idempotency: Not a mutation receipt key; read or claim protocol.
+      x-observability: Request ID, operation, authorized actor/source, duration and safe outcome; never body/secret.
+      x-tests:
+        normal: netSummary-normal
+        invalid: netSummary-invalid
+        auth: netSummary-anonymous-and-no-sensitive-fields
+        repeat: netSummary-repeat-read-or-claim
+        concurrent: netSummary-concurrent
+  /v1/programs/{kilavuz_kodu}/{yil}:
+    get:
+      operationId: getProgram
+      summary: Program detail for its natural year key
+      description: Program detail for its natural year key
+      tags:
+      - catalog
+      security: []
+      parameters:
+      - name: kilavuz_kodu
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/Int64String'
+        description: ''
+      - name: yil
+        in: path
+        required: true
+        schema: &id010
+          type: integer
+          minimum: 1000
+          maximum: 9999
+        description: ''
+      - $ref: '#/components/parameters/IfNoneMatch'
+      responses:
+        '200':
+          description: One published program; no conditions without approved read model.
+          headers:
+            X-Request-ID: *id001
+            ETag: *id003
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProgramDetail'
+        '304':
+          description: Unchanged only after ready/gate/authorization checks.
+          headers:
+            X-Request-ID: *id001
+            ETag: *id003
+            Cache-Control: *id002
+        '400':
+          description: Malformed cursor/header or ambiguous credentials.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: Missing or invisible object.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: Input/schema/hash/pipeline semantics invalid.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: Rate limit exceeded.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '500':
+          description: Sanitized unexpected internal error.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '503':
+          description: Dependency/capability/publication gate unavailable.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+      x-implementation-status: planned
+      x-implementation-phase: 3
+      x-actors:
+      - anonymous reader
+      x-required-scopes: []
+      x-object-authorization: No protected object.
+      x-data-layer: catalog
+      x-transaction: READ COMMITTED + nonblocking shared transaction publication gate; state, rows and count under
+        the same gate.
+      x-idempotency: Not a mutation receipt key; read or claim protocol.
+      x-observability: Request ID, operation, authorized actor/source, duration and safe outcome; never body/secret.
+      x-tests:
+        normal: getProgram-normal
+        invalid: getProgram-invalid
+        auth: getProgram-anonymous-and-no-sensitive-fields
+        repeat: getProgram-repeat-read-or-claim
+        concurrent: getProgram-concurrent
+  /v1/coverage:
+    get:
+      operationId: coverage
+      summary: Published coverage and business availability
+      description: Published coverage and business availability
+      tags:
+      - catalog
+      security: []
+      parameters: []
+      responses:
+        '200':
+          description: State is available even without a published dataset; unpublished counts are null.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoverageEnvelope'
+        '429':
+          description: Rate limit exceeded.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '500':
+          description: Sanitized unexpected internal error.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '503':
+          description: Dependency/capability/publication gate unavailable.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+      x-implementation-status: planned
+      x-implementation-phase: 3
+      x-actors:
+      - anonymous reader
+      x-required-scopes: []
+      x-object-authorization: No protected object.
+      x-data-layer: catalog
+      x-transaction: Read sanitized publication status. No data counts are computed while gate is unavailable.
+      x-idempotency: Not a mutation receipt key; read or claim protocol.
+      x-observability: Request ID, operation, authorized actor/source, duration and safe outcome; never body/secret.
+      x-tests:
+        normal: coverage-normal
+        invalid: coverage-invalid
+        auth: coverage-anonymous-and-no-sensitive-fields
+        repeat: coverage-repeat-read-or-claim
+        concurrent: coverage-concurrent
+  /internal/v1/ingestions:
+    post:
+      operationId: createIngestion
+      summary: Open owned ingestion run
+      description: Open owned ingestion run
+      tags:
+      - ingestion
+      security:
+      - serviceKey: []
+      parameters:
+      - $ref: '#/components/parameters/Idempotency'
+      responses:
+        '201':
+          description: Durably created run or original idempotent replay.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Idempotency-Replayed: &id006
+              description: True only when the original mutation receipt/status is replayed.
+              schema: &id012
+                type: boolean
+            Location: &id007
+              description: Relative status resource URL.
+              schema:
+                type: string
+                maxLength: 500
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunEnvelope'
+        '400':
+          description: Malformed cursor/header or ambiguous credentials.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '401':
+          description: Missing, wrong, expired or revoked identity.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: Scope/source policy denied.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: Missing or invisible object.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '409':
+          description: Idempotency/state/lease/epoch/child conflict.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: Input/schema/hash/pipeline semantics invalid.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: Rate limit exceeded.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '500':
+          description: Sanitized unexpected internal error.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '503':
+          description: Dependency/capability/publication gate unavailable.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+      x-implementation-status: planned
+      x-implementation-phase: 3
+      x-actors:
+      - service principal
+      x-required-scopes:
+      - ingest:create
+      x-object-authorization: Allowed source; creator assigned server-side.
+      x-data-layer: ingestion
+      x-transaction: RAW run + ownership + idempotency receipt + audit on one ingest connection.
+      x-idempotency: Required mutation key; same command replays original result.
+      x-observability: Request ID, operation, authorized actor/source, duration and safe outcome; never body/secret.
+      x-tests:
+        normal: createIngestion-normal
+        invalid: createIngestion-invalid
+        auth: createIngestion-missing-or-denied-identity
+        repeat: createIngestion-same-key-replay
+        concurrent: createIngestion-concurrent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateIngestion'
+  /internal/v1/ingestions/{run_id}:
+    get:
+      operationId: getIngestion
+      summary: Read own ingestion run
+      description: Read own ingestion run
+      tags:
+      - ingestion
+      security:
+      - serviceKey: []
+      parameters:
+      - &id005
+        name: run_id
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/RunId'
+        description: ''
+      responses:
+        '200':
+          description: Own run status.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunEnvelope'
+        '401':
+          description: Missing, wrong, expired or revoked identity.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: Scope/source policy denied.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: Missing or invisible object.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: Input/schema/hash/pipeline semantics invalid.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: Rate limit exceeded.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '500':
+          description: Sanitized unexpected internal error.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '503':
+          description: Dependency/capability/publication gate unavailable.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+      x-implementation-status: planned
+      x-implementation-phase: 3
+      x-actors:
+      - service principal
+      x-required-scopes:
+      - ingest:read
+      x-object-authorization: Creator principal + permitted source only.
+      x-data-layer: ingestion
+      x-transaction: No SQL writes.
+      x-idempotency: Not a mutation receipt key; read or claim protocol.
+      x-observability: Request ID, operation, authorized actor/source, duration and safe outcome; never body/secret.
+      x-tests:
+        normal: getIngestion-normal
+        invalid: getIngestion-invalid
+        auth: getIngestion-missing-or-denied-identity
+        repeat: getIngestion-repeat-read-or-claim
+        concurrent: getIngestion-concurrent
+  /internal/v1/ingestions/{run_id}/responses:
+    post:
+      operationId: storeResponse
+      summary: Store one complete original response atomically
+      description: 4 MiB decoded body, 1000 records, strict UTF-8 JSON and verified byte SHA-256. Non-2xx failures
+        go through run failure completion. Legacy ambiguity/incomplete children returns conflict; never overwrite.
+      tags:
+      - ingestion
+      security:
+      - serviceKey: []
+      parameters:
+      - *id005
+      - $ref: '#/components/parameters/Idempotency'
+      responses:
+        '201':
+          description: 'stored: new response/children and observation committed.'
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Idempotency-Replayed: *id006
+            Location: *id007
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReceiptEnvelope'
+        '200':
+          description: 'duplicate: verified RAW reused, new observation committed; replay preserves original status.'
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Idempotency-Replayed: *id006
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReceiptEnvelope'
+        '400':
+          description: Malformed cursor/header or ambiguous credentials.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '401':
+          description: Missing, wrong, expired or revoked identity.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: Scope/source policy denied.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: Missing or invisible object.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '409':
+          description: Idempotency/state/lease/epoch/child conflict.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '413':
+          description: Body, decoded bytes or records exceed configured limits.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: Input/schema/hash/pipeline semantics invalid.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: Rate limit exceeded.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '500':
+          description: Sanitized unexpected internal error.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '503':
+          description: Dependency/capability/publication gate unavailable.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+      x-implementation-status: planned
+      x-implementation-phase: 3
+      x-actors:
+      - service principal
+      x-required-scopes:
+      - ingest:write
+      x-object-authorization: Own running run + source/method/endpoint policy.
+      x-data-layer: ingestion
+      x-transaction: One RAW + children + response metadata + observation + artifact link + idempotency + audit
+        SQL transaction.
+      x-idempotency: Required mutation key; same command replays original result.
+      x-observability: Request ID, operation, authorized actor/source, duration and safe outcome; never body/secret.
+      x-tests:
+        normal: storeResponse-normal
+        invalid: storeResponse-invalid
+        auth: storeResponse-missing-or-denied-identity
+        repeat: storeResponse-same-key-replay
+        concurrent: storeResponse-concurrent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StoreResponse'
+  /internal/v1/ingestions/{run_id}/complete:
+    post:
+      operationId: completeIngestion
+      summary: Complete, partially complete or fail own run
+      description: Complete, partially complete or fail own run
+      tags:
+      - ingestion
+      security:
+      - serviceKey: []
+      parameters:
+      - *id005
+      - $ref: '#/components/parameters/Idempotency'
+      responses:
+        '200':
+          description: Terminal ingestion state; not an ETL publication result.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Idempotency-Replayed: *id006
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunEnvelope'
+        '400':
+          description: Malformed cursor/header or ambiguous credentials.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '401':
+          description: Missing, wrong, expired or revoked identity.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: Scope/source policy denied.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: Missing or invisible object.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '409':
+          description: Idempotency/state/lease/epoch/child conflict.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: Input/schema/hash/pipeline semantics invalid.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: Rate limit exceeded.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '500':
+          description: Sanitized unexpected internal error.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '503':
+          description: Dependency/capability/publication gate unavailable.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+      x-implementation-status: planned
+      x-implementation-phase: 3
+      x-actors:
+      - service principal
+      x-required-scopes:
+      - ingest:complete
+      x-object-authorization: Own running run; immutable terminal outcome, identical command replay allowed.
+      x-data-layer: ingestion
+      x-transaction: Validate server observation counts; update allowed run lifecycle columns + idempotency + audit.
+      x-idempotency: Required mutation key; same command replays original result.
+      x-observability: Request ID, operation, authorized actor/source, duration and safe outcome; never body/secret.
+      x-tests:
+        normal: completeIngestion-normal
+        invalid: completeIngestion-invalid
+        auth: completeIngestion-missing-or-denied-identity
+        repeat: completeIngestion-same-key-replay
+        concurrent: completeIngestion-concurrent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompleteIngestion'
+  /internal/v1/ingestions/{run_id}/manifest:
+    get:
+      operationId: getManifest
+      summary: Read authorized RAW response manifest
+      description: Read authorized RAW response manifest
+      tags:
+      - ingestion
+      security:
+      - serviceKey: []
+      parameters:
+      - *id005
+      - $ref: '#/components/parameters/Limit'
+      - $ref: '#/components/parameters/Cursor'
+      - name: job_id
+        in: query
+        required: false
+        schema: *id008
+        description: ''
+      responses:
+        '200':
+          description: Bounded private metadata; no host path/credential/body.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ManifestEnvelope'
+        '400':
+          description: Malformed cursor/header or ambiguous credentials.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '401':
+          description: Missing, wrong, expired or revoked identity.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: Scope/source policy denied.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: Missing or invisible object.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: Input/schema/hash/pipeline semantics invalid.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: Rate limit exceeded.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '500':
+          description: Sanitized unexpected internal error.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '503':
+          description: Dependency/capability/publication gate unavailable.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+      x-implementation-status: planned
+      x-implementation-phase: 3
+      x-actors:
+      - service principal
+      x-required-scopes:
+      - raw:manifest:read
+      x-object-authorization: Own run, or permitted input of currently assigned live worker job (job_id required
+        for worker).
+      x-data-layer: ingestion
+      x-transaction: No SQL writes.
+      x-idempotency: Not a mutation receipt key; read or claim protocol.
+      x-observability: Request ID, operation, authorized actor/source, duration and safe outcome; never body/secret.
+      x-tests:
+        normal: getManifest-normal
+        invalid: getManifest-invalid
+        auth: getManifest-missing-or-denied-identity
+        repeat: getManifest-repeat-read-or-claim
+        concurrent: getManifest-concurrent
+  /ops/v1/jobs:
+    post:
+      operationId: createJob
+      summary: Queue registered ETL pipeline
+      description: Queue registered ETL pipeline
+      tags:
+      - jobs
+      security:
+      - serviceKey: []
+      - operatorBearer: []
+      parameters:
+      - $ref: '#/components/parameters/Idempotency'
+      responses:
+        '202':
+          description: Durable queued job; never pretend pipeline ran.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Idempotency-Replayed: *id006
+            Location: *id007
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobEnvelope'
+        '400':
+          description: Malformed cursor/header or ambiguous credentials.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '401':
+          description: Missing, wrong, expired or revoked identity.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: Scope/source policy denied.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: Missing or invisible object.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '409':
+          description: Idempotency/state/lease/epoch/child conflict.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: Input/schema/hash/pipeline semantics invalid.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: Rate limit exceeded.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '500':
+          description: Sanitized unexpected internal error.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '503':
+          description: Dependency/capability/publication gate unavailable.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+      x-implementation-status: planned
+      x-implementation-phase: 3
+      x-actors:
+      - operator service
+      - verified human operator
+      x-required-scopes:
+      - jobs:create
+      x-object-authorization: All input runs in allowed source scope and completed; registered pipeline/revision
+        only.
+      x-data-layer: jobs
+      x-transaction: Active input uniqueness + queue metadata + idempotency + audit.
+      x-idempotency: Required mutation key; same command replays original result.
+      x-observability: Request ID, operation, authorized actor/source, duration and safe outcome; never body/secret.
+      x-tests:
+        normal: createJob-normal
+        invalid: createJob-invalid
+        auth: createJob-missing-or-denied-identity
+        repeat: createJob-same-key-replay
+        concurrent: createJob-concurrent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateJob'
+    get:
+      operationId: listJobs
+      summary: List source-authorized job metadata
+      description: List source-authorized job metadata
+      tags:
+      - jobs
+      security:
+      - serviceKey: []
+      - operatorBearer: []
+      parameters:
+      - $ref: '#/components/parameters/Limit'
+      - $ref: '#/components/parameters/Cursor'
+      - name: status
+        in: query
+        required: false
+        schema:
+          $ref: '#/components/schemas/JobState'
+        description: ''
+      responses:
+        '200':
+          description: Queue/status list without lease secrets.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobList'
+        '400':
+          description: Malformed cursor/header or ambiguous credentials.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '401':
+          description: Missing, wrong, expired or revoked identity.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: Scope/source policy denied.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: Input/schema/hash/pipeline semantics invalid.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: Rate limit exceeded.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '500':
+          description: Sanitized unexpected internal error.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '503':
+          description: Dependency/capability/publication gate unavailable.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+      x-implementation-status: planned
+      x-implementation-phase: 3
+      x-actors:
+      - operator service
+      - verified human operator
+      x-required-scopes:
+      - jobs:read
+      x-object-authorization: Allowed sources only.
+      x-data-layer: jobs
+      x-transaction: No SQL writes.
+      x-idempotency: Not a mutation receipt key; read or claim protocol.
+      x-observability: Request ID, operation, authorized actor/source, duration and safe outcome; never body/secret.
+      x-tests:
+        normal: listJobs-normal
+        invalid: listJobs-invalid
+        auth: listJobs-missing-or-denied-identity
+        repeat: listJobs-repeat-read-or-claim
+        concurrent: listJobs-concurrent
+  /ops/v1/jobs/{job_id}:
+    get:
+      operationId: getJob
+      summary: Read source-authorized job status
+      description: Read source-authorized job status
+      tags:
+      - jobs
+      security:
+      - serviceKey: []
+      - operatorBearer: []
+      parameters:
+      - &id009
+        name: job_id
+        in: path
+        required: true
+        schema: *id008
+        description: ''
+      responses:
+        '200':
+          description: Progress/result/candidate status without lease secret.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobEnvelope'
+        '401':
+          description: Missing, wrong, expired or revoked identity.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: Scope/source policy denied.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: Missing or invisible object.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: Input/schema/hash/pipeline semantics invalid.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: Rate limit exceeded.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '500':
+          description: Sanitized unexpected internal error.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '503':
+          description: Dependency/capability/publication gate unavailable.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+      x-implementation-status: planned
+      x-implementation-phase: 3
+      x-actors:
+      - operator service
+      - verified human operator
+      x-required-scopes:
+      - jobs:read
+      x-object-authorization: Allowed job input sources.
+      x-data-layer: jobs
+      x-transaction: No SQL writes.
+      x-idempotency: Not a mutation receipt key; read or claim protocol.
+      x-observability: Request ID, operation, authorized actor/source, duration and safe outcome; never body/secret.
+      x-tests:
+        normal: getJob-normal
+        invalid: getJob-invalid
+        auth: getJob-missing-or-denied-identity
+        repeat: getJob-repeat-read-or-claim
+        concurrent: getJob-concurrent
+  /ops/v1/jobs/{job_id}/retry:
+    post:
+      operationId: retryJob
+      summary: Preview or apply failed job retry
+      description: Preview or apply failed job retry
+      tags:
+      - jobs
+      security:
+      - serviceKey: []
+      - operatorBearer: []
+      parameters:
+      - *id009
+      - $ref: '#/components/parameters/Idempotency'
+      responses:
+        '200':
+          description: Dry-run defaults true; no execution side effect.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Idempotency-Replayed: *id006
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanEnvelope'
+        '202':
+          description: Plan-bound new attempt queued.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Idempotency-Replayed: *id006
+            Location: *id007
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobEnvelope'
+        '400':
+          description: Malformed cursor/header or ambiguous credentials.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '401':
+          description: Missing, wrong, expired or revoked identity.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: Scope/source policy denied.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: Missing or invisible object.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '409':
+          description: Idempotency/state/lease/epoch/child conflict.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: Input/schema/hash/pipeline semantics invalid.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: Rate limit exceeded.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '500':
+          description: Sanitized unexpected internal error.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '503':
+          description: Dependency/capability/publication gate unavailable.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+      x-implementation-status: planned
+      x-implementation-phase: 3
+      x-actors:
+      - operator service
+      - verified human operator
+      x-required-scopes:
+      - jobs:retry
+      x-object-authorization: Allowed failed/partial/expired job; CORE recovery policy approved and old session
+        released.
+      x-data-layer: jobs
+      x-transaction: Dry-run changes no job/domain state; it may persist idempotency/audit receipt. Apply checks
+        plan/state/epoch under gate.
+      x-idempotency: Required mutation key; same command replays original result.
+      x-observability: Request ID, operation, authorized actor/source, duration and safe outcome; never body/secret.
+      x-tests:
+        normal: retryJob-normal
+        invalid: retryJob-invalid
+        auth: retryJob-missing-or-denied-identity
+        repeat: retryJob-same-key-replay
+        concurrent: retryJob-concurrent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RetryJob'
+  /internal/v1/jobs/claim:
+    post:
+      operationId: claimJob
+      summary: Claim eligible registered work
+      description: Claim is not a replay-key operation. Lost ACK is resolved by querying/reclaiming own unexpired
+        assignment server-side; must never claim a second own assignment while first remains active. Lost claim
+        ACK for an unstarted leased assignment rotates its own token/epoch; running assignment is not reissued.
+        See ADR-0004.
+      tags:
+      - worker
+      security:
+      - serviceKey: []
+      parameters: []
+      responses:
+        '200':
+          description: One job leased to authenticated worker.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeaseEnvelope'
+        '204':
+          description: No eligible work.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+        '401':
+          description: Missing, wrong, expired or revoked identity.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: Scope/source policy denied.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '409':
+          description: Idempotency/state/lease/epoch/child conflict.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: Input/schema/hash/pipeline semantics invalid.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: Rate limit exceeded.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '500':
+          description: Sanitized unexpected internal error.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '503':
+          description: Dependency/capability/publication gate unavailable.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+      x-implementation-status: planned
+      x-implementation-phase: 3
+      x-actors:
+      - service principal
+      x-required-scopes:
+      - jobs:claim
+      x-object-authorization: Server worker principal/source/pipeline capability mapping.
+      x-data-layer: worker
+      x-transaction: Short control transaction with FOR UPDATE SKIP LOCKED; active CORE lane uniqueness.
+      x-idempotency: Not a mutation receipt key; read or claim protocol.
+      x-observability: Request ID, operation, authorized actor/source, duration and safe outcome; never body/secret.
+      x-tests:
+        normal: claimJob-normal
+        invalid: claimJob-invalid
+        auth: claimJob-missing-or-denied-identity
+        repeat: claimJob-repeat-read-or-claim
+        concurrent: claimJob-concurrent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClaimJob'
+  /internal/v1/jobs/{job_id}/start:
+    post:
+      operationId: startJob
+      summary: Verify dedicated exclusive gate PID before marking model updating.
+      description: Verify dedicated exclusive gate PID before marking model updating.
+      tags:
+      - worker
+      security:
+      - serviceKey: []
+      parameters:
+      - *id009
+      - $ref: '#/components/parameters/Lease'
+      - $ref: '#/components/parameters/Idempotency'
+      responses:
+        '200':
+          description: Verify dedicated exclusive gate PID before marking model updating.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Idempotency-Replayed: *id006
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobEnvelope'
+        '400':
+          description: Malformed cursor/header or ambiguous credentials.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '401':
+          description: Missing, wrong, expired or revoked identity.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: Scope/source policy denied.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: Missing or invisible object.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '409':
+          description: Idempotency/state/lease/epoch/child conflict.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: Input/schema/hash/pipeline semantics invalid.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: Rate limit exceeded.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '500':
+          description: Sanitized unexpected internal error.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '503':
+          description: Dependency/capability/publication gate unavailable.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+      x-implementation-status: planned
+      x-implementation-phase: 3
+      x-actors:
+      - service principal
+      x-required-scopes:
+      - jobs:start
+      x-object-authorization: Assigned principal + current secret lease + epoch + permitted source.
+      x-data-layer: worker
+      x-transaction: Control metadata + idempotency + audit; start/complete verifies stored worker gate PID and
+        job state.
+      x-idempotency: Required mutation key; same command replays original result.
+      x-observability: Request ID, operation, authorized actor/source, duration and safe outcome; never body/secret.
+      x-tests:
+        normal: startJob-normal
+        invalid: startJob-invalid
+        auth: startJob-missing-or-denied-identity
+        repeat: startJob-same-key-replay
+        concurrent: startJob-concurrent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartJob'
+  /internal/v1/jobs/{job_id}/heartbeat:
+    post:
+      operationId: heartbeatJob
+      summary: Extend live assigned lease and monotonically update progress.
+      description: Extend live assigned lease and monotonically update progress.
+      tags:
+      - worker
+      security:
+      - serviceKey: []
+      parameters:
+      - *id009
+      - $ref: '#/components/parameters/Lease'
+      - $ref: '#/components/parameters/Idempotency'
+      responses:
+        '200':
+          description: Extend live assigned lease and monotonically update progress.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Idempotency-Replayed: *id006
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeaseStatusEnvelope'
+        '400':
+          description: Malformed cursor/header or ambiguous credentials.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '401':
+          description: Missing, wrong, expired or revoked identity.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: Scope/source policy denied.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: Missing or invisible object.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '409':
+          description: Idempotency/state/lease/epoch/child conflict.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: Input/schema/hash/pipeline semantics invalid.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: Rate limit exceeded.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '500':
+          description: Sanitized unexpected internal error.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '503':
+          description: Dependency/capability/publication gate unavailable.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+      x-implementation-status: planned
+      x-implementation-phase: 3
+      x-actors:
+      - service principal
+      x-required-scopes:
+      - jobs:heartbeat
+      x-object-authorization: Assigned principal + current secret lease + epoch + permitted source.
+      x-data-layer: worker
+      x-transaction: Control metadata + idempotency + audit; start/complete verifies stored worker gate PID and
+        job state.
+      x-idempotency: Required mutation key; same command replays original result.
+      x-observability: Request ID, operation, authorized actor/source, duration and safe outcome; never body/secret.
+      x-tests:
+        normal: heartbeatJob-normal
+        invalid: heartbeatJob-invalid
+        auth: heartbeatJob-missing-or-denied-identity
+        repeat: heartbeatJob-same-key-replay
+        concurrent: heartbeatJob-concurrent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HeartbeatJob'
+  /internal/v1/jobs/{job_id}/complete:
+    post:
+      operationId: completeJob
+      summary: Terminal result; succeeded validation creates candidate, failure closes model.
+      description: Terminal result; succeeded validation creates candidate, failure closes model.
+      tags:
+      - worker
+      security:
+      - serviceKey: []
+      parameters:
+      - *id009
+      - $ref: '#/components/parameters/Lease'
+      - $ref: '#/components/parameters/Idempotency'
+      responses:
+        '200':
+          description: Terminal result; succeeded validation creates candidate, failure closes model.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Idempotency-Replayed: *id006
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobEnvelope'
+        '400':
+          description: Malformed cursor/header or ambiguous credentials.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '401':
+          description: Missing, wrong, expired or revoked identity.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: Scope/source policy denied.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: Missing or invisible object.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '409':
+          description: Idempotency/state/lease/epoch/child conflict.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: Input/schema/hash/pipeline semantics invalid.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: Rate limit exceeded.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '500':
+          description: Sanitized unexpected internal error.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '503':
+          description: Dependency/capability/publication gate unavailable.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+      x-implementation-status: planned
+      x-implementation-phase: 3
+      x-actors:
+      - service principal
+      x-required-scopes:
+      - jobs:complete
+      x-object-authorization: Assigned principal + current secret lease + epoch + permitted source.
+      x-data-layer: worker
+      x-transaction: Control metadata + idempotency + audit; start/complete verifies stored worker gate PID and
+        job state.
+      x-idempotency: Required mutation key; same command replays original result.
+      x-observability: Request ID, operation, authorized actor/source, duration and safe outcome; never body/secret.
+      x-tests:
+        normal: completeJob-normal
+        invalid: completeJob-invalid
+        auth: completeJob-missing-or-denied-identity
+        repeat: completeJob-same-key-replay
+        concurrent: completeJob-concurrent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompleteJob'
+  /ops/v1/ingestions:
+    get:
+      operationId: listIngestions
+      summary: Read ingestion operational metadata
+      description: Read ingestion operational metadata
+      tags:
+      - operations
+      security:
+      - serviceKey: []
+      - operatorBearer: []
+      parameters:
+      - $ref: '#/components/parameters/Limit'
+      - $ref: '#/components/parameters/Cursor'
+      - name: source_system
+        in: query
+        required: false
+        schema:
+          type: string
+          maxLength: 80
+        description: ''
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - running
+          - completed
+          - partial
+          - failed
+        description: ''
+      responses:
+        '200':
+          description: Source-authorized status/counts; no RAW body.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunList'
+        '400':
+          description: Malformed cursor/header or ambiguous credentials.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '401':
+          description: Missing, wrong, expired or revoked identity.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: Scope/source policy denied.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: Input/schema/hash/pipeline semantics invalid.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: Rate limit exceeded.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '500':
+          description: Sanitized unexpected internal error.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '503':
+          description: Dependency/capability/publication gate unavailable.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+      x-implementation-status: planned
+      x-implementation-phase: 3
+      x-actors:
+      - operator service
+      - verified human operator
+      x-required-scopes:
+      - ops:ingestions:read
+      x-object-authorization: Server allowed source filter; no unrestricted caller scope.
+      x-data-layer: operations
+      x-transaction: No SQL writes.
+      x-idempotency: Not a mutation receipt key; read or claim protocol.
+      x-observability: Request ID, operation, authorized actor/source, duration and safe outcome; never body/secret.
+      x-tests:
+        normal: listIngestions-normal
+        invalid: listIngestions-invalid
+        auth: listIngestions-missing-or-denied-identity
+        repeat: listIngestions-repeat-read-or-claim
+        concurrent: listIngestions-concurrent
+  /ops/v1/quality:
+    get:
+      operationId: qualitySummary
+      summary: Read metadata-only quality summary
+      description: Read metadata-only quality summary
+      tags:
+      - operations
+      security:
+      - serviceKey: []
+      - operatorBearer: []
+      parameters:
+      - name: source_system
+        in: query
+        required: false
+        schema:
+          type: string
+          maxLength: 80
+        description: ''
+      responses:
+        '200':
+          description: Counts/check statuses; no candidate JSON or resolution action.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QualityEnvelope'
+        '401':
+          description: Missing, wrong, expired or revoked identity.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: Scope/source policy denied.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: Input/schema/hash/pipeline semantics invalid.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: Rate limit exceeded.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '500':
+          description: Sanitized unexpected internal error.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '503':
+          description: Dependency/capability/publication gate unavailable.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+      x-implementation-status: planned
+      x-implementation-phase: 3
+      x-actors:
+      - operator service
+      - verified human operator
+      x-required-scopes:
+      - ops:quality:read
+      x-object-authorization: Allowed source only; DE owns quality rules.
+      x-data-layer: operations
+      x-transaction: No SQL writes.
+      x-idempotency: Not a mutation receipt key; read or claim protocol.
+      x-observability: Request ID, operation, authorized actor/source, duration and safe outcome; never body/secret.
+      x-tests:
+        normal: qualitySummary-normal
+        invalid: qualitySummary-invalid
+        auth: qualitySummary-missing-or-denied-identity
+        repeat: qualitySummary-repeat-read-or-claim
+        concurrent: qualitySummary-concurrent
+  /ops/v1/lineage/{run_id}:
+    get:
+      operationId: lineage
+      summary: Read bounded source-run-job-publication lineage
+      description: Read bounded source-run-job-publication lineage
+      tags:
+      - operations
+      security:
+      - serviceKey: []
+      - operatorBearer: []
+      parameters:
+      - *id005
+      - $ref: '#/components/parameters/Limit'
+      - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: Observed links and bounded related IDs; truncated flag if related collections exceed limit.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LineageEnvelope'
+        '400':
+          description: Malformed cursor/header or ambiguous credentials.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '401':
+          description: Missing, wrong, expired or revoked identity.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: Scope/source policy denied.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: Missing or invisible object.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: Input/schema/hash/pipeline semantics invalid.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: Rate limit exceeded.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '500':
+          description: Sanitized unexpected internal error.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '503':
+          description: Dependency/capability/publication gate unavailable.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+      x-implementation-status: planned
+      x-implementation-phase: 3
+      x-actors:
+      - operator service
+      - verified human operator
+      x-required-scopes:
+      - ops:lineage:read
+      x-object-authorization: Allowed run source; metadata projection only.
+      x-data-layer: operations
+      x-transaction: No SQL writes.
+      x-idempotency: Not a mutation receipt key; read or claim protocol.
+      x-observability: Request ID, operation, authorized actor/source, duration and safe outcome; never body/secret.
+      x-tests:
+        normal: lineage-normal
+        invalid: lineage-invalid
+        auth: lineage-missing-or-denied-identity
+        repeat: lineage-repeat-read-or-claim
+        concurrent: lineage-concurrent
+  /ops/v1/publications:
+    get:
+      operationId: listPublications
+      summary: Read publication candidates and audit history
+      description: Read publication candidates and audit history
+      tags:
+      - operations
+      security:
+      - serviceKey: []
+      - operatorBearer: []
+      parameters:
+      - $ref: '#/components/parameters/Limit'
+      - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: Metadata history is not historical readable CORE data.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicationList'
+        '400':
+          description: Malformed cursor/header or ambiguous credentials.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '401':
+          description: Missing, wrong, expired or revoked identity.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: Scope/source policy denied.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: Input/schema/hash/pipeline semantics invalid.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: Rate limit exceeded.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '500':
+          description: Sanitized unexpected internal error.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '503':
+          description: Dependency/capability/publication gate unavailable.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+      x-implementation-status: planned
+      x-implementation-phase: 3
+      x-actors:
+      - operator service
+      - verified human operator
+      x-required-scopes:
+      - publications:read
+      x-object-authorization: Authorized operator publication source scope.
+      x-data-layer: operations
+      x-transaction: No SQL writes.
+      x-idempotency: Not a mutation receipt key; read or claim protocol.
+      x-observability: Request ID, operation, authorized actor/source, duration and safe outcome; never body/secret.
+      x-tests:
+        normal: listPublications-normal
+        invalid: listPublications-invalid
+        auth: listPublications-missing-or-denied-identity
+        repeat: listPublications-repeat-read-or-claim
+        concurrent: listPublications-concurrent
+    post:
+      operationId: publish
+      summary: Preview or apply validated publication
+      description: Preview or apply validated publication
+      tags:
+      - operations
+      security:
+      - serviceKey: []
+      - operatorBearer: []
+      parameters:
+      - $ref: '#/components/parameters/Idempotency'
+      responses:
+        '200':
+          description: Dry-run plan or atomic approved publication result.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Idempotency-Replayed: *id006
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/PlanEnvelope'
+                - $ref: '#/components/schemas/PublicationEnvelope'
+        '400':
+          description: Malformed cursor/header or ambiguous credentials.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '401':
+          description: Missing, wrong, expired or revoked identity.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: Scope/source policy denied.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: Missing or invisible object.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '409':
+          description: Idempotency/state/lease/epoch/child conflict.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: Input/schema/hash/pipeline semantics invalid.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: Rate limit exceeded.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '500':
+          description: Sanitized unexpected internal error.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '503':
+          description: Dependency/capability/publication gate unavailable.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+      x-implementation-status: planned
+      x-implementation-phase: 3
+      x-actors:
+      - operator service
+      - verified human operator
+      x-required-scopes:
+      - publications:publish
+      x-object-authorization: Allowed candidate sources + succeeded job + DE attestation + current epoch/plan token.
+      x-data-layer: operations
+      x-transaction: Short exclusive transaction gate + publication/current epoch + idempotency + audit; no CORE
+        writes.
+      x-idempotency: Required mutation key; same command replays original result.
+      x-observability: Request ID, operation, authorized actor/source, duration and safe outcome; never body/secret.
+      x-tests:
+        normal: publish-normal
+        invalid: publish-invalid
+        auth: publish-missing-or-denied-identity
+        repeat: publish-same-key-replay
+        concurrent: publish-concurrent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Publish'
+  /ops/v1/metrics:
+    get:
+      operationId: metrics
+      summary: Read private Prometheus metrics
+      description: Read private Prometheus metrics
+      tags:
+      - operations
+      security:
+      - serviceKey: []
+      - operatorBearer: []
+      parameters: []
+      responses:
+        '200':
+          description: Prometheus metadata, no arbitrary high-cardinality IDs/secrets.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            text/plain; version=0.0.4:
+              schema:
+                type: string
+                maxLength: 1048576
+        '401':
+          description: Missing, wrong, expired or revoked identity.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: Scope/source policy denied.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '429':
+          description: Rate limit exceeded.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '500':
+          description: Sanitized unexpected internal error.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '503':
+          description: Dependency/capability/publication gate unavailable.
+          headers:
+            X-Request-ID: *id001
+            Cache-Control: *id002
+            Retry-After: *id004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+      x-implementation-status: planned
+      x-implementation-phase: 3
+      x-actors:
+      - operator service
+      - verified human operator
+      x-required-scopes:
+      - metrics:read
+      x-object-authorization: No protected object.
+      x-data-layer: operations
+      x-transaction: No SQL writes.
+      x-idempotency: Not a mutation receipt key; read or claim protocol.
+      x-observability: Request ID, operation, authorized actor/source, duration and safe outcome; never body/secret.
+      x-tests:
+        normal: metrics-normal
+        invalid: metrics-invalid
+        auth: metrics-missing-or-denied-identity
+        repeat: metrics-repeat-read-or-claim
+        concurrent: metrics-concurrent
+components:
+  schemas:
+    Int64String:
+      type: string
+      maxLength: 20
+      pattern: ^-?(0|[1-9][0-9]*)$
+      description: Signed BIGINT decimal string; server additionally validates int64 range.
+    CountString:
+      type: string
+      maxLength: 20
+      pattern: ^(0|[1-9][0-9]*)$
+      description: Nonnegative integer count as decimal string.
+    RunId:
+      type: string
+      maxLength: 19
+      pattern: ^[1-9][0-9]*$
+      description: Generated positive BIGINT identity.
+    Sha256:
+      type: string
+      maxLength: 64
+      minLength: 64
+      pattern: ^[0-9a-f]{64}$
+    ScoreType:
+      type: string
+      enum:
+      - SAY
+      - EA
+      - SÖZ
+      - DİL
+      - TYT
+    Warning:
+      type: object
+      additionalProperties: false
+      properties:
+        code:
+          type: string
+          maxLength: 80
+          minLength: 1
+        message:
+          type: string
+          maxLength: 500
+        reference_year:
+          type:
+          - integer
+          - 'null'
+          minimum: 1000
+          maximum: 9999
+      required:
+      - code
+      - message
+    ErrorEnvelope:
+      type: object
+      additionalProperties: false
+      properties:
+        error:
+          type: object
+          additionalProperties: false
+          properties:
+            code:
+              type: string
+              maxLength: 80
+              minLength: 1
+            message:
+              type: string
+              maxLength: 500
+            request_id: *id008
+            details:
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  field:
+                    type: string
+                    maxLength: 160
+                  reason:
+                    type: string
+                    maxLength: 160
+                required:
+                - field
+                - reason
+              maxItems: 20
+          required:
+          - code
+          - message
+          - request_id
+          - details
+      required:
+      - error
+    Health:
+      type: object
+      additionalProperties: false
+      properties:
+        status:
+          type: string
+          enum:
+          - live
+          - ready
+          - not_ready
+      required:
+      - status
+    ReadMeta:
+      type: object
+      additionalProperties: false
+      properties:
+        publication_id: *id008
+        published_at: &id011
+          type: string
+          format: date-time
+        requested_year:
+          type:
+          - integer
+          - 'null'
+          minimum: 1000
+          maximum: 9999
+        available_years:
+          type: array
+          items: *id010
+          maxItems: 100
+          uniqueItems: true
+        warnings:
+          type: array
+          items:
+            $ref: '#/components/schemas/Warning'
+          maxItems: 20
+      required:
+      - publication_id
+      - published_at
+      - requested_year
+      - available_years
+      - warnings
+    Page:
+      type: object
+      additionalProperties: false
+      properties:
+        total_count:
+          $ref: '#/components/schemas/CountString'
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+        next_cursor:
+          type:
+          - string
+          - 'null'
+          maxLength: 4096
+      required:
+      - total_count
+      - limit
+      - next_cursor
+    University:
+      type: object
+      additionalProperties: false
+      properties:
+        universite_id:
+          $ref: '#/components/schemas/Int64String'
+        universite_adi:
+          type: string
+          maxLength: 1000
+      required:
+      - universite_id
+      - universite_adi
+    City:
+      type: object
+      additionalProperties: false
+      properties:
+        il_kodu:
+          $ref: '#/components/schemas/Int64String'
+        il_adi:
+          type: string
+          maxLength: 1000
+      required:
+      - il_kodu
+      - il_adi
+    ProgramGroup:
+      type: object
+      additionalProperties: false
+      properties:
+        birim_grup_id:
+          $ref: '#/components/schemas/Int64String'
+        puan_turu:
+          $ref: '#/components/schemas/ScoreType'
+        birim_grup_adi:
+          type: string
+          maxLength: 1000
+      required:
+      - birim_grup_id
+      - puan_turu
+      - birim_grup_adi
+    Program:
+      type: object
+      additionalProperties: false
+      properties:
+        birim_id:
+          anyOf:
+          - $ref: '#/components/schemas/Int64String'
+          - type: 'null'
+        fymk_id:
+          anyOf:
+          - $ref: '#/components/schemas/Int64String'
+          - type: 'null'
+        birim_grup_id:
+          anyOf:
+          - $ref: '#/components/schemas/Int64String'
+          - type: 'null'
+        il_kodu:
+          anyOf:
+          - $ref: '#/components/schemas/Int64String'
+          - type: 'null'
+        basari_sirasi:
+          anyOf:
+          - $ref: '#/components/schemas/Int64String'
+          - type: 'null'
+        kontenjan:
+          anyOf:
+          - $ref: '#/components/schemas/Int64String'
+          - type: 'null'
+        program_version_id:
+          $ref: '#/components/schemas/RunId'
+        kilavuz_kodu:
+          $ref: '#/components/schemas/Int64String'
+        yil: *id010
+        puan_turu:
+          $ref: '#/components/schemas/ScoreType'
+        birim_adi:
+          type: string
+          maxLength: 2000
+        universite_id:
+          $ref: '#/components/schemas/Int64String'
+        universite_adi:
+          type: string
+          maxLength: 1000
+        birim_grup_adi:
+          type:
+          - string
+          - 'null'
+          maxLength: 1000
+        il_adi:
+          type:
+          - string
+          - 'null'
+          maxLength: 1000
+        min_puan:
+          type:
+          - number
+          - 'null'
+        ingested_at: *id011
+      required:
+      - birim_id
+      - fymk_id
+      - birim_grup_id
+      - il_kodu
+      - basari_sirasi
+      - kontenjan
+      - program_version_id
+      - kilavuz_kodu
+      - yil
+      - puan_turu
+      - birim_adi
+      - universite_id
+      - universite_adi
+      - birim_grup_adi
+      - il_adi
+      - min_puan
+      - ingested_at
+    NetResult:
+      type: object
+      additionalProperties: false
+      properties:
+        net_result_id:
+          $ref: '#/components/schemas/RunId'
+        kilavuz_kodu:
+          $ref: '#/components/schemas/Int64String'
+        yil: *id010
+        puan_turu:
+          $ref: '#/components/schemas/ScoreType'
+        program_version_id:
+          anyOf:
+          - $ref: '#/components/schemas/RunId'
+          - type: 'null'
+        universite_id:
+          anyOf:
+          - $ref: '#/components/schemas/Int64String'
+          - type: 'null'
+        birim_grup_id:
+          anyOf:
+          - $ref: '#/components/schemas/Int64String'
+          - type: 'null'
+        ingested_at: *id011
+        taban_puan:
+          type:
+          - number
+          - 'null'
+        katsayi:
+          type:
+          - number
+          - 'null'
+        obp:
+          type:
+          - number
+          - 'null'
+        tyt_trk_net:
+          type:
+          - number
+          - 'null'
+        tyt_sos_net:
+          type:
+          - number
+          - 'null'
+        tyt_mat_net:
+          type:
+          - number
+          - 'null'
+        tyt_fen_net:
+          type:
+          - number
+          - 'null'
+        ayt_mat_net:
+          type:
+          - number
+          - 'null'
+        ayt_fiz_net:
+          type:
+          - number
+          - 'null'
+        ayt_kim_net:
+          type:
+          - number
+          - 'null'
+        ayt_bio_net:
+          type:
+          - number
+          - 'null'
+        ayt_tde_net:
+          type:
+          - number
+          - 'null'
+        ayt_trh1_net:
+          type:
+          - number
+          - 'null'
+        ayt_cog1_net:
+          type:
+          - number
+          - 'null'
+        ayt_trh2_net:
+          type:
+          - number
+          - 'null'
+        ayt_cog2_net:
+          type:
+          - number
+          - 'null'
+        ayt_fel_net:
+          type:
+          - number
+          - 'null'
+        ayt_din_net:
+          type:
+          - number
+          - 'null'
+        ydt_ydil_net:
+          type:
+          - number
+          - 'null'
+      required:
+      - net_result_id
+      - kilavuz_kodu
+      - yil
+      - puan_turu
+      - program_version_id
+      - universite_id
+      - birim_grup_id
+      - ingested_at
+      - taban_puan
+      - katsayi
+      - obp
+      - tyt_trk_net
+      - tyt_sos_net
+      - tyt_mat_net
+      - tyt_fen_net
+      - ayt_mat_net
+      - ayt_fiz_net
+      - ayt_kim_net
+      - ayt_bio_net
+      - ayt_tde_net
+      - ayt_trh1_net
+      - ayt_cog1_net
+      - ayt_trh2_net
+      - ayt_cog2_net
+      - ayt_fel_net
+      - ayt_din_net
+      - ydt_ydil_net
+    ProgramYearSummary:
+      type: object
+      additionalProperties: false
+      properties:
+        yil: *id010
+        puan_turu:
+          $ref: '#/components/schemas/ScoreType'
+        programs:
+          $ref: '#/components/schemas/CountString'
+        with_min_puan:
+          $ref: '#/components/schemas/CountString'
+        avg_min_puan:
+          type:
+          - number
+          - 'null'
+        total_kontenjan:
+          anyOf:
+          - $ref: '#/components/schemas/Int64String'
+          - type: 'null'
+      required:
+      - yil
+      - puan_turu
+      - programs
+      - with_min_puan
+      - avg_min_puan
+      - total_kontenjan
+      description: Existing SQL view aggregate; quota is not placements and avg_min_puan is unweighted.
+    NetYearSummary:
+      type: object
+      additionalProperties: false
+      properties:
+        yil: *id010
+        puan_turu:
+          $ref: '#/components/schemas/ScoreType'
+        net_records:
+          $ref: '#/components/schemas/CountString'
+        avg_tyt_mat_net:
+          type:
+          - number
+          - 'null'
+        avg_tyt_trk_net:
+          type:
+          - number
+          - 'null'
+        avg_obp:
+          type:
+          - number
+          - 'null'
+      required:
+      - yil
+      - puan_turu
+      - net_records
+      - avg_tyt_mat_net
+      - avg_tyt_trk_net
+      - avg_obp
+    UniversityList:
+      type: object
+      additionalProperties: false
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/University'
+          maxItems: 100
+        page:
+          $ref: '#/components/schemas/Page'
+        meta:
+          $ref: '#/components/schemas/ReadMeta'
+      required:
+      - data
+      - page
+      - meta
+    CityList:
+      type: object
+      additionalProperties: false
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/City'
+          maxItems: 100
+        page:
+          $ref: '#/components/schemas/Page'
+        meta:
+          $ref: '#/components/schemas/ReadMeta'
+      required:
+      - data
+      - page
+      - meta
+    ProgramGroupList:
+      type: object
+      additionalProperties: false
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProgramGroup'
+          maxItems: 100
+        page:
+          $ref: '#/components/schemas/Page'
+        meta:
+          $ref: '#/components/schemas/ReadMeta'
+      required:
+      - data
+      - page
+      - meta
+    ProgramList:
+      type: object
+      additionalProperties: false
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Program'
+          maxItems: 100
+        page:
+          $ref: '#/components/schemas/Page'
+        meta:
+          $ref: '#/components/schemas/ReadMeta'
+      required:
+      - data
+      - page
+      - meta
+    NetResultList:
+      type: object
+      additionalProperties: false
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/NetResult'
+          maxItems: 100
+        page:
+          $ref: '#/components/schemas/Page'
+        meta:
+          $ref: '#/components/schemas/ReadMeta'
+      required:
+      - data
+      - page
+      - meta
+    ProgramYearSummaryList:
+      type: object
+      additionalProperties: false
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProgramYearSummary'
+          maxItems: 100
+        page:
+          $ref: '#/components/schemas/Page'
+        meta:
+          $ref: '#/components/schemas/ReadMeta'
+      required:
+      - data
+      - page
+      - meta
+    NetYearSummaryList:
+      type: object
+      additionalProperties: false
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/NetYearSummary'
+          maxItems: 100
+        page:
+          $ref: '#/components/schemas/Page'
+        meta:
+          $ref: '#/components/schemas/ReadMeta'
+      required:
+      - data
+      - page
+      - meta
+    ProgramDetail:
+      type: object
+      additionalProperties: false
+      properties:
+        data:
+          $ref: '#/components/schemas/Program'
+        meta:
+          $ref: '#/components/schemas/ReadMeta'
+      required:
+      - data
+      - meta
+    ModelState:
+      type: string
+      enum:
+      - empty
+      - ready
+      - updating
+      - awaiting_publication
+      - failed
+    EntityCoverage:
+      type: object
+      additionalProperties: false
+      properties:
+        entity:
+          type: string
+          enum:
+          - universities
+          - cities
+          - program_groups
+          - program_versions
+          - net_results
+        row_count:
+          anyOf:
+          - $ref: '#/components/schemas/CountString'
+          - type: 'null'
+        available_years:
+          type: array
+          items: *id010
+          maxItems: 100
+          uniqueItems: true
+      required:
+      - entity
+      - row_count
+      - available_years
+    Coverage:
+      type: object
+      additionalProperties: false
+      properties:
+        state:
+          $ref: '#/components/schemas/ModelState'
+        publication_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        published_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        entities:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityCoverage'
+          maxItems: 5
+        warnings:
+          type: array
+          items:
+            $ref: '#/components/schemas/Warning'
+          maxItems: 20
+      required:
+      - state
+      - publication_id
+      - published_at
+      - entities
+      - warnings
+    CoverageEnvelope:
+      type: object
+      additionalProperties: false
+      properties:
+        data:
+          $ref: '#/components/schemas/Coverage'
+      required:
+      - data
+    CreateIngestion:
+      type: object
+      additionalProperties: false
+      properties:
+        source_system:
+          type: string
+          maxLength: 80
+          minLength: 1
+          pattern: ^[a-z][a-z0-9_-]*$
+        scraper_version:
+          type: string
+          maxLength: 128
+          minLength: 1
+        client_run_key:
+          type: string
+          maxLength: 128
+          minLength: 1
+      required:
+      - source_system
+      - scraper_version
+    IngestionRun:
+      type: object
+      additionalProperties: false
+      properties:
+        ingestion_run_id:
+          $ref: '#/components/schemas/RunId'
+        source_system:
+          type: string
+          maxLength: 80
+        status:
+          type: string
+          enum:
+          - running
+          - completed
+          - partial
+          - failed
+        started_at: *id011
+        completed_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        observation_count:
+          $ref: '#/components/schemas/CountString'
+      required:
+      - ingestion_run_id
+      - source_system
+      - status
+      - started_at
+      - completed_at
+      - observation_count
+    RunEnvelope:
+      type: object
+      additionalProperties: false
+      properties:
+        data:
+          $ref: '#/components/schemas/IngestionRun'
+      required:
+      - data
+    QueryPair:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          maxLength: 160
+          minLength: 1
+        value:
+          type: string
+          maxLength: 1000
+      required:
+      - name
+      - value
+    SourceRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        method:
+          type: string
+          enum:
+          - GET
+          - POST
+        endpoint:
+          type: string
+          maxLength: 256
+          minLength: 1
+          pattern: ^/
+        query:
+          type: array
+          items:
+            $ref: '#/components/schemas/QueryPair'
+          maxItems: 100
+          default: []
+        body:
+          type:
+          - object
+          - 'null'
+          additionalProperties: true
+          default: null
+        score_type:
+          type:
+          - string
+          - 'null'
+          maxLength: 32
+      required:
+      - method
+      - endpoint
+    SourceResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        http_status:
+          type: integer
+          minimum: 200
+          maximum: 299
+        body_base64:
+          type: string
+          maxLength: 5592408
+          minLength: 1
+          contentEncoding: base64
+        body_sha256:
+          $ref: '#/components/schemas/Sha256'
+      required:
+      - http_status
+      - body_base64
+      - body_sha256
+    StoreResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        request:
+          $ref: '#/components/schemas/SourceRequest'
+        captured_at: *id011
+        reference_year:
+          type:
+          - integer
+          - 'null'
+          minimum: 1000
+          maximum: 9999
+        response:
+          $ref: '#/components/schemas/SourceResponse'
+      required:
+      - request
+      - captured_at
+      - response
+    ResponseReceipt:
+      type: object
+      additionalProperties: false
+      properties:
+        result:
+          type: string
+          enum:
+          - stored
+          - duplicate
+        api_response_id:
+          $ref: '#/components/schemas/RunId'
+        observation_id: *id008
+        record_count:
+          $ref: '#/components/schemas/CountString'
+        response_byte_sha256:
+          $ref: '#/components/schemas/Sha256'
+        request_signature:
+          $ref: '#/components/schemas/Sha256'
+      required:
+      - result
+      - api_response_id
+      - observation_id
+      - record_count
+      - response_byte_sha256
+      - request_signature
+    ReceiptEnvelope:
+      type: object
+      additionalProperties: false
+      properties:
+        data:
+          $ref: '#/components/schemas/ResponseReceipt'
+      required:
+      - data
+    CompleteIngestion:
+      type: object
+      additionalProperties: false
+      properties:
+        outcome:
+          type: string
+          enum:
+          - completed
+          - partial
+          - failed
+        expected_responses:
+          $ref: '#/components/schemas/CountString'
+        error_code:
+          type: string
+          maxLength: 80
+          minLength: 1
+        error_message:
+          type: string
+          maxLength: 500
+      required:
+      - outcome
+      allOf:
+      - if:
+          properties:
+            outcome:
+              enum:
+              - failed
+              - partial
+          required:
+          - outcome
+        then:
+          required:
+          - error_code
+    Observation:
+      type: object
+      additionalProperties: false
+      properties:
+        observation_id: *id008
+        api_response_id:
+          $ref: '#/components/schemas/RunId'
+        captured_at: *id011
+        request_signature:
+          $ref: '#/components/schemas/Sha256'
+        response_byte_sha256:
+          $ref: '#/components/schemas/Sha256'
+        record_count:
+          $ref: '#/components/schemas/CountString'
+        artifact_id: *id008
+        reference_year:
+          type:
+          - integer
+          - 'null'
+          minimum: 1000
+          maximum: 9999
+      required:
+      - observation_id
+      - api_response_id
+      - captured_at
+      - request_signature
+      - response_byte_sha256
+      - record_count
+      - artifact_id
+      - reference_year
+    ManifestEnvelope:
+      type: object
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            ingestion_run_id:
+              $ref: '#/components/schemas/RunId'
+            observations:
+              type: array
+              items:
+                $ref: '#/components/schemas/Observation'
+              maxItems: 100
+          required:
+          - ingestion_run_id
+          - observations
+        page:
+          $ref: '#/components/schemas/Page'
+      required:
+      - data
+      - page
+    RunList:
+      type: object
+      additionalProperties: false
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/IngestionRun'
+          maxItems: 100
+        page:
+          $ref: '#/components/schemas/Page'
+      required:
+      - data
+      - page
+    CreateJob:
+      type: object
+      additionalProperties: false
+      properties:
+        pipeline_key:
+          type: string
+          maxLength: 128
+          minLength: 3
+          pattern: ^[a-z][a-z0-9_.-]*$
+        run_ids:
+          type: array
+          items:
+            $ref: '#/components/schemas/RunId'
+          maxItems: 100
+          minItems: 1
+          uniqueItems: true
+      required:
+      - pipeline_key
+      - run_ids
+    JobState:
+      type: string
+      enum:
+      - queued
+      - leased
+      - running
+      - succeeded
+      - failed
+      - partial
+      - expired
+    JobProgress:
+      type: object
+      additionalProperties: false
+      properties:
+        processed_batches:
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+        total_batches:
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+        processed_records:
+          anyOf:
+          - $ref: '#/components/schemas/CountString'
+          - type: 'null'
+      required:
+      - processed_batches
+      - total_batches
+      - processed_records
+    Job:
+      type: object
+      additionalProperties: false
+      properties:
+        job_id: *id008
+        pipeline_key:
+          type: string
+          maxLength: 128
+        pipeline_revision:
+          type: string
+          maxLength: 128
+        run_ids:
+          type: array
+          items:
+            $ref: '#/components/schemas/RunId'
+          maxItems: 100
+        status:
+          $ref: '#/components/schemas/JobState'
+        attempt_no:
+          type: integer
+          minimum: 0
+        progress:
+          $ref: '#/components/schemas/JobProgress'
+        candidate_publication_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        created_at: *id011
+        completed_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      required:
+      - job_id
+      - pipeline_key
+      - pipeline_revision
+      - run_ids
+      - status
+      - attempt_no
+      - progress
+      - candidate_publication_id
+      - created_at
+      - completed_at
+    JobEnvelope:
+      type: object
+      additionalProperties: false
+      properties:
+        data:
+          $ref: '#/components/schemas/Job'
+      required:
+      - data
+    JobList:
+      type: object
+      additionalProperties: false
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Job'
+          maxItems: 100
+        page:
+          $ref: '#/components/schemas/Page'
+      required:
+      - data
+      - page
+    RetryJob:
+      type: object
+      additionalProperties: false
+      properties:
+        dry_run:
+          type: boolean
+          default: true
+        plan_token:
+          type: string
+          maxLength: 4096
+          minLength: 1
+        reason:
+          type: string
+          maxLength: 500
+          minLength: 1
+        recovery_policy_key:
+          type: string
+          maxLength: 128
+          minLength: 1
+      required:
+      - reason
+      allOf: &id013
+      - if:
+          properties:
+            dry_run:
+              const: false
+          required:
+          - dry_run
+        then:
+          required:
+          - plan_token
+    ActionPlan:
+      type: object
+      additionalProperties: false
+      properties:
+        action:
+          type: string
+          enum:
+          - retry_job
+          - publish
+        target_id: *id008
+        executable: *id012
+        warnings:
+          type: array
+          items:
+            $ref: '#/components/schemas/Warning'
+          maxItems: 20
+        expected_epoch:
+          $ref: '#/components/schemas/CountString'
+        expires_at: *id011
+        plan_token:
+          type: string
+          maxLength: 4096
+          minLength: 1
+      required:
+      - action
+      - target_id
+      - executable
+      - warnings
+      - expected_epoch
+      - expires_at
+      - plan_token
+    PlanEnvelope:
+      type: object
+      additionalProperties: false
+      properties:
+        data:
+          $ref: '#/components/schemas/ActionPlan'
+      required:
+      - data
+    ClaimJob:
+      type: object
+      additionalProperties: false
+      properties:
+        pipeline_keys:
+          type: array
+          items:
+            type: string
+            maxLength: 128
+            minLength: 3
+          maxItems: 20
+          minItems: 1
+          uniqueItems: true
+        worker_version:
+          type: string
+          maxLength: 128
+          minLength: 1
+      required:
+      - pipeline_keys
+      - worker_version
+    JobLease:
+      type: object
+      additionalProperties: false
+      properties:
+        job:
+          $ref: '#/components/schemas/Job'
+        lease_token:
+          type: string
+          maxLength: 128
+          minLength: 32
+        lease_expires_at: *id011
+        fencing_epoch:
+          $ref: '#/components/schemas/CountString'
+      required:
+      - job
+      - lease_token
+      - lease_expires_at
+      - fencing_epoch
+    LeaseEnvelope:
+      type: object
+      additionalProperties: false
+      properties:
+        data:
+          $ref: '#/components/schemas/JobLease'
+      required:
+      - data
+    StartJob:
+      type: object
+      additionalProperties: false
+      properties:
+        backend_pid:
+          type: integer
+          minimum: 1
+      required:
+      - backend_pid
+    HeartbeatJob:
+      type: object
+      additionalProperties: false
+      properties:
+        progress:
+          $ref: '#/components/schemas/JobProgress'
+      required:
+      - progress
+    LeaseStatus:
+      type: object
+      additionalProperties: false
+      properties:
+        job_id: *id008
+        status:
+          $ref: '#/components/schemas/JobState'
+        lease_expires_at: *id011
+      required:
+      - job_id
+      - status
+      - lease_expires_at
+    LeaseStatusEnvelope:
+      type: object
+      additionalProperties: false
+      properties:
+        data:
+          $ref: '#/components/schemas/LeaseStatus'
+      required:
+      - data
+    ValidationAttestation:
+      type: object
+      additionalProperties: false
+      properties:
+        contract_revision:
+          type: string
+          maxLength: 128
+          minLength: 1
+        checked_at: *id011
+        passed: *id012
+        check_codes:
+          type: array
+          items:
+            type: string
+            maxLength: 80
+            minLength: 1
+          maxItems: 100
+          minItems: 1
+          uniqueItems: true
+        coverage:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityCoverage'
+          maxItems: 5
+          minItems: 5
+          allOf:
+          - contains:
+              type: object
+              properties:
+                entity:
+                  const: universities
+              required:
+              - entity
+            minContains: 1
+            maxContains: 1
+          - contains:
+              type: object
+              properties:
+                entity:
+                  const: cities
+              required:
+              - entity
+            minContains: 1
+            maxContains: 1
+          - contains:
+              type: object
+              properties:
+                entity:
+                  const: program_groups
+              required:
+              - entity
+            minContains: 1
+            maxContains: 1
+          - contains:
+              type: object
+              properties:
+                entity:
+                  const: program_versions
+              required:
+              - entity
+            minContains: 1
+            maxContains: 1
+          - contains:
+              type: object
+              properties:
+                entity:
+                  const: net_results
+              required:
+              - entity
+            minContains: 1
+            maxContains: 1
+      required:
+      - contract_revision
+      - checked_at
+      - passed
+      - check_codes
+      - coverage
+    CompleteJob:
+      type: object
+      additionalProperties: false
+      properties:
+        outcome:
+          type: string
+          enum:
+          - succeeded
+          - failed
+          - partial
+        validation:
+          $ref: '#/components/schemas/ValidationAttestation'
+        error_code:
+          type: string
+          maxLength: 80
+          minLength: 1
+        error_message:
+          type: string
+          maxLength: 500
+      required:
+      - outcome
+      allOf:
+      - if:
+          properties:
+            outcome:
+              const: succeeded
+          required:
+          - outcome
+        then:
+          required:
+          - validation
+          properties:
+            validation:
+              properties:
+                passed:
+                  const: true
+      - if:
+          properties:
+            outcome:
+              enum:
+              - failed
+              - partial
+          required:
+          - outcome
+        then:
+          required:
+          - error_code
+    Publication:
+      type: object
+      additionalProperties: false
+      properties:
+        publication_id: *id008
+        job_id: *id008
+        status:
+          type: string
+          enum:
+          - candidate
+          - published
+          - superseded
+          - rejected
+        published_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        coverage:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityCoverage'
+          maxItems: 5
+        contract_revision:
+          type: string
+          maxLength: 128
+      required:
+      - publication_id
+      - job_id
+      - status
+      - published_at
+      - coverage
+      - contract_revision
+    PublicationEnvelope:
+      type: object
+      additionalProperties: false
+      properties:
+        data:
+          $ref: '#/components/schemas/Publication'
+      required:
+      - data
+    PublicationList:
+      type: object
+      additionalProperties: false
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Publication'
+          maxItems: 100
+        page:
+          $ref: '#/components/schemas/Page'
+      required:
+      - data
+      - page
+    Publish:
+      type: object
+      additionalProperties: false
+      properties:
+        candidate_publication_id: *id008
+        dry_run:
+          type: boolean
+          default: true
+        plan_token:
+          type: string
+          maxLength: 4096
+          minLength: 1
+      required:
+      - candidate_publication_id
+      allOf: *id013
+    QualitySummary:
+      type: object
+      additionalProperties: false
+      properties:
+        open_quarantines:
+          $ref: '#/components/schemas/CountString'
+        checks:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              check_name:
+                type: string
+                maxLength: 128
+              status:
+                type: string
+                maxLength: 80
+              count:
+                $ref: '#/components/schemas/CountString'
+            required:
+            - check_name
+            - status
+            - count
+          maxItems: 100
+      required:
+      - open_quarantines
+      - checks
+    QualityEnvelope:
+      type: object
+      additionalProperties: false
+      properties:
+        data:
+          $ref: '#/components/schemas/QualitySummary'
+      required:
+      - data
+    Lineage:
+      type: object
+      additionalProperties: false
+      properties:
+        ingestion_run_id:
+          $ref: '#/components/schemas/RunId'
+        observations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Observation'
+          maxItems: 100
+        job_ids:
+          type: array
+          items: *id008
+          maxItems: 100
+        publication_ids:
+          type: array
+          items: *id008
+          maxItems: 100
+        truncated: *id012
+      required:
+      - ingestion_run_id
+      - observations
+      - job_ids
+      - publication_ids
+      - truncated
+    LineageEnvelope:
+      type: object
+      additionalProperties: false
+      properties:
+        data:
+          $ref: '#/components/schemas/Lineage'
+        page:
+          $ref: '#/components/schemas/Page'
+      required:
+      - data
+      - page
+  parameters:
+    Limit:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 50
+      description: Bounded page size.
+    Cursor:
+      name: cursor
+      in: query
+      required: false
+      schema:
+        type: string
+        maxLength: 4096
+      description: Signed cursor bound to filters/sort/publication; never a SQL expression.
+    Idempotency:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema:
+        type: string
+        maxLength: 128
+        minLength: 12
+        pattern: ^[A-Za-z0-9_.:-]+$
+      description: Required durable mutation identity, principal/route scoped.
+    Lease:
+      name: X-Job-Lease
+      in: header
+      required: true
+      schema:
+        type: string
+        maxLength: 128
+        minLength: 32
+      description: Assigned lease secret; redacted from logs.
+    IfNoneMatch:
+      name: If-None-Match
+      in: header
+      required: false
+      schema:
+        type: string
+        maxLength: 256
+      description: Conditional read after publication gate check.
+    Year:
+      name: yil
+      in: query
+      required: true
+      schema: *id010
+      description: Reference year; no implicit current-year fallback.
+    OptionalYear:
+      name: yil
+      in: query
+      required: false
+      schema: *id010
+      description: Optional reference-year filter.
+    Score:
+      name: puan_turu
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/ScoreType'
+      description: ''
+    Query:
+      name: q
+      in: query
+      required: false
+      schema:
+        type: string
+        maxLength: 160
+      description: Literal text search; LIKE metacharacters are escaped.
+    UniversityId:
+      name: universite_id
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/Int64String'
+      description: ''
+    CityId:
+      name: il_kodu
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/Int64String'
+      description: ''
+    GroupId:
+      name: birim_grup_id
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/Int64String'
+      description: ''
+  securitySchemes:
+    serviceKey:
+      type: apiKey
+      in: header
+      name: X-Service-Key
+      description: Separate machine principal key_id.secret; server scopes/source/owner checks. Never include a
+        production key in client mocks.
+    operatorBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Configured operator issuer/audience/signature/expiry validation; disabled without provider. Token
+        role is not trusted by itself.
+x-design-status: pending-implementation-approval
+x-public-read-owner-choice: anonymous
+x-global-limits:
+  http_body_bytes: 8388608
+  decoded_response_bytes: 4194304
+  response_records: 1000
+  json_depth: 64
+  page_max: 100
+x-source-policy: Server registered/approved sources only; outside-source selection is not granted by this contract.
