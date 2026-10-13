@@ -1,7 +1,8 @@
 # YÖK Atlas Intelligence — API demosu
 
-Docker PostgreSQL üzerindeki mevcut görünümleri okuyan küçük bir FastAPI uygulaması.
-Üniversite arama, program filtreleme ve net sonuçlarını Swagger'da gösterebiliriz.
+Docker PostgreSQL üzerindeki görünümleri kullanan küçük bir FastAPI uygulaması.
+Üniversite arama, program filtreleme, net sonuçları ve demo üniversitesi
+ekleme/güncelleme/silme işlemlerini Swagger'da gösterebiliriz.
 
 ## Demoyu aç
 
@@ -16,7 +17,8 @@ Tarayıcı: http://127.0.0.1:8000/docs
 Yerel kurulum ve kısa sunum akışı: [DEMO_TR.md](docs/backend/DEMO_TR.md).
 Çalışan API sözleşmesi `/openapi.json` adresindedir. Önceki kapsamlı mimari ve
 sözleşme belgeleri ilerideki geliştirmeler için taslaktır; bu küçük demonun kapsamı
-altı okuma endpoint'idir.
+yedi okuma ve üç üniversite yazma işlemidir. Yazma işlemleri için `.env.demo`
+dosyasındaki `DEMO_API_KEY` değerini Swagger **Authorize** alanına gir.
 
 ## Veritabanı şeması
 

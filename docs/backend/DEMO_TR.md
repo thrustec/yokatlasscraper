@@ -11,7 +11,7 @@ powershell -ExecutionPolicy Bypass -File .\backend\run-demo.ps1
 Swagger: http://127.0.0.1:8000/docs. Her uçta **Try it out → Execute**.
 Terminalde `Ctrl+C` API'yi kapatır.
 
-## 2–3 dakikalık gösterim
+## 3–4 dakikalık gösterim
 
 1. `/health`: API'nin PostgreSQL'e bağlandığını göster.
 2. `/api/coverage`: yüklenen örneğin boyutunu göster.
@@ -19,6 +19,35 @@ Terminalde `Ctrl+C` API'yi kapatır.
 4. `/api/programs`: `puan_turu=SAY`, `limit=3` ile filtrele. Sonuçtaki bir
    `kilavuz_kodu` değerini `/api/programs/{kilavuz_kodu}` alanında kullan.
 5. `/api/net-results`: `yil=2025`, `puan_turu=SAY`, `limit=3` ile netleri göster.
+6. Aşağıdaki üniversite ekleme → okuma → güncelleme → silme akışını göster.
+
+## API üzerinden yazma demosu
+
+Başlatma scripti yazma yetkisini ve `.env.demo` dosyasını otomatik hazırlar.
+Bu dosyadaki **DEMO_API_KEY** değerini Swagger'ın **Authorize** alanına gir.
+Anahtarı terminalde göstermeden panoya almak için repo kökünde:
+
+```powershell
+(Get-Content .env.demo | Select-String '^DEMO_API_KEY=').Line.Split('=', 2)[1] | Set-Clipboard
+```
+
+1. **POST `/api/universities`** — aşağıdaki JSON ile ekle; cevap `201`:
+
+   ```json
+   {"universite_id": 900000001, "universite_adi": "DEMO ÜNİVERSİTESİ"}
+   ```
+
+2. **GET `/api/universities/900000001`** — PostgreSQL'e yazılan kaydı oku.
+3. **PUT `/api/universities/900000001`** — `{"universite_adi": "DEMO ÜNİVERSİTESİ — Güncellendi"}` gönder.
+4. **DELETE `/api/universities/900000001`** — kaydı sil; cevap `204`.
+5. Aynı **GET** isteğini tekrarla; artık `404` döner.
+
+Yazma demosu manuel eklenen üniversite kayıtları içindir. YÖK Atlas kaynak
+kayıtları korunur; bunları güncelleme/silme denemesi `409`, hatalı anahtar `401`
+döner. Program ve net uçları okuma amaçlıdır. Demo kaydı gerçek üniversite verisi
+olarak sunulmamalıdır. Yazma rolünün yetkisi yalnız `api.demo_universities`
+görünümüdür; mevcut okuma rolü değişmez. SQL tanımı `backend/demo-write.sql`
+dosyasındadır; bu yerel demo kurulumu genel migration akışına eklenmemiştir.
 
 ## Hocaya anlatım
 
@@ -29,7 +58,8 @@ araçlarıyla küçük bir gerçek veri örneğini veritabanına aktardık.
 Üzerine basit bir API ekledik. Üniversiteleri arayabiliyor, programları yıl ve
 puan türüne göre filtreleyebiliyor, net sonuçlarını JSON olarak alabiliyoruz.
 Swagger üzerinden istek gönderip cevabı anlık görebiliyoruz. Sonraki adım,
-veri kapsamını genişletmek ve bu API'yi arayüze bağlamak.”
+veri kapsamını genişletmek ve bu API'yi arayüze bağlamak. Ayrıca bir demo
+üniversitesini API üzerinden ekleyip okuyabiliyor, güncelleyip silebiliyoruz.”
 
 ## Gösterimdeki veriler
 
@@ -58,4 +88,5 @@ python -m venv backend/.venv
 Örnek veriler `outputs/demo` altında yereldir, Git'e eklenmez. Sunum sırasında
 API PostgreSQL'deki kopyayı okur; Swagger'ın arayüz dosyaları için internet gerekir.
 
-Kontrol: `.\backend\.venv\Scripts\python.exe -m unittest discover -s tests/backend -v`.
+Kontrol: önce `.\backend\.venv\Scripts\python.exe backend/setup-demo-write.py`,
+ardından `.\backend\.venv\Scripts\python.exe -m unittest discover -s tests/backend -v`.

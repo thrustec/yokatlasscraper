@@ -1,16 +1,20 @@
-"""Small, read-only API demo over the existing PostgreSQL views."""
+"""Small PostgreSQL API demo with public reads and authenticated demo CRUD."""
+import secrets
 from pathlib import Path
 from typing import Annotated, Literal
 
 import psycopg
 from dotenv import dotenv_values
-from fastapi import FastAPI, HTTPException, Path as ApiPath, Query
-from fastapi.responses import RedirectResponse
+from fastapi import Depends, FastAPI, HTTPException, Path as ApiPath, Query
+from fastapi.responses import RedirectResponse, Response
+from fastapi.security import APIKeyHeader
 from psycopg.rows import dict_row
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 
 
 CONFIG = dotenv_values(Path(__file__).resolve().parents[1] / ".env")
+DEMO_CONFIG = dotenv_values(Path(__file__).resolve().parents[1] / ".env.demo")
+UniversityId = Annotated[int, ApiPath(gt=0, le=9223372036854775807)]
 Score = Literal["SAY", "EA", "SÖZ", "DİL", "TYT"]
 Limit = Annotated[int, Query(ge=1, le=100, description="En fazla 100 kayıt")]
 Offset = Annotated[int, Query(ge=0, description="Atlanacak kayıt sayısı")]
@@ -18,10 +22,12 @@ Year = Annotated[int | None, Query(ge=2000, le=2100)]
 
 app = FastAPI(
     title="YÖK Atlas — Basit API Demosu",
-    version="0.1.0",
+    version="0.2.0",
     description=(
         "Docker PostgreSQL → mevcut API görünümleri → JSON. "
-        "Okuma uçları giriş gerektirmez. Yerel örnek veri tam veri setini temsil etmez; "
+        "Okuma uçları giriş gerektirmez. Üniversite demo kayıtlarını ekleme, güncelleme "
+        "ve silme için Authorize alanına X-API-Key girin. "
+        "Yerel örnek veri tam veri setini temsil etmez; "
         "yıl alanı kaynaktan geldiği haliyle gösterilir."
     ),
     swagger_ui_parameters={"defaultModelsExpandDepth": -1},
@@ -31,6 +37,17 @@ app = FastAPI(
 class University(BaseModel):
     universite_id: int
     universite_adi: str
+
+
+class UniversityName(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    universite_adi: Annotated[
+        str, StringConstraints(strip_whitespace=True, min_length=1, max_length=200)
+    ] = Field(examples=["DEMO ÜNİVERSİTESİ — Güncellendi"])
+
+
+class UniversityCreate(UniversityName):
+    universite_id: int = Field(gt=0, le=9223372036854775807, examples=[900000001])
 
 
 class Program(BaseModel):
@@ -78,6 +95,48 @@ def query(statement: str, params: dict | None = None) -> list[dict]:
         ) from None
 
 
+write_key = APIKeyHeader(name="X-API-Key", scheme_name="DemoWriteKey", auto_error=False)
+
+
+def require_write_key(key: Annotated[str | None, Depends(write_key)]) -> None:
+    expected = DEMO_CONFIG.get("DEMO_API_KEY")
+    if not expected:
+        raise HTTPException(status_code=503, detail="Demo yazma kurulumu yapılmamış.")
+    if not key or not secrets.compare_digest(key.encode(), expected.encode()):
+        raise HTTPException(status_code=401, detail="Geçerli X-API-Key gerekli.")
+
+
+def write_query(statement: str, params: dict) -> list[dict]:
+    """Commit one operation; PostgreSQL limits this role to manual demo rows."""
+    try:
+        with psycopg.connect(
+            host="127.0.0.1", port=int(CONFIG.get("POSTGRES_PORT") or 5433),
+            dbname="yokatlas_intelligence", user="atlas_demo_writer",
+            password=DEMO_CONFIG.get("ATLAS_DEMO_WRITE_PASSWORD"),
+            connect_timeout=3, options="-c statement_timeout=5000 -c lock_timeout=3000",
+            row_factory=dict_row,
+        ) as conn:
+            return conn.execute(statement, params).fetchall()
+    except psycopg.errors.UniqueViolation:
+        raise HTTPException(status_code=409, detail="Bu üniversite ID'si zaten mevcut.") from None
+    except psycopg.errors.ForeignKeyViolation:
+        raise HTTPException(status_code=409, detail="Programların kullandığı üniversite silinemez.") from None
+    except psycopg.Error:
+        raise HTTPException(status_code=503, detail="Veritabanı yazma işlemi tamamlanamadı.") from None
+
+
+def demo_row_or_error(rows: list[dict], university_id: int) -> dict:
+    if rows:
+        return rows[0]
+    existing = query(
+        "SELECT universite_id FROM api.universities WHERE universite_id = %(id)s",
+        {"id": university_id},
+    )
+    if existing:
+        raise HTTPException(status_code=409, detail="YÖK Atlas kaynak kaydı korunuyor. Demo kaydı kullanın.")
+    raise HTTPException(status_code=404, detail="Üniversite bulunamadı.")
+
+
 @app.get("/", include_in_schema=False)
 def home():
     return RedirectResponse("/docs")
@@ -109,6 +168,51 @@ def universities(
            ORDER BY universite_id LIMIT %(limit)s OFFSET %(offset)s""",
         {"q": f"%{q}%" if q else None, "limit": limit, "offset": offset},
     )
+
+
+@app.get("/api/universities/{universite_id}", tags=["2. Üniversiteler"], summary="Tek üniversiteyi oku")
+def university_detail(universite_id: UniversityId) -> University:
+    rows = query(
+        "SELECT universite_id, universite_adi FROM api.universities WHERE universite_id = %(id)s",
+        {"id": universite_id},
+    )
+    if not rows:
+        raise HTTPException(status_code=404, detail="Üniversite bulunamadı.")
+    return rows[0]
+
+
+@app.post("/api/universities", status_code=201, tags=["2. Üniversiteler"],
+          summary="Demo üniversitesi ekle", dependencies=[Depends(require_write_key)])
+def create_university(body: UniversityCreate) -> University:
+    return write_query(
+        """INSERT INTO api.demo_universities (universite_id, universite_adi)
+           VALUES (%(universite_id)s, %(universite_adi)s)
+           RETURNING universite_id, universite_adi""",
+        body.model_dump(),
+    )[0]
+
+
+@app.put("/api/universities/{universite_id}", tags=["2. Üniversiteler"],
+         summary="Demo üniversitesinin adını güncelle", dependencies=[Depends(require_write_key)])
+def update_university(universite_id: UniversityId, body: UniversityName) -> University:
+    rows = write_query(
+        """UPDATE api.demo_universities SET universite_adi = %(name)s, updated_at = now()
+           WHERE universite_id = %(id)s RETURNING universite_id, universite_adi""",
+        {"id": universite_id, "name": body.universite_adi},
+    )
+    return demo_row_or_error(rows, universite_id)
+
+
+@app.delete("/api/universities/{universite_id}", status_code=204, tags=["2. Üniversiteler"],
+            summary="Demo üniversitesini sil", dependencies=[Depends(require_write_key)])
+def delete_university(universite_id: UniversityId) -> Response:
+    rows = write_query(
+        """DELETE FROM api.demo_universities WHERE universite_id = %(id)s
+           RETURNING universite_id, universite_adi""",
+        {"id": universite_id},
+    )
+    demo_row_or_error(rows, universite_id)
+    return Response(status_code=204)
 
 
 PROGRAM_COLUMNS = """kilavuz_kodu, yil, puan_turu, birim_adi, universite_id,

@@ -1,11 +1,12 @@
-"""Read-only integration checks. PostgreSQL and the demo sample must be loaded."""
+"""Integration checks. PostgreSQL, demo data and setup-demo-write.py are required."""
+import secrets
 import unittest
 from unittest.mock import patch
 
 import psycopg
 from fastapi.testclient import TestClient
 
-from backend.main import app
+from backend.main import CONFIG, DEMO_CONFIG, app, query
 
 
 class DemoTests(unittest.TestCase):
@@ -67,6 +68,93 @@ class DemoTests(unittest.TestCase):
             response = self.client.get("/health")
         self.assertEqual(response.status_code, 503)
         self.assertNotIn("secret detail", response.text)
+
+
+    def test_create_read_update_delete_university(self):
+        headers = {"X-API-Key": DEMO_CONFIG["DEMO_API_KEY"]}
+        university_id = 8000000000 + secrets.randbelow(1000000000)
+        url = f"/api/universities/{university_id}"
+        before = self.client.get("/api/coverage").json()["universities"]
+        body = {"universite_id": university_id, "universite_adi": "DEMO TEST ÜNİVERSİTESİ"}
+        created = False
+        try:
+            response = self.client.post("/api/universities", json=body, headers=headers)
+            self.assertEqual(response.status_code, 201, response.text)
+            created = True
+            self.assertEqual(response.json(), body)
+            self.assertEqual(self.client.get(url).json(), body)
+            self.assertEqual(self.client.get("/api/coverage").json()["universities"], before + 1)
+            duplicate = self.client.post("/api/universities", json=body, headers=headers)
+            self.assertEqual(duplicate.status_code, 409)
+            updated = self.client.put(url, json={"universite_adi": "DEMO GÜNCELLENDİ"}, headers=headers)
+            self.assertEqual(updated.status_code, 200, updated.text)
+            self.assertEqual(self.client.get(url).json()["universite_adi"], "DEMO GÜNCELLENDİ")
+            deleted = self.client.delete(url, headers=headers)
+            self.assertEqual(deleted.status_code, 204, deleted.text)
+            self.assertEqual(deleted.content, b"")
+            created = False
+            self.assertEqual(self.client.get(url).status_code, 404)
+            self.assertEqual(self.client.put(url, json={"universite_adi": "DEMO"}, headers=headers).status_code, 404)
+            self.assertEqual(self.client.delete(url, headers=headers).status_code, 404)
+            self.assertEqual(self.client.get("/api/coverage").json()["universities"], before)
+        finally:
+            if created:
+                self.client.delete(url, headers=headers)
+
+    def test_mutations_require_key(self):
+        body = {"universite_id": 900000001, "universite_adi": "DEMO"}
+        for headers in ({}, {"X-API-Key": "incorrect"}):
+            for method, url, payload in (
+                ("POST", "/api/universities", body),
+                ("PUT", "/api/universities/900000001", {"universite_adi": "DEMO"}),
+                ("DELETE", "/api/universities/900000001", None),
+            ):
+                self.assertEqual(self.client.request(method, url, json=payload, headers=headers).status_code, 401)
+
+    def test_source_backed_universities_are_protected(self):
+        headers = {"X-API-Key": DEMO_CONFIG["DEMO_API_KEY"]}
+        original = query(
+            """SELECT universite_id, universite_adi FROM api.universities
+               WHERE universite_id NOT IN (SELECT universite_id FROM api.demo_universities)
+               ORDER BY universite_id LIMIT 1"""
+        )[0]
+        url = f"/api/universities/{original['universite_id']}"
+        self.assertEqual(self.client.put(url, json={"universite_adi": "DEMO"}, headers=headers).status_code, 409)
+        self.assertEqual(self.client.delete(url, headers=headers).status_code, 409)
+        self.assertEqual(self.client.get(url).json(), original)
+
+    def test_write_validation_and_failure(self):
+        headers = {"X-API-Key": DEMO_CONFIG["DEMO_API_KEY"]}
+        for body in (
+            {"universite_id": -1, "universite_adi": "DEMO"},
+            {"universite_id": 9223372036854775808, "universite_adi": "DEMO"},
+            {"universite_id": 900000001, "universite_adi": "   "},
+            {"universite_id": 900000001, "universite_adi": "DEMO", "source_record_id": 1},
+        ):
+            self.assertEqual(self.client.post("/api/universities", json=body, headers=headers).status_code, 422)
+        with patch("backend.main.psycopg.connect", side_effect=psycopg.OperationalError("secret detail")):
+            response = self.client.post(
+                "/api/universities", headers=headers,
+                json={"universite_id": 900000001, "universite_adi": "DEMO"},
+            )
+        self.assertEqual(response.status_code, 503)
+        self.assertNotIn("secret detail", response.text)
+
+    def test_writer_database_privileges(self):
+        with psycopg.connect(
+            host="127.0.0.1", port=int(CONFIG.get("POSTGRES_PORT") or 5433),
+            dbname="yokatlas_intelligence", user="atlas_demo_writer",
+            password=DEMO_CONFIG["ATLAS_DEMO_WRITE_PASSWORD"], connect_timeout=3,
+        ) as conn:
+            self.assertTrue(conn.execute(
+                "SELECT has_table_privilege(current_user, 'api.demo_universities', 'DELETE')"
+            ).fetchone()[0])
+            with self.assertRaises(psycopg.errors.InsufficientPrivilege):
+                conn.execute("SELECT * FROM core.universities LIMIT 1")
+            conn.rollback()
+            with self.assertRaises(psycopg.errors.InsufficientPrivilege):
+                conn.execute("SELECT * FROM raw.api_responses LIMIT 1")
+            conn.rollback()
 
 
 if __name__ == "__main__":
