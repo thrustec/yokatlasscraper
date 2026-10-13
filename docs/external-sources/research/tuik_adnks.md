@@ -2,13 +2,13 @@
 
 **Reviewed:** 13 October 2026  
 **Decision status:** `PENDING`  
-**Evidence status:** 2025 release metadata and official series description verified; dataset-specific API response not captured.
+**Evidence status:** 2025 release metadata, official series/table descriptions, and general SDMX/bulk-download interface verified; dataset-specific API response not captured.
 
 ## Access and actual data
 
 The [ADNKS 2025 release metadata](https://veriportali.tuik.gov.tr/tr/press/53899/metadata) states the population reference date is 31 December 2025 and describes annual results. TÜİK's series metadata/search descriptions say the publication levels include NUTS 1/2/3 and the administrative units defined in the address database (province, district, municipality, village, neighborhood), with age and sex dimensions. Age categories include five-year groups (0–4 through 90+), alongside other published age groupings.
 
-TÜİK SDMX is the candidate API, but the specific ADNKS dataflow, exact geographic/age/sex codes and response were not verified. Official downloadable tables are the fallback. Exact table completeness and whether every age-by-sex breakdown is available at district level should be confirmed in a real extract.
+TÜİK SDMX is the candidate API, with official bulk download in CSV/XML/JSON. The 2025 release lists tables such as age-group and sex population by settlement type, and single-age/sex geography tables in earlier releases; exact 2025 table IDs and district granularity for each age-by-sex table were not verified. Official release tables are the fallback. Use the authenticated catalog to establish exact codes and coverage.
 
 ## Grain, keys, temporal meaning
 
@@ -26,4 +26,4 @@ Keep release and source geography/age/sex code lists as versioned metadata, and 
 **Recommendation:** `RECOMMEND_APPROVE` if district/province population context is needed; require geography-code vintage handling.  
 **Owner decision:** `PENDING`.
 
-Sources: [ADNKS 2025 release metadata](https://veriportali.tuik.gov.tr/tr/press/53899/metadata), [ADNKS series metadata example](https://veriportali.tuik.gov.tr/tr/databrowser/tuik/TR%2CDF_ADNKS_T23%2C1.1), [TÜİK SDMX docs](https://veriportali.tuik.gov.tr/en/sdmx-web-service-documentation).
+Sources: [ADNKS 2025 release metadata](https://veriportali.tuik.gov.tr/tr/press/53899/metadata), [ADNKS series metadata example](https://veriportali.tuik.gov.tr/tr/databrowser/tuik/TR%2CDF_ADNKS_T23%2C1.1), [TÜİK SDMX docs](https://veriportali.tuik.gov.tr/en/sdmx-web-service-documentation), [TÜİK bulk dataset download](https://veriportali.tuik.gov.tr/tr/bulk-download).
