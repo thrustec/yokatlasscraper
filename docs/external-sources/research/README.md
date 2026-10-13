@@ -8,6 +8,7 @@ This branch records the Phase 0/1 research requested by `EXTERNAL_SOURCES_SCRAPE
 - Direct live captures now include byte/entity sizes and SHA-256 for the URAP PDF, one public OpenAlex JSON response, and the KYGM HTML table. The reports distinguish those captures from authenticated endpoints not yet queried.
 - Rights are marked `REVIEW` when a clear reuse license/redistribution permission was not verified. Access to a public page is not by itself a license.
 - Source decisions remain `PENDING`. The contract requires a source-by-source owner decision before physical RAW tables or durable ingestion.
+- TCMB EVDS3 is in beta and has current REST/JSON/CSV/XML documentation, but its exact YKKE authenticated query and series IDs have not yet been captured. The old EVDS2 request pattern is not assumed to work on EVDS3.
 
 ## Findings requiring care
 
