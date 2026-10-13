@@ -14,7 +14,7 @@ TÜİK's [SDMX documentation](https://veriportali.tuik.gov.tr/en/sdmx-web-servic
 
 ## Grain, keys, and temporal meaning
 
-Candidate grain: `(release, education_level, field_or_department_code, indicator, graduate_cohort, reference_year)`. The source's **2025** release is currently newest; keep its release year, 2015–2024 graduate cohorts, and 2025 population/outcome reference year distinct. Separate release/publication year, graduation cohort, and outcome reference year. Exact education-field codes and confidentiality/suppression markers must be obtained from dataset metadata, not guessed. Treat suppressed/unavailable cells distinctly from numeric zero and ordinary missing values.
+Candidate grain: `(release, education_level, field_or_department_code, indicator, graduate_cohort, reference_year)`. The source's **2025** release is currently newest. Keep release year, graduate cohort and population/outcome reference year distinct; the latter detailed dimensions remain to be confirmed from the 2025 metadata. Separate release/publication year, graduation cohort, and outcome reference year. Exact education-field codes and confidentiality/suppression markers must be obtained from dataset metadata, not guessed. Treat suppressed/unavailable cells distinctly from numeric zero and ordinary missing values.
 
 ## Rights, risks, value
 
