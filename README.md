@@ -14,6 +14,11 @@ powershell -ExecutionPolicy Bypass -File .\backend\run-demo.ps1
 
 Tarayıcı: http://127.0.0.1:8000/docs
 
+Endpoint yolları: `/durum`, `/api/veri-kapsami`, `/api/universiteler`,
+`/api/programlar`, `/api/net-sonuclari`. Üniversite ve program ayrıntıları
+aynı yolların sonuna ilgili ID eklenerek okunur. Üniversite ekleme için `POST`,
+güncelleme için `PUT`, silme için `DELETE` kullanılır.
+
 Yerel kurulum ve kısa sunum akışı: [DEMO_TR.md](docs/backend/DEMO_TR.md).
 Çalışan API sözleşmesi `/openapi.json` adresindedir. Önceki kapsamlı mimari ve
 sözleşme belgeleri ilerideki geliştirmeler için taslaktır; bu küçük demonun kapsamı

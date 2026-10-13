@@ -13,12 +13,12 @@ Terminalde `Ctrl+C` API'yi kapatır.
 
 ## 3–4 dakikalık gösterim
 
-1. `/health`: API'nin PostgreSQL'e bağlandığını göster.
-2. `/api/coverage`: yüklenen örneğin boyutunu göster.
-3. `/api/universities`: `q=İSTANBUL` ile üniversite ara.
-4. `/api/programs`: `puan_turu=SAY`, `limit=3` ile filtrele. Sonuçtaki bir
-   `kilavuz_kodu` değerini `/api/programs/{kilavuz_kodu}` alanında kullan.
-5. `/api/net-results`: `yil=2025`, `puan_turu=SAY`, `limit=3` ile netleri göster.
+1. `/durum`: API'nin PostgreSQL'e bağlandığını göster.
+2. `/api/veri-kapsami`: yüklenen örneğin boyutunu göster.
+3. `/api/universiteler`: `q=İSTANBUL` ile üniversite ara.
+4. `/api/programlar`: `puan_turu=SAY`, `limit=3` ile filtrele. Sonuçtaki bir
+   `kilavuz_kodu` değerini `/api/programlar/{kilavuz_kodu}` alanında kullan.
+5. `/api/net-sonuclari`: `yil=2025`, `puan_turu=SAY`, `limit=3` ile netleri göster.
 6. Aşağıdaki üniversite ekleme → okuma → güncelleme → silme akışını göster.
 
 ## API üzerinden yazma demosu
@@ -31,15 +31,15 @@ Anahtarı terminalde göstermeden panoya almak için repo kökünde:
 (Get-Content .env.demo | Select-String '^DEMO_API_KEY=').Line.Split('=', 2)[1] | Set-Clipboard
 ```
 
-1. **POST `/api/universities`** — aşağıdaki JSON ile ekle; cevap `201`:
+1. **POST `/api/universiteler`** — aşağıdaki JSON ile ekle; cevap `201`:
 
    ```json
    {"universite_id": 900000001, "universite_adi": "DEMO ÜNİVERSİTESİ"}
    ```
 
-2. **GET `/api/universities/900000001`** — PostgreSQL'e yazılan kaydı oku.
-3. **PUT `/api/universities/900000001`** — `{"universite_adi": "DEMO ÜNİVERSİTESİ — Güncellendi"}` gönder.
-4. **DELETE `/api/universities/900000001`** — kaydı sil; cevap `204`.
+2. **GET `/api/universiteler/900000001`** — PostgreSQL'e yazılan kaydı oku.
+3. **PUT `/api/universiteler/900000001`** — `{"universite_adi": "DEMO ÜNİVERSİTESİ — Güncellendi"}` gönder.
+4. **DELETE `/api/universiteler/900000001`** — kaydı sil; cevap `204`.
 5. Aynı **GET** isteğini tekrarla; artık `404` döner.
 
 Yazma demosu manuel eklenen üniversite kayıtları içindir. YÖK Atlas kaynak
@@ -67,7 +67,7 @@ veri kapsamını genişletmek ve bu API'yi arayüze bağlamak. Ayrıca bir demo
 228 üniversite, 83 şehir kaydı, 611 program grubu, 50 program, 50 ham net kaydı.
 Program ve net aramalarında her puan türünün yalnız ilk 10 satırı alındı; tam veri
 seti değildir. Yükleyici aynı anahtarlı netleri birleştirebildiği için kesin
-veritabanı sayısı `/api/coverage` çıktısıdır.
+veritabanı sayısı `/api/veri-kapsami` çıktısıdır.
 
 Kaynağın `yil` alanı programlarda **2026**, bu net örneğinde **2025** geldi.
 API bu değerleri değiştirmez; program ve netleri farklı yıllar üzerinden

@@ -22,7 +22,7 @@ Year = Annotated[int | None, Query(ge=2000, le=2100)]
 
 app = FastAPI(
     title="YÖK Atlas — Basit API Demosu",
-    version="0.2.0",
+    version="0.3.0",
     description=(
         "Docker PostgreSQL → mevcut API görünümleri → JSON. "
         "Okuma uçları giriş gerektirmez. Üniversite demo kayıtlarını ekleme, güncelleme "
@@ -142,13 +142,13 @@ def home():
     return RedirectResponse("/docs")
 
 
-@app.get("/health", tags=["1. Bağlantı"], summary="API ve veritabanı bağlantısı")
+@app.get("/durum", tags=["1. Bağlantı"], summary="API ve veritabanı bağlantısı")
 def health() -> dict[str, str]:
     query("SELECT 1 AS ok")
     return {"status": "ok", "database": "connected"}
 
 
-@app.get("/api/coverage", tags=["1. Bağlantı"], summary="Yereldeki kayıt sayıları")
+@app.get("/api/veri-kapsami", tags=["1. Bağlantı"], summary="Yereldeki kayıt sayıları")
 def coverage() -> dict[str, int]:
     return {
         row["entity"]: row["row_count"]
@@ -156,7 +156,7 @@ def coverage() -> dict[str, int]:
     }
 
 
-@app.get("/api/universities", tags=["2. Üniversiteler"], summary="Üniversite listele / ara")
+@app.get("/api/universiteler", tags=["2. Üniversiteler"], summary="Üniversite listele / ara")
 def universities(
     q: Annotated[str | None, Query(max_length=100, description="Üniversite adı")] = None,
     limit: Limit = 10,
@@ -170,7 +170,7 @@ def universities(
     )
 
 
-@app.get("/api/universities/{universite_id}", tags=["2. Üniversiteler"], summary="Tek üniversiteyi oku")
+@app.get("/api/universiteler/{universite_id}", tags=["2. Üniversiteler"], summary="Tek üniversiteyi oku")
 def university_detail(universite_id: UniversityId) -> University:
     rows = query(
         "SELECT universite_id, universite_adi FROM api.universities WHERE universite_id = %(id)s",
@@ -181,7 +181,7 @@ def university_detail(universite_id: UniversityId) -> University:
     return rows[0]
 
 
-@app.post("/api/universities", status_code=201, tags=["2. Üniversiteler"],
+@app.post("/api/universiteler", status_code=201, tags=["2. Üniversiteler"],
           summary="Demo üniversitesi ekle", dependencies=[Depends(require_write_key)])
 def create_university(body: UniversityCreate) -> University:
     return write_query(
@@ -192,7 +192,7 @@ def create_university(body: UniversityCreate) -> University:
     )[0]
 
 
-@app.put("/api/universities/{universite_id}", tags=["2. Üniversiteler"],
+@app.put("/api/universiteler/{universite_id}", tags=["2. Üniversiteler"],
          summary="Demo üniversitesinin adını güncelle", dependencies=[Depends(require_write_key)])
 def update_university(universite_id: UniversityId, body: UniversityName) -> University:
     rows = write_query(
@@ -203,7 +203,7 @@ def update_university(universite_id: UniversityId, body: UniversityName) -> Univ
     return demo_row_or_error(rows, universite_id)
 
 
-@app.delete("/api/universities/{universite_id}", status_code=204, tags=["2. Üniversiteler"],
+@app.delete("/api/universiteler/{universite_id}", status_code=204, tags=["2. Üniversiteler"],
             summary="Demo üniversitesini sil", dependencies=[Depends(require_write_key)])
 def delete_university(universite_id: UniversityId) -> Response:
     rows = write_query(
@@ -219,7 +219,7 @@ PROGRAM_COLUMNS = """kilavuz_kodu, yil, puan_turu, birim_adi, universite_id,
     universite_adi, il_adi, min_puan, basari_sirasi, kontenjan"""
 
 
-@app.get("/api/programs", tags=["3. Programlar"], summary="Programları filtrele")
+@app.get("/api/programlar", tags=["3. Programlar"], summary="Programları filtrele")
 def programs(
     q: Annotated[str | None, Query(max_length=100, description="Program adı")] = None,
     yil: Year = None,
@@ -240,7 +240,7 @@ def programs(
     )
 
 
-@app.get("/api/programs/{kilavuz_kodu}", tags=["3. Programlar"], summary="Tek programın bilgileri")
+@app.get("/api/programlar/{kilavuz_kodu}", tags=["3. Programlar"], summary="Tek programın bilgileri")
 def program_detail(
     kilavuz_kodu: Annotated[int, ApiPath(gt=0)],
     yil: Year = None,
@@ -256,7 +256,7 @@ def program_detail(
     return rows[0]
 
 
-@app.get("/api/net-results", tags=["4. Netler"], summary="Yıl / puan türüne göre net sonuçları")
+@app.get("/api/net-sonuclari", tags=["4. Netler"], summary="Yıl / puan türüne göre net sonuçları")
 def net_results(
     yil: Year = None,
     puan_turu: Score | None = None,
