@@ -10,7 +10,7 @@ OpenAlex documents a REST API at `https://api.openalex.org`. Institution singlet
 
 Authentication is not required for casual API use, but the current official docs recommend a free API key for meaningful scale. Keyless: 10 requests/second; free-key/prepaid: 30 requests/second; annual: 50 requests/second. `per_page` max is 100 and basic paging is limited to 10,000 results; cursor pagination is needed beyond that. Daily usage budget: $1 free per account; prepaid/annual service costs apply above the free budget. A 429 may reflect a per-second or daily budget limit.
 
-A response body of 2,356 bytes was captured at 2026-10-13T16:03:37Z; content type `application/json`; SHA-256 of the HTTP entity body: `352f20fd24be6cd06d55fd00b483cff20927f7df8b3309a95cccb53c50aca554`. The response excerpt above is not a substitute for preserving the complete body in the eventual artifact store. Pagination and a full Turkey export were not tested. Do not put a personal key in the repo; use environment/secret storage.
+A response body of 2,356 bytes was captured at 2026-10-13T16:14:39Z; content type `application/json`; SHA-256 of that same HTTP entity body: `8259b3449b3dd16a73aaf5a33f261e9e7b0426d081ee2c9448ed5d1f8897d6bc`. The response excerpt above is not a substitute for preserving the complete body in the eventual artifact store. Pagination and a full Turkey export were not tested. Do not put a personal key in the repo; use environment/secret storage.
 
 ## Grain, keys, temporal meaning
 
