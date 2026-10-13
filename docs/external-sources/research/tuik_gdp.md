@@ -2,13 +2,13 @@
 
 **Reviewed:** 13 October 2026  
 **Decision status:** `PENDING`  
-**Evidence status:** 2024 official bulletin and its table list verified; authenticated SDMX dataflow/query and table download bytes not captured.
+**Evidence status:** 2024 official bulletin, table list, revision details and general SDMX download/API interface verified; GDP-specific authenticated flow/query not captured.
 
 ## Access and actual data
 
 The [2024 bulletin](https://veriportali.tuik.gov.tr/en/press/53930) lists official tables for 2020–2024: GDP by province and NACE A10 activity at current prices; province GDP in chained volume index and percent change by NACE A10; GDP per capita by province; corresponding NUTS-2 regional GDP; NUTS-2 GDP per capita; and provinces' contribution to national GDP growth. This is a publication surface with tables, not evidence of one API endpoint.
 
-General TÜİK SDMX 2.1 web service documentation exists and describes API-key/token authentication and CSV/XML/JSON output. The specific GDP flow, code lists, source unit labels, revision history, and live query were not verified. Use the current official table download or resolve the dataflow through the authenticated catalog before implementation.
+General TÜİK SDMX docs specify an API-key-to-token flow and bearer authorization; the portal also documents bulk SDMX downloads in CSV/XML/JSON. The 2024 GDP release documents its table outputs and current yearly revision information, but this review did not resolve the specific dataflow ID/API query or capture a table download. Before implementation, identify the exact flow and code lists via the authenticated catalog or use the official table download.
 
 ## Grain, keys, temporal meaning
 
@@ -26,4 +26,4 @@ Store the original table artifact and its release metadata. Preserve source geog
 **Recommendation:** `CONDITIONAL` — approve if province-level socioeconomic context is in scope; not for university-specific claims.  
 **Owner decision:** `PENDING`.
 
-Sources: [TÜİK GDP 2024](https://veriportali.tuik.gov.tr/en/press/53930), [TÜİK SDMX Web Service](https://veriportali.tuik.gov.tr/en/sdmx-web-service-documentation).
+Sources: [TÜİK GDP 2024](https://veriportali.tuik.gov.tr/en/press/53930), [TÜİK SDMX Web Service](https://veriportali.tuik.gov.tr/en/sdmx-web-service-documentation), [TÜİK bulk dataset download](https://veriportali.tuik.gov.tr/tr/bulk-download).
