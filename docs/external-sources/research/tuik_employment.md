@@ -2,7 +2,7 @@
 
 **Reviewed:** 13 October 2026  
 **Decision status:** `PENDING`  
-**Evidence status:** official 2024 bulletin and SDMX documentation discovered; dataset-specific authenticated response/dataflow not verified.
+**Evidence status:** official 2024/2025 releases, a table dataset code, and current SDMX/bulk-download documentation identified; no authenticated response captured.
 
 ## Access and actual data
 
@@ -10,11 +10,11 @@ The provided [2024 release](https://veriportali.tuik.gov.tr/Bulten/Index?dil=1&p
 
 The 2024 bulletin exposes tables by level/field/program (search results list tables such as graduate-level employment rates by field and by department). This is not university-level output. The release does not establish an institution identifier or a one-program-to-YÖK-program key. No university-level value may be inferred from the field result.
 
-TÜİK's official [SDMX Web Service documentation](https://veriportali.tuik.gov.tr/en/sdmx-web-service-documentation) describes SDMX 2.1 structural objects and REST API use, with API key plus access token for Turkish mobile-verified users and output formats including SDMX-ML/XML, CSV, and JSON. The actual employment dataflow ID, dataset-specific query, response schema, suppression markers, pagination/time coverage and rates were not verified. The bulletin/table surface is a viable official fallback; no workbook bytes or SHA-256 were captured.
+TÜİK's [SDMX documentation](https://veriportali.tuik.gov.tr/en/sdmx-web-service-documentation) specifies `POST https://giris.tuik.gov.tr/realms/web/protocol/openid-connect/token` with `grant_type=password`, `client_id=nsi-ws-consumer`, and an API key; subsequent SDMX requests use `Authorization: Bearer …`. Its example structure endpoint is `GET https://nsiws.tuik.gov.tr/rest/dataflow/TR/all/latest?detail=full`. TÜİK also documents bulk downloads in CSV/XML/JSON. The exact 2025 dataflow version, current table query, response, suppression codes and pagination were not captured. The 2024 table code is confirmed as above; no response workbook bytes or hash were captured.
 
 ## Grain, keys, and temporal meaning
 
-Candidate grain: `(release, education_level, field_or_department_code, indicator, graduate_cohort, reference_year)`. Separate release/publication year, graduation cohort, and outcome reference year. Exact education-field codes and confidentiality/suppression markers must be obtained from dataset metadata, not guessed. Treat suppressed/unavailable cells distinctly from numeric zero and ordinary missing values.
+Candidate grain: `(release, education_level, field_or_department_code, indicator, graduate_cohort, reference_year)`. The source's **2025** release is currently newest; keep its release year, 2015–2024 graduate cohorts, and 2025 population/outcome reference year distinct. Separate release/publication year, graduation cohort, and outcome reference year. Exact education-field codes and confidentiality/suppression markers must be obtained from dataset metadata, not guessed. Treat suppressed/unavailable cells distinctly from numeric zero and ordinary missing values.
 
 ## Rights, risks, value
 
@@ -24,7 +24,7 @@ The public release is readable, but a clear dataset-specific redistribution lice
 
 Capture release tables as original artifacts. Model release, published field/department codes and definitions, level, metric, cohort/reference year and source cell values independently. Keep source label/code and suppression state. Only later propose a reviewed classification crosswalk; no direct university or YÖK program FK is evidenced.
 
-**API status:** `API_REQUIRES_AUTH` (general SDMX service; source dataflow not verified); **alternative:** official bulletin tables; **rights:** `REVIEW`.  
+**API status:** `API_REQUIRES_AUTH` (general SDMX service; 2024 table code found; 2025 flow/query not verified); **alternative:** official bulletin and tables; **rights:** `REVIEW`.  
 **Recommendation:** `CONDITIONAL` — useful only if field-level context fits the agreed product question.  
 **Owner decision:** `PENDING`.
 
