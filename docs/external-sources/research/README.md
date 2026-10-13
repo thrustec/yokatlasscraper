@@ -13,7 +13,7 @@ This branch records the Phase 0/1 research requested by `EXTERNAL_SOURCES_SCRAPE
 
 1. The 2025–2026 URAP PDF confirms 198 universities and reports ranks and indicator **scores** in its tables. Its methodology describes underlying counts, but those counts are not the same as the displayed scores.
 2. OpenAlex's live public API returned 606 Türkiye-filtered institution records in the captured query. Institution identifiers are its own `I...` IDs and ROR identifiers. No documented rule maps the first four digits of a YÖK ID to OpenAlex.
-3. TÜİK's newest employment release as of this review is 2025 (published 23 July 2026), covering 2015–2024 cohorts as of 2025. It is published by level/field/program and graduate/reference year; the inspected release does not establish a university-level result.
+3. TÜİK's newest employment release as of this review is 2025 (published 23 July 2026), The official portal lists that release as published on 23 July 2026, but the full cohort range still needs primary-metadata verification. It is published by level/field/program and graduate/reference year; the inspected release does not establish a university-level result.
 4. TCMB YKKE is monthly, but the methodology describes 13 NUTS-2 and 6 NUTS-1 strata plus Türkiye and selected large-city reporting. It is not an 81-province series.
 5. KYGM's inspected page is an HTML table of province, district, and gender (353 rows in the captured page). It does not provide dorm capacity or a complete facility catalog.
 
