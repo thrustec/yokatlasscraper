@@ -1,0 +1,10 @@
+# Optional local bind mount. Use with compose.yaml and set POSTGRES_DATA_DIR.
+# Keep the directory outside the Git checkout; it contains the database cluster.
+services:
+  postgres:
+    volumes:
+      - type: bind
+        source: ${POSTGRES_DATA_DIR:?Set POSTGRES_DATA_DIR to an existing local directory}
+        target: /var/lib/postgresql/data
+        bind:
+          create_host_path: false
