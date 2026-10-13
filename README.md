@@ -14,7 +14,7 @@ powershell -ExecutionPolicy Bypass -File .\backend\run-demo.ps1
 
 Tarayıcı: http://127.0.0.1:8000/docs
 
-Endpoint yolları: `/durum`, `/api/veri-kapsami`, `/api/universiteler`,
+Endpoint yolları: `/status`, `/api/veri-kapsami`, `/api/universiteler`,
 `/api/programlar`, `/api/net-sonuclari`. Üniversite ve program ayrıntıları
 aynı yolların sonuna ilgili ID eklenerek okunur. Üniversite ekleme için `POST`,
 güncelleme için `PUT`, silme için `DELETE` kullanılır.

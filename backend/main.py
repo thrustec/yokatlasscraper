@@ -142,7 +142,7 @@ def home():
     return RedirectResponse("/docs")
 
 
-@app.get("/durum", tags=["1. Bağlantı"], summary="API ve veritabanı bağlantısı")
+@app.get("/status", tags=["1. Bağlantı"], summary="API ve veritabanı bağlantısı")
 def health() -> dict[str, str]:
     query("SELECT 1 AS ok")
     return {"status": "ok", "database": "connected"}

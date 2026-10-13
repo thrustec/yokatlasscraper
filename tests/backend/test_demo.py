@@ -19,7 +19,7 @@ class DemoTests(unittest.TestCase):
         cls.client.close()
 
     def test_database_and_loaded_data(self):
-        response = self.client.get("/durum")
+        response = self.client.get("/status")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["database"], "connected")
         counts = self.client.get("/api/veri-kapsami").json()
@@ -65,7 +65,7 @@ class DemoTests(unittest.TestCase):
         for params in ({"limit": 101}, {"offset": -1}, {"puan_turu": "INVALID"}):
             self.assertEqual(self.client.get("/api/programlar", params=params).status_code, 422)
         with patch("backend.main.psycopg.connect", side_effect=psycopg.OperationalError("secret detail")):
-            response = self.client.get("/durum")
+            response = self.client.get("/status")
         self.assertEqual(response.status_code, 503)
         self.assertNotIn("secret detail", response.text)
 

@@ -13,7 +13,7 @@ Terminalde `Ctrl+C` API'yi kapatır.
 
 ## 3–4 dakikalık gösterim
 
-1. `/durum`: API'nin PostgreSQL'e bağlandığını göster.
+1. `/status`: API'nin PostgreSQL'e bağlandığını göster.
 2. `/api/veri-kapsami`: yüklenen örneğin boyutunu göster.
 3. `/api/universiteler`: `q=İSTANBUL` ile üniversite ara.
 4. `/api/programlar`: `puan_turu=SAY`, `limit=3` ile filtrele. Sonuçtaki bir
