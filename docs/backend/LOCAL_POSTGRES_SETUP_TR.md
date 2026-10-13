@@ -106,13 +106,22 @@ sonraki güvenlik tasarımı ve onaylı migration aşamasında ele alınmalıdı
 - Host üzerindeki `127.0.0.1:5433` portuna TCP bağlantısı başarılı.
 - Reponun smoke kontrolü geçti: şemalar, 124 alan, 8 view ve mevcut grants.
 - `python -m unittest discover -s tests/database -v`: 4 test geçti.
-- Dört rolün `.env` parolalarıyla TCP üzerinden kimlik doğrulaması başarılı.
+- Dört rolün `.env` parolalarıyla, `postgres` servis adresinin loopback olmayan
+  IP'si üzerinden SCRAM kimlik doğrulaması başarılı; yanlış parola reddedildi.
 - `atlas_api`, `api.data_coverage` view'ını okuyabiliyor.
 - `atlas_api` ile RAW INSERT ve doğrudan CORE SELECT, DB tarafından reddediliyor.
 - `atlas_ingest` ile RAW transaction açılıp yazıldı; ROLLBACK sonrası kayıt sayısı 0.
 - `001`–`004` migration'ları mevcut scriptle tekrar uygulanabildi.
 - Container `--force-recreate` ile yeniden oluşturuldu; yeni başlangıçta
   initialization atlandı ve aynı şema/rollerle smoke kontrolü tekrar geçti.
+
+Faz 0 incelemesinde doğrulama düzeltmesi: ilk aşamadaki container içi
+`-h 127.0.0.1` testi, HBA'daki `trust` kuralına denk geldiğinden parola testi
+değildi. Parola kontrolü 13 Ekim 2026 tarihinde `-h postgres` bağlantısıyla
+tekrarlandı; istemci ve sunucu adresleri loopback dışında, yanlış parola sonucu
+`password authentication failed` ve doğru parolalarla dört rolün sonucu başarılı
+olarak doğrulandı. Windows host portuna TCP erişimi ayrıca test edilmiştir;
+Windows host üzerinden sürücüyle parola doğrulaması henüz yapılmamıştır.
 
 Kontrol komutları:
 

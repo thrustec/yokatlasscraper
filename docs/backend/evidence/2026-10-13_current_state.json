@@ -1,0 +1,319 @@
+{
+  "database": "yokatlas_intelligence",
+  "server_version": "17.11 (Debian 17.11-1.pgdg13+2)",
+  "settings": {
+    "idle_in_transaction_session_timeout": "0",
+    "lock_timeout": "0",
+    "max_connections": "100",
+    "ssl": "off",
+    "statement_timeout": "0",
+    "TimeZone": "Europe/Istanbul"
+  },
+  "objects": [
+    {
+      "table_schema": "api",
+      "table_name": "cities",
+      "table_type": "VIEW"
+    },
+    {
+      "table_schema": "api",
+      "table_name": "data_coverage",
+      "table_type": "VIEW"
+    },
+    {
+      "table_schema": "api",
+      "table_name": "net_results",
+      "table_type": "VIEW"
+    },
+    {
+      "table_schema": "api",
+      "table_name": "net_year_summary",
+      "table_type": "VIEW"
+    },
+    {
+      "table_schema": "api",
+      "table_name": "program_catalog",
+      "table_type": "VIEW"
+    },
+    {
+      "table_schema": "api",
+      "table_name": "program_groups",
+      "table_type": "VIEW"
+    },
+    {
+      "table_schema": "api",
+      "table_name": "program_year_summary",
+      "table_type": "VIEW"
+    },
+    {
+      "table_schema": "api",
+      "table_name": "universities",
+      "table_type": "VIEW"
+    },
+    {
+      "table_schema": "core",
+      "table_name": "cities",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_schema": "core",
+      "table_name": "conditions",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_schema": "core",
+      "table_name": "net_results",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_schema": "core",
+      "table_name": "program_conditions",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_schema": "core",
+      "table_name": "program_groups",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_schema": "core",
+      "table_name": "program_versions",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_schema": "core",
+      "table_name": "universities",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_schema": "quality",
+      "table_name": "data_quality_checks",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_schema": "quality",
+      "table_name": "quarantined_records",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_schema": "raw",
+      "table_name": "api_responses",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_schema": "raw",
+      "table_name": "ingestion_runs",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_schema": "raw",
+      "table_name": "source_records",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_schema": "staging",
+      "table_name": "cities",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_schema": "staging",
+      "table_name": "net_results",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_schema": "staging",
+      "table_name": "program_groups",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_schema": "staging",
+      "table_name": "programs",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_schema": "staging",
+      "table_name": "universities",
+      "table_type": "BASE TABLE"
+    }
+  ],
+  "row_counts": {
+    "raw.ingestion_runs": 0,
+    "raw.api_responses": 0,
+    "raw.source_records": 0,
+    "staging.universities": 0,
+    "staging.program_groups": 0,
+    "staging.cities": 0,
+    "staging.programs": 0,
+    "staging.net_results": 0,
+    "core.universities": 0,
+    "core.cities": 0,
+    "core.program_groups": 0,
+    "core.program_versions": 0,
+    "core.net_results": 0,
+    "core.conditions": 0,
+    "core.program_conditions": 0,
+    "quality.quarantined_records": 0,
+    "quality.data_quality_checks": 0
+  },
+  "roles": [
+    {
+      "rolname": "atlas_analytics",
+      "rolsuper": false,
+      "rolcanlogin": true,
+      "rolcreaterole": false,
+      "rolcreatedb": false,
+      "rolconnlimit": -1
+    },
+    {
+      "rolname": "atlas_api",
+      "rolsuper": false,
+      "rolcanlogin": true,
+      "rolcreaterole": false,
+      "rolcreatedb": false,
+      "rolconnlimit": -1
+    },
+    {
+      "rolname": "atlas_ingest",
+      "rolsuper": false,
+      "rolcanlogin": true,
+      "rolcreaterole": false,
+      "rolcreatedb": false,
+      "rolconnlimit": -1
+    },
+    {
+      "rolname": "atlas_owner",
+      "rolsuper": true,
+      "rolcanlogin": true,
+      "rolcreaterole": true,
+      "rolcreatedb": true,
+      "rolconnlimit": -1
+    }
+  ],
+  "grants": [
+    {
+      "grantee": "atlas_analytics",
+      "table_schema": "api",
+      "privilege_type": "SELECT",
+      "object_count": 8
+    },
+    {
+      "grantee": "atlas_analytics",
+      "table_schema": "core",
+      "privilege_type": "SELECT",
+      "object_count": 7
+    },
+    {
+      "grantee": "atlas_api",
+      "table_schema": "api",
+      "privilege_type": "SELECT",
+      "object_count": 8
+    },
+    {
+      "grantee": "atlas_ingest",
+      "table_schema": "core",
+      "privilege_type": "INSERT",
+      "object_count": 7
+    },
+    {
+      "grantee": "atlas_ingest",
+      "table_schema": "core",
+      "privilege_type": "SELECT",
+      "object_count": 7
+    },
+    {
+      "grantee": "atlas_ingest",
+      "table_schema": "core",
+      "privilege_type": "UPDATE",
+      "object_count": 7
+    },
+    {
+      "grantee": "atlas_ingest",
+      "table_schema": "quality",
+      "privilege_type": "INSERT",
+      "object_count": 2
+    },
+    {
+      "grantee": "atlas_ingest",
+      "table_schema": "quality",
+      "privilege_type": "SELECT",
+      "object_count": 2
+    },
+    {
+      "grantee": "atlas_ingest",
+      "table_schema": "quality",
+      "privilege_type": "UPDATE",
+      "object_count": 2
+    },
+    {
+      "grantee": "atlas_ingest",
+      "table_schema": "raw",
+      "privilege_type": "INSERT",
+      "object_count": 3
+    },
+    {
+      "grantee": "atlas_ingest",
+      "table_schema": "raw",
+      "privilege_type": "SELECT",
+      "object_count": 3
+    },
+    {
+      "grantee": "atlas_ingest",
+      "table_schema": "staging",
+      "privilege_type": "INSERT",
+      "object_count": 5
+    },
+    {
+      "grantee": "atlas_ingest",
+      "table_schema": "staging",
+      "privilege_type": "SELECT",
+      "object_count": 5
+    },
+    {
+      "grantee": "atlas_ingest",
+      "table_schema": "staging",
+      "privilege_type": "UPDATE",
+      "object_count": 5
+    }
+  ],
+  "rls_enabled_tables": 0,
+  "response_identity_index": "CREATE UNIQUE INDEX ux_api_response_identity ON raw.api_responses USING btree (endpoint, COALESCE(score_type, ''::text), COALESCE(page_number, '-1'::integer), source_hash_sha256) WHERE (source_hash_sha256 IS NOT NULL)",
+  "audit_date": "2026-10-13",
+  "timezone_context": "Europe/Istanbul",
+  "repo": {
+    "remote": "https://github.com/thrustec/yokatlas-intelligence",
+    "branch": "feat/backend-local-postgres-20261013",
+    "input_head": "e815290155a10d32743477b979d102ee528eaac8",
+    "origin_main": "0d09f20804f0efb1ac1d64c63f3c9f9ef96dc1b7"
+  },
+  "schema_comparison": {
+    "repository_statements": 98,
+    "live_statements": 98,
+    "equal": true,
+    "only_repository": [],
+    "only_live": []
+  },
+  "brief": {
+    "filename": "BACKEND_INFRASTRUCTURE_DEVELOPER_BRIEF_TR.md",
+    "sha256": "8db4b854a694325f3abc3f3f92d259e86b0512b22c6b66ab6f106ff0133a2c3d",
+    "location": "user-provided file outside repository"
+  },
+  "authentication_validation": {
+    "transport": "non-loopback Compose service TCP (psql -h postgres)",
+    "four_configured_roles_passed": true,
+    "incorrect_api_password_rejected": true,
+    "container_loopback_auth": "trust",
+    "windows_host_driver_password_tested": false
+  },
+  "open_draft_prs": [
+    {
+      "number": 1,
+      "head": "yokatlas-scraper-foundation",
+      "sha": "e4892a0ec79ce25be83fec3ff53d92420a41973c"
+    },
+    {
+      "number": 2,
+      "head": "external-source-research",
+      "sha": "45e28a60e774ecd138677e4ab3f54b35b67f2c2a"
+    }
+  ]
+}
