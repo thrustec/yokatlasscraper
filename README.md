@@ -20,6 +20,8 @@ aynı yolların sonuna ilgili ID eklenerek okunur. Üniversite ekleme için `POS
 güncelleme için `PUT`, silme için `DELETE` kullanılır.
 
 Yerel kurulum ve kısa sunum akışı: [DEMO_TR.md](docs/backend/DEMO_TR.md).
+API geliştirmelerinin tamamı ve istek örnekleri:
+[API_GELISTIRMELERI_TR.md](docs/backend/API_GELISTIRMELERI_TR.md).
 Çalışan API sözleşmesi `/openapi.json` adresindedir. Önceki kapsamlı mimari ve
 sözleşme belgeleri ilerideki geliştirmeler için taslaktır; bu küçük demonun kapsamı
 yedi okuma ve üç üniversite yazma işlemidir. Yazma işlemleri için `.env.demo`
