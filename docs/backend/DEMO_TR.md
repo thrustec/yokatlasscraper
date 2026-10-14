@@ -20,6 +20,7 @@ Terminalde `Ctrl+C` API'yi kapatır.
    `kilavuz_kodu` değerini `/api/programlar/{kilavuz_kodu}` alanında kullan.
 5. `/api/net-sonuclari`: `yil=2025`, `puan_turu=SAY`, `limit=3` ile netleri göster.
 6. Aşağıdaki üniversite ekleme → okuma → güncelleme → silme akışını göster.
+7. Programlar için de aşağıdaki ekleme → güncelleme → silme akışı kullanılabilir.
 
 ## API üzerinden yazma demosu
 
@@ -42,12 +43,56 @@ Anahtarı terminalde göstermeden panoya almak için repo kökünde:
 4. **DELETE `/api/universiteler/900000001`** — kaydı sil; cevap `204`.
 5. Aynı **GET** isteğini tekrarla; artık `404` döner.
 
-Yazma demosu manuel eklenen üniversite kayıtları içindir. YÖK Atlas kaynak
+Yazma demosu manuel eklenen üniversite ve program kayıtları içindir. YÖK Atlas kaynak
 kayıtları korunur; bunları güncelleme/silme denemesi `409`, hatalı anahtar `401`
-döner. Program ve net uçları okuma amaçlıdır. Demo kaydı gerçek üniversite verisi
-olarak sunulmamalıdır. Yazma rolünün yetkisi yalnız `api.demo_universities`
-görünümüdür; mevcut okuma rolü değişmez. SQL tanımı `backend/demo-write.sql`
+döner. Net uçları okuma amaçlıdır. Demo kaydı gerçek üniversite/program verisi
+olarak sunulmamalıdır. Yazma rolünün CRUD yetkisi `api.demo_universities` ve
+`api.demo_programs` görünümleridir; program ID'sinin üretilmesi için ilgili
+sequence üzerinde `USAGE` verilir. SQL tanımı `backend/demo-write.sql`
 dosyasındadır; bu yerel demo kurulumu genel migration akışına eklenmemiştir.
+
+## Program yazma demosu
+
+Aynı API anahtarı kullanılır. Aşağıdaki `universite_id` örneği yüklenen YÖK Atlas
+üniversite listesinden gelir; başka veri setinde `/api/universiteler` üzerinden
+geçerli bir üniversite ID'si seç.
+
+1. **POST `/api/programlar`** — cevap `201`:
+
+   ```json
+   {
+     "kilavuz_kodu": 900000002,
+     "yil": 2026,
+     "puan_turu": "SAY",
+     "birim_adi": "DEMO Bilgisayar Mühendisliği",
+     "universite_id": 173499,
+     "min_puan": 430.5,
+     "basari_sirasi": 10000,
+     "kontenjan": 20
+   }
+   ```
+
+2. **GET `/api/programlar/900000002?yil=2026`** — eklenen kaydı oku.
+3. **PUT `/api/programlar/900000002?yil=2026`** — cevap `200`:
+
+   ```json
+   {
+     "puan_turu": "SAY",
+     "birim_adi": "DEMO Bilgisayar Mühendisliği Güncellendi",
+     "universite_id": 173499,
+     "min_puan": 440.5,
+     "basari_sirasi": 9000,
+     "kontenjan": 10
+   }
+   ```
+
+4. **DELETE `/api/programlar/900000002?yil=2026`** — cevap `204`.
+5. Aynı yıl için **GET** isteği artık `404` döner.
+
+Güncelleme ve silmede `yil` zorunludur; başka yıllar değişmez. `PUT` tam güncellemedir:
+gönderilmeyen isteğe bağlı alanlar `null` olur. Üniversite, şehir ve program grubu
+ilişkileri DB tarafından kontrol edilir. Olmayan ilişki veya tekrarlanan kod/yıl
+`409` döner. Bu programı başka net/koşul kayıtları kullanıyorsa silme `409` döner.
 
 ## Hocaya anlatım
 
@@ -59,7 +104,7 @@ araçlarıyla küçük bir gerçek veri örneğini veritabanına aktardık.
 puan türüne göre filtreleyebiliyor, net sonuçlarını JSON olarak alabiliyoruz.
 Swagger üzerinden istek gönderip cevabı anlık görebiliyoruz. Sonraki adım,
 veri kapsamını genişletmek ve bu API'yi arayüze bağlamak. Ayrıca bir demo
-üniversitesini API üzerinden ekleyip okuyabiliyor, güncelleyip silebiliyoruz.”
+üniversitesini ve programını API üzerinden ekleyip okuyabiliyor, güncelleyip silebiliyoruz.”
 
 ## Gösterimdeki veriler
 

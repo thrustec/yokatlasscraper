@@ -11,7 +11,9 @@ kodu yazıldı; Swagger dokümantasyonu bu koddan otomatik üretilir.
 - Üniversite, program ve net verileri için JSON döndüren okuma endpoint'leri eklendi.
 - Üniversite ve program adına göre arama, yıl/puan türü/üniversite filtreleri ve
   `limit`/`offset` ile sayfalama eklendi.
-- Üniversite demo kayıtları için ekleme, okuma, güncelleme ve silme akışı eklendi.
+- Üniversite ve program demo kayıtları için ekleme, okuma, güncelleme ve silme akışı eklendi.
+- Program güncelleme/silme işlemlerinde yıl zorunlu tutuldu; kod/yıl anahtarıyla
+  diğer yıllardaki kayıtlar korunur. Programın üniversite/şehir/grup ilişkileri kontrol edilir.
 - Yazma işlemleri `X-API-Key` ile korundu; okuma endpoint'leri anonim erişime açık.
 - Pydantic modelleriyle istek ve cevap alanları tanımlandı; hatalı girdiler kontrol edildi.
 - PostgreSQL sorguları Psycopg ile parametreli olarak yazıldı. Her yazma isteği
@@ -27,15 +29,15 @@ kodu yazıldı; Swagger dokümantasyonu bu koddan otomatik üretilir.
 | [backend/main.py](../../backend/main.py) | Endpoint'ler, veri modelleri, DB bağlantıları, SQL ve anahtar kontrolü |
 | [backend/run-demo.ps1](../../backend/run-demo.ps1) | PostgreSQL'i hazırlar, demo yazma kurulumunu ve API'yi başlatır |
 | [backend/setup-demo-write.py](../../backend/setup-demo-write.py) | Yerel anahtar/parola üretimi ve sınırlı yazma rolünün kurulumu |
-| [backend/demo-write.sql](../../backend/demo-write.sql) | Demo üniversitesi görünümü ve yazma rolünün yetkileri |
+| [backend/demo-write.sql](../../backend/demo-write.sql) | Demo üniversitesi/programı görünümleri ve yazma rolünün yetkileri |
 | [backend/requirements.txt](../../backend/requirements.txt) | FastAPI, Uvicorn, Psycopg ve python-dotenv bağımlılıkları |
 | [backend/requirements-dev.txt](../../backend/requirements-dev.txt) | HTTP test istemcisi ve veri toplama bağımlılıkları |
-| [tests/backend/test_demo.py](../../tests/backend/test_demo.py) | 9 API/DB entegrasyon testi |
+| [tests/backend/test_demo.py](../../tests/backend/test_demo.py) | 12 API/DB entegrasyon testi |
 | [DEMO_TR.md](DEMO_TR.md) | Canlı gösterim sırası ve hocaya anlatım metni |
 
 ## Mevcut endpoint'ler
 
-API, yedi okuma ve üç yazma olmak üzere **10 işlem** sunar.
+API, yedi okuma ve altı yazma olmak üzere **13 işlem** sunar.
 
 | Metot | Yol | İşlev | Anahtar |
 |---|---|---|---|
@@ -48,6 +50,9 @@ API, yedi okuma ve üç yazma olmak üzere **10 işlem** sunar.
 | DELETE | `/api/universiteler/{universite_id}` | Demo üniversitesini silme | Gerekir |
 | GET | `/api/programlar` | Program arama ve filtreleme | Gerekmez |
 | GET | `/api/programlar/{kilavuz_kodu}` | Tek programı okuma; yıl verilmezse en güncel kayıt | Gerekmez |
+| POST | `/api/programlar` | Demo programı oluşturma | Gerekir |
+| PUT | `/api/programlar/{kilavuz_kodu}?yil=2026` | Belirtilen yılın demo programını güncelleme | Gerekir |
+| DELETE | `/api/programlar/{kilavuz_kodu}?yil=2026` | Belirtilen yılın demo programını silme | Gerekir |
 | GET | `/api/net-sonuclari` | Net sonuçlarını yıl, puan türü ve program koduyla filtreleme | Gerekmez |
 
 Üniversite listesinde `q`; program listesinde `q`, `yil`, `puan_turu`,
@@ -70,15 +75,18 @@ HTTP yolları uygulamada tanımlandı; JSON alanları mevcut DB sütun adların�
 | `api.net_results` | `core.net_results` |
 | `api.data_coverage` | Beş ana veri tablosunun kayıt sayıları |
 | `api.demo_universities` | `core.universities` içindeki `source_record_id IS NULL` kayıtları |
+| `api.demo_programs` | `core.program_versions` içindeki `source_record_id IS NULL` kayıtları |
 
 Okuma bağlantısı mevcut `atlas_api` rolünü ve salt okunur transaction'ları
 kullanır. Demo yazma bağlantısı `atlas_demo_writer` rolünü kullanır; bu rolün
-CRUD yetkisi yalnız `api.demo_universities` görünümündedir. YÖK Atlas'tan alınan
-kaynak kayıtları bu görünümde yer almaz ve demo uçlarıyla değiştirilmez.
+CRUD yetkisi `api.demo_universities` ve `api.demo_programs` görünümlerindedir.
+Program ID'si için `core.program_versions_program_version_id_seq` sequence'inde
+`USAGE` yetkisi vardır. YÖK Atlas kaynak kayıtları bu görünümlerde yer almaz ve
+demo uçlarıyla değiştirilmez.
 
-Yerel demo kurulumu bir ek görünüm ve bir sınırlı rol oluşturur. SQL tanımı
+Yerel demo kurulumu iki ek görünüm ve bir sınırlı rol oluşturur. SQL tanımı
 `backend/demo-write.sql` içindedir; genel migration akışına eklenmemiştir.
-Veritabanında 17 tablo ve bu demo görünümü dahil 9 API görünümü bulunur.
+Veritabanında 17 tablo ve bu demo görünümleri dahil 10 API görünümü bulunur.
 
 `core.net_results` tablosunda TYT/AYT/YDT netleri, OBP, taban puan, yıl ve
 program kodu alanları vardır. Mevcut net endpoint'i program kodu, yıl, puan türü,
@@ -86,8 +94,8 @@ taban puan, OBP ve dört TYT net alanını döndürür.
 
 Program ve net verileri mevcut toplama/yükleme araçlarıyla DB'ye aktarılır.
 `atlas_ingest` rolünün bu tablolarda `INSERT/UPDATE` yetkisi vardır.
-Program/net CRUD endpoint'leri ve botun API'ye veri göndereceği ingestion
-endpoint'i bu demoda henüz uygulanmadı.
+Net CRUD endpoint'leri ve botun API'ye veri göndereceği ingestion endpoint'i
+bu demoda henüz uygulanmadı. Program CRUD demo kayıtları için kullanılabilir.
 
 ## Kurulum ve çalıştırma
 
@@ -152,6 +160,34 @@ DELETE http://127.0.0.1:8000/api/universiteler/900000001
 X-API-Key: <DEMO_API_KEY>
 ```
 
+Program ekleme örneği; `universite_id` yerelde mevcut olmalıdır:
+
+```http
+POST http://127.0.0.1:8000/api/programlar
+Content-Type: application/json
+X-API-Key: <DEMO_API_KEY>
+
+{"kilavuz_kodu": 900000002, "yil": 2026, "puan_turu": "SAY", "birim_adi": "DEMO Bilgisayar Mühendisliği", "universite_id": 173499, "min_puan": 430.5, "kontenjan": 20}
+```
+
+```http
+PUT http://127.0.0.1:8000/api/programlar/900000002?yil=2026
+Content-Type: application/json
+X-API-Key: <DEMO_API_KEY>
+
+{"puan_turu": "SAY", "birim_adi": "DEMO Program Güncellendi", "universite_id": 173499, "min_puan": 440.5, "kontenjan": 10}
+```
+
+```http
+DELETE http://127.0.0.1:8000/api/programlar/900000002?yil=2026
+X-API-Key: <DEMO_API_KEY>
+```
+
+Program yazma modeli; puan türü, program adı ve üniversite ID'sini zorunlu tutar.
+POST ayrıca kod ve yıl gerektirir. Şehir/grup/birim/fymk ID'leri, puan, başarı
+sırası ve kontenjan isteğe bağlıdır. PUT ve DELETE için sorguda `yil` zorunludur;
+PUT gövdesinde kod/yıl değiştirilmez ve gönderilmeyen isteğe bağlı alanlar `null` olur.
+
 Oluşturma `201`, silme `204`; hatalı anahtar `401`, bulunamayan kayıt `404`,
 tekrarlanan ID veya korunan/ilişkili kayıt `409`, hatalı girdi `422`, DB erişim
 hatası `503` döner. Kaynak kaydı koruması güncelleme/silme uçları için geçerlidir.
@@ -163,10 +199,11 @@ hatası `503` döner. Kaynak kaydı koruması güncelleme/silme uçları için g
 ```
 
 Testlerden önce yerel DB, örnek veri ve demo yazma kurulumu hazır olmalıdır.
-9 test; bağlantıyı, kayıt sayılarını, filtrelemeyi, sayfalamayı, program detayını,
-üniversite CRUD işlemlerini, girdi/anahtar kontrollerini, kaynak kayıtlarının
-korunmasını ve yazma rolünün sınırlarını doğrular. Test kayıtları temizlenir.
-4 mevcut DB paket testi de kontrol edildi; toplam 13 test başarılıdır.
+12 test; bağlantıyı, kayıt sayılarını, filtrelemeyi, sayfalamayı, program detayını,
+üniversite/program CRUD işlemlerini, yıl ayrımını, ilişki kontrollerini,
+girdi/anahtar kontrollerini, kaynak kayıtlarının korunmasını ve yazma rolünün
+sınırlarını doğrular. Test kayıtları temizlenir.
+4 mevcut DB paket testi de kontrol edildi; toplam 16 test başarılıdır.
 Canlı HTTP üzerinden ekle → oku → güncelle → sil → `404` akışı da doğrulandı.
 
 Yerel gerçek veri örneği 13 Ekim'de toplandı: 228 üniversite, 83 şehir kaydı,
@@ -178,7 +215,7 @@ eşleştirmez. Güncel kayıt sayıları `/api/veri-kapsami` üzerinden görül�
 ## Demo ve sonraki geliştirmeler
 
 Bu sürüm çalışan ilk backend demosudur. Gösterim akışı:
-`/status` → program/net sorgusu → demo üniversitesi ekle/oku/güncelle/sil.
+`/status` → program/net sorgusu → demo üniversitesi/programı ekle/oku/güncelle/sil.
 Botun API üzerinden otomatik veri göndermesi ve veri kapsamının genişletilmesi
 sonraki geliştirmelerdir. Önceki mimari, ADR ve `openapi.yaml` dosyaları ilerideki
 geliştirmeler için taslaktır; çalışan demonun sözleşmesi `/openapi.json` çıktısıdır.

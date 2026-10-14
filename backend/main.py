@@ -15,6 +15,9 @@ from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 CONFIG = dotenv_values(Path(__file__).resolve().parents[1] / ".env")
 DEMO_CONFIG = dotenv_values(Path(__file__).resolve().parents[1] / ".env.demo")
 UniversityId = Annotated[int, ApiPath(gt=0, le=9223372036854775807)]
+ProgramCode = Annotated[int, ApiPath(gt=0, le=9223372036854775807)]
+RequiredYear = Annotated[int, Query(ge=2000, le=2100, description="İşlem yapılacak program yılı")]
+PositiveId = Annotated[int, Field(gt=0, le=9223372036854775807)]
 Score = Literal["SAY", "EA", "SÖZ", "DİL", "TYT"]
 Limit = Annotated[int, Query(ge=1, le=100, description="En fazla 100 kayıt")]
 Offset = Annotated[int, Query(ge=0, description="Atlanacak kayıt sayısı")]
@@ -22,10 +25,10 @@ Year = Annotated[int | None, Query(ge=2000, le=2100)]
 
 app = FastAPI(
     title="YÖK Atlas — Basit API Demosu",
-    version="0.3.0",
+    version="0.4.0",
     description=(
         "Docker PostgreSQL → mevcut API görünümleri → JSON. "
-        "Okuma uçları giriş gerektirmez. Üniversite demo kayıtlarını ekleme, güncelleme "
+        "Okuma uçları giriş gerektirmez. Üniversite ve program demo kayıtlarını ekleme, güncelleme "
         "ve silme için Authorize alanına X-API-Key girin. "
         "Yerel örnek veri tam veri setini temsil etmez; "
         "yıl alanı kaynaktan geldiği haliyle gösterilir."
@@ -61,6 +64,27 @@ class Program(BaseModel):
     min_puan: float | None
     basari_sirasi: int | None
     kontenjan: int | None
+
+
+class ProgramWrite(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    puan_turu: Score
+    birim_adi: Annotated[
+        str, StringConstraints(strip_whitespace=True, min_length=1, max_length=200)
+    ] = Field(examples=["DEMO Bilgisayar Mühendisliği"])
+    universite_id: PositiveId = Field(examples=[173499])
+    il_kodu: PositiveId | None = None
+    birim_grup_id: PositiveId | None = None
+    birim_id: PositiveId | None = None
+    fymk_id: PositiveId | None = None
+    min_puan: float | None = Field(default=None, ge=0, allow_inf_nan=False)
+    basari_sirasi: int | None = Field(default=None, ge=0, le=9223372036854775807)
+    kontenjan: int | None = Field(default=None, ge=0, le=9223372036854775807)
+
+
+class ProgramCreate(ProgramWrite):
+    kilavuz_kodu: PositiveId = Field(examples=[900000002])
+    yil: int = Field(ge=2000, le=2100, examples=[2026])
 
 
 class NetResult(BaseModel):
@@ -106,7 +130,11 @@ def require_write_key(key: Annotated[str | None, Depends(write_key)]) -> None:
         raise HTTPException(status_code=401, detail="Geçerli X-API-Key gerekli.")
 
 
-def write_query(statement: str, params: dict) -> list[dict]:
+def write_query(
+    statement: str, params: dict, *,
+    unique_message: str = "Bu üniversite ID'si zaten mevcut.",
+    foreign_key_message: str = "Programların kullandığı üniversite silinemez.",
+) -> list[dict]:
     """Commit one operation; PostgreSQL limits this role to manual demo rows."""
     try:
         with psycopg.connect(
@@ -118,9 +146,9 @@ def write_query(statement: str, params: dict) -> list[dict]:
         ) as conn:
             return conn.execute(statement, params).fetchall()
     except psycopg.errors.UniqueViolation:
-        raise HTTPException(status_code=409, detail="Bu üniversite ID'si zaten mevcut.") from None
+        raise HTTPException(status_code=409, detail=unique_message) from None
     except psycopg.errors.ForeignKeyViolation:
-        raise HTTPException(status_code=409, detail="Programların kullandığı üniversite silinemez.") from None
+        raise HTTPException(status_code=409, detail=foreign_key_message) from None
     except psycopg.Error:
         raise HTTPException(status_code=503, detail="Veritabanı yazma işlemi tamamlanamadı.") from None
 
@@ -242,7 +270,7 @@ def programs(
 
 @app.get("/api/programlar/{kilavuz_kodu}", tags=["3. Programlar"], summary="Tek programın bilgileri")
 def program_detail(
-    kilavuz_kodu: Annotated[int, ApiPath(gt=0)],
+    kilavuz_kodu: ProgramCode,
     yil: Year = None,
 ) -> Program:
     rows = query(
@@ -254,6 +282,71 @@ def program_detail(
     if not rows:
         raise HTTPException(status_code=404, detail="Bu program yerel veri setinde bulunamadı.")
     return rows[0]
+
+
+def check_demo_program(rows: list[dict], code: int, year: int) -> None:
+    if rows:
+        return
+    existing = query(
+        """SELECT kilavuz_kodu FROM api.program_catalog
+           WHERE kilavuz_kodu = %(code)s AND yil = %(year)s""",
+        {"code": code, "year": year},
+    )
+    if existing:
+        raise HTTPException(status_code=409, detail="YÖK Atlas kaynak programı korunuyor. Demo kaydı kullanın.")
+    raise HTTPException(status_code=404, detail="Bu kod ve yıla ait program bulunamadı.")
+
+
+@app.post("/api/programlar", status_code=201, tags=["3. Programlar"],
+          summary="Demo programı ekle", dependencies=[Depends(require_write_key)])
+def create_program(body: ProgramCreate) -> Program:
+    write_query(
+        """INSERT INTO api.demo_programs
+           (kilavuz_kodu, yil, puan_turu, birim_adi, universite_id, il_kodu,
+            birim_grup_id, birim_id, fymk_id, min_puan, basari_sirasi, kontenjan)
+           VALUES (%(kilavuz_kodu)s, %(yil)s, %(puan_turu)s, %(birim_adi)s,
+                   %(universite_id)s, %(il_kodu)s, %(birim_grup_id)s, %(birim_id)s,
+                   %(fymk_id)s, %(min_puan)s, %(basari_sirasi)s, %(kontenjan)s)
+           RETURNING kilavuz_kodu, yil""",
+        body.model_dump(),
+        unique_message="Bu program kodu ve yıl zaten mevcut.",
+        foreign_key_message="Üniversite, şehir veya program grubu ilişkisi bulunamadı.",
+    )
+    return program_detail(body.kilavuz_kodu, body.yil)
+
+
+@app.put("/api/programlar/{kilavuz_kodu}", tags=["3. Programlar"],
+         summary="Demo programını belirtilen yılda güncelle", dependencies=[Depends(require_write_key)],
+         description="Kod ve yıl sabittir. Gövde programın yazılabilir alanlarını değiştirir; "
+                     "gönderilmeyen isteğe bağlı alanlar null olur.")
+def update_program(kilavuz_kodu: ProgramCode, body: ProgramWrite, yil: RequiredYear) -> Program:
+    rows = write_query(
+        """UPDATE api.demo_programs SET
+           puan_turu = %(puan_turu)s, birim_adi = %(birim_adi)s,
+           universite_id = %(universite_id)s, il_kodu = %(il_kodu)s,
+           birim_grup_id = %(birim_grup_id)s, birim_id = %(birim_id)s,
+           fymk_id = %(fymk_id)s, min_puan = %(min_puan)s,
+           basari_sirasi = %(basari_sirasi)s, kontenjan = %(kontenjan)s, ingested_at = now()
+           WHERE kilavuz_kodu = %(code)s AND yil = %(year)s
+           RETURNING kilavuz_kodu, yil""",
+        {**body.model_dump(), "code": kilavuz_kodu, "year": yil},
+        foreign_key_message="Üniversite, şehir veya program grubu ilişkisi bulunamadı.",
+    )
+    check_demo_program(rows, kilavuz_kodu, yil)
+    return program_detail(kilavuz_kodu, yil)
+
+
+@app.delete("/api/programlar/{kilavuz_kodu}", status_code=204, tags=["3. Programlar"],
+            summary="Demo programını belirtilen yılda sil", dependencies=[Depends(require_write_key)])
+def delete_program(kilavuz_kodu: ProgramCode, yil: RequiredYear) -> Response:
+    rows = write_query(
+        """DELETE FROM api.demo_programs WHERE kilavuz_kodu = %(code)s AND yil = %(year)s
+           RETURNING kilavuz_kodu, yil""",
+        {"code": kilavuz_kodu, "year": yil},
+        foreign_key_message="Net veya koşul kayıtlarının kullandığı program silinemez.",
+    )
+    check_demo_program(rows, kilavuz_kodu, yil)
+    return Response(status_code=204)
 
 
 @app.get("/api/net-sonuclari", tags=["4. Netler"], summary="Yıl / puan türüne göre net sonuçları")
