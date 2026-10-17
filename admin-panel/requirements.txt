@@ -1,0 +1,7 @@
+fastapi==0.143.3
+uvicorn[standard]==0.53.0
+pydantic==2.13.5
+psycopg[binary]==3.3.6
+psycopg-pool==3.3.3
+croniter==6.2.4
+psutil==7.2.2

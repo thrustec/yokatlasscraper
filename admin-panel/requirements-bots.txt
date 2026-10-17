@@ -1,0 +1,6 @@
+# Botların (scraper klasöründeki kodun) ihtiyaç duyduğu kütüphaneleri buraya yazın.
+# Değiştirdikten sonra: docker compose -f admin-panel/compose.admin.yaml up -d --build
+requests
+httpx
+beautifulsoup4
+pandas
