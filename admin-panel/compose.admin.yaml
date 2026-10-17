@@ -1,0 +1,43 @@
+# ÜniRota admin paneli: web arayüzü + botları çalıştıran çalıştırıcı.
+# Repo kökünden:  docker compose -f admin-panel/compose.admin.yaml up -d --build
+# Panel sadece sunucunun kendisinden erişilebilir (127.0.0.1:8090); dışarıdan SSH tüneliyle girilir.
+name: yokatlas-admin
+
+x-common: &common
+  build:
+    context: .
+  env_file: .env
+  restart: unless-stopped
+  networks: [db]
+
+services:
+  web:
+    <<: *common
+    ports:
+      - "127.0.0.1:${ADMIN_PORT:-8090}:8090"
+    volumes:
+      - /:/hostfs:ro            # disk doluluğunu sunucunun diskinden ölçmek için (salt okunur)
+    environment:
+      ADMIN_DISK_PATH: /hostfs
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8090/healthz')"]
+      interval: 30s
+      timeout: 5s
+
+  runner:
+    <<: *common
+    command: ["python", "-m", "adminpanel.runner"]
+    stop_grace_period: 40s       # çalışan botlar düzgün dursun diye
+    volumes:
+      - ${ADMIN_REPO_HOST_DIR:-..}:/repo   # repo: botların kodu burada (scraper/ vb.)
+      - /:/hostfs:ro
+    environment:
+      ADMIN_REPO_DIR: /repo
+      ADMIN_DISK_PATH: /hostfs
+
+networks:
+  db:
+    # Mevcut PostgreSQL'in (repo kökündeki compose.yaml) Docker ağı.
+    # Adı farklıysa: docker network ls  ile bakıp .env içindeki ADMIN_DB_NETWORK'e yazın.
+    name: ${ADMIN_DB_NETWORK:-yokatlas-intelligence_default}
+    external: true
