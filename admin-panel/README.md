@@ -116,7 +116,7 @@ Panel repodan ayrı bir klasöre de kurulabilir (ör. `/opt/yokatlas-admin/admin
    ```
    Bu komut panele "Örnek bot" ekler. Bot gerçek bir siteye gitmez, sadece sayfa indiriyormuş gibi yapar. Panelden başlatıp durdurmayı, logları ve yeniden denemeyi bununla deneyebilirsiniz. İşiniz bitince Ayarlar sekmesinden silebilirsiniz.
 
-Güncelleme (kod değişince): `git pull` ve ardından `docker compose -f admin-panel/compose.admin.yaml up -d --build`.
+Güncelleme (kod değişince): sunucuda `admin-panel` klasöründe `sudo bash guncelle.sh`. Betik main'deki son kodu çeker (`git pull`) ve paneli yeniden kurar; çalışan bot varsa önce sorar.
 
 ## Yeni bot ekleme
 
