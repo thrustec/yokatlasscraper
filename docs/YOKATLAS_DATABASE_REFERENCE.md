@@ -25,6 +25,10 @@ flowchart LR
 - **Ham içerik:** API yanıtı ve kayıtları `JSONB`; alan/değer düzeyinde korunur, fakat özgün HTTP response baytları, anahtar sırası ve boşluklar **birebir korunmaz**.
 - **Tamlık iddiası:** Bu şema **keşfedilmiş 5 endpoint / 5 kaynak varlığını** kapsar. YÖK Atlas'ın bütün olası API'leri tarandı anlamına gelmez.
 
+### 17 Ekim 2026 TÜİK örnek veri eki
+
+`006_tuik_population_by_province.sql`, `staging.tuik_population_by_province` tablosunu ve `api.tuik_population_by_province` görünümünü ekler. Geliştirme veritabanına TÜİK SDMX `DF_ADNKS_T16` dataflow'unun 2025 verisi yüklendi: `raw` katmanında 4.920 gözlem, YÖK Atlas il kodlarıyla eşleşen `staging` katmanında 4.860 gözlem (81 il, yaş grubu ve cinsiyet boyutları). API anahtarı ve erişim token'ı kaydedilmedi. Aşağıdaki sayım ve şema özeti 10 Ekim tarihli başlangıç snapshot'ıdır; bu ek tabloyu içermez.
+
 ## 2. Ortam ve bağlantı
 
 | Ayar | Yerel geliştirme değeri |

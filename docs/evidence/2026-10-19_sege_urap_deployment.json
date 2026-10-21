@@ -1,0 +1,161 @@
+{
+  "runs": [
+    {
+      "run_id": 5,
+      "bot_id": 4,
+      "status": "succeeded",
+      "exit_code": 0,
+      "records_written": 1080,
+      "pages_ok": 2,
+      "pages_failed": 0,
+      "summary": {
+        "reports": [
+          {
+            "counts": {
+              "il": 81,
+              "bolge": 26
+            },
+            "issues": [],
+            "status": "completed",
+            "records": 107,
+            "published": true,
+            "report_id": "sege-il-2025",
+            "document_id": 1,
+            "new_records": 107,
+            "ingestion_run_id": 10
+          },
+          {
+            "counts": {
+              "ilce": 973
+            },
+            "issues": [],
+            "status": "completed",
+            "records": 973,
+            "published": true,
+            "report_id": "sege-ilce-2022",
+            "document_id": 2,
+            "new_records": 973,
+            "ingestion_run_id": 11
+          }
+        ]
+      }
+    },
+    {
+      "run_id": 6,
+      "bot_id": 5,
+      "status": "succeeded",
+      "exit_code": 0,
+      "records_written": 198,
+      "pages_ok": 1,
+      "pages_failed": 0,
+      "summary": {
+        "reports": [
+          {
+            "counts": {
+              "universite": 198
+            },
+            "issues": [],
+            "status": "completed",
+            "records": 198,
+            "published": true,
+            "report_id": "urap-tr-2025-2026",
+            "document_id": 3,
+            "new_records": 198,
+            "ingestion_run_id": 13
+          }
+        ]
+      }
+    }
+  ],
+  "publications": [
+    {
+      "report_id": "sege-il-2025",
+      "source_system": "sege",
+      "edition": "2025",
+      "source_url": "https://www.kalkinmakutuphanesi.gov.tr/assets/upload/dosyalar/l-sege-2025.pdf",
+      "source_sha256": "7b933570a02b6cb14f8da1ca1db77f066a61665951f4716f771f570f0d41e7c7",
+      "parser_version": "reports-pdf-1",
+      "captured_at": "2026-10-19T16:36:40.128583+03:00",
+      "published_at": "2026-10-19T16:36:44.262857+03:00",
+      "counts": {
+        "il": 81,
+        "bolge": 26
+      }
+    },
+    {
+      "report_id": "sege-ilce-2022",
+      "source_system": "sege",
+      "edition": "2022",
+      "source_url": "https://www.kalkinmakutuphanesi.gov.tr/assets/upload/dosyalar/2022-ilce-sege.pdf",
+      "source_sha256": "5c99314d7a10558f9f607f1fe4c4135148b887a232e79984b4540a213d9ede8f",
+      "parser_version": "reports-pdf-1",
+      "captured_at": "2026-10-19T16:36:50.500268+03:00",
+      "published_at": "2026-10-19T16:37:23.016181+03:00",
+      "counts": {
+        "ilce": 973
+      }
+    },
+    {
+      "report_id": "urap-tr-2025-2026",
+      "source_system": "urap",
+      "edition": "2025-2026",
+      "source_url": "https://newtr.urapcenter.org/cdn/storage/PDFs/mezDn2uAd4mx2mZzW/original/mezDn2uAd4mx2mZzW.pdf",
+      "source_sha256": "5499f09ba953c9519f2f36643a893c76edaf6ca2e5736b6158dd226ec1a92329",
+      "parser_version": "reports-pdf-1",
+      "captured_at": "2026-10-19T16:37:26.245352+03:00",
+      "published_at": "2026-10-19T16:37:36.538527+03:00",
+      "counts": {
+        "universite": 198
+      }
+    }
+  ],
+  "sege_counts": [
+    {
+      "yerlesim_duzeyi": "bolge",
+      "yil": 2025,
+      "records": 26
+    },
+    {
+      "yerlesim_duzeyi": "il",
+      "yil": 2025,
+      "records": 81
+    },
+    {
+      "yerlesim_duzeyi": "ilce",
+      "yil": 2022,
+      "records": 973
+    }
+  ],
+  "urap": {
+    "records": 198,
+    "university_ids": 198,
+    "missing_identities": 0
+  },
+  "deployment_date": "2026-10-19",
+  "server_repository": "/home/deploy/yokatlas",
+  "panel_directory": "/opt/yokatlas-admin/admin-panel",
+  "runner": "yokatlas-admin-runner-1",
+  "web": "yokatlas-admin-web-1",
+  "migration": "007_sege_urap_reports.sql",
+  "pdfplumber_version": "0.11.10",
+  "schedule": "manual",
+  "university_mapping": {
+    "unmatched_after_mapping": 0,
+    "explicit_aliases": 83,
+    "method": "Exact PDF university name plus PDF city matches the core name with its parenthesized city suffix.",
+    "file": "inputs/urap-universite-eslemeleri.json"
+  },
+  "read_role_verified": "atlas_api",
+  "code_sha256": {
+    "scraper/report_bot.py": "93bdc11b0995317af68801432defc333d143e9bd7838b3ba0e49b150f25e0108",
+    "scraper/report_parsers.py": "f1bf2ebd2396b436e491b76aa36e520dceca4b36d656369426550802919dd05e",
+    "scraper/panel_sege.py": "b9e7db97be602f9cdd27da2d28c6e51ccb161de49e679286f38dca512fe28bd4",
+    "scraper/panel_urap.py": "6228d73c89539e98b217d8874c6d1ecfb3ebedc735e510a407ea2b83a7671974",
+    "database/migrations/007_sege_urap_reports.sql": "fab39de3726250c34fc1cb451c29808536f1769a3ab82e044eb11911cd3a6bbc",
+    "inputs/urap-universite-eslemeleri.json": "0dc5a128a76adc701802b1a1fef8ce4b8c40a021865beeb4d8ac01ee21b9e9f5"
+  },
+  "panel_coverage_verified": {
+    "api.sege_results": 1080,
+    "api.urap_rankings": 198
+  }
+}

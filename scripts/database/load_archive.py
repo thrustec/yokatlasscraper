@@ -2,13 +2,15 @@
 """Offline, resumable archived-JSON -> raw, staging, core loader for Data Contract v1.
 
 No network requests. One atomic transaction per source JSON file. Reruns
-skip unchanged pages. All raw duplicates are preserved; identical net entries
+reuse RAW pages; new snapshots refresh CORE even for known content. Identical net entries
 are deduped only in core and conflicting natural keys enter quarantine.
 """
 from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
+import os
 import re
 import sys
 from collections import Counter
@@ -36,7 +38,8 @@ def read_env(path):
             line=line.strip()
             if not line or line.startswith('#') or '=' not in line: continue
             k,v=line.split('=',1)
-            out[k]=v
+            if len(v)>=2 and v[0]==v[-1] and v[0] in ('"',"'"): v=v[1:-1]
+            out[k.strip()]=v
     return out
 
 def source_files(root):
@@ -70,15 +73,40 @@ def parse_file(path,entity):
 def parse_int(obj,key):
     value=obj.get(key)
     if value is None or value == '': return None
+    if isinstance(value,bool) or not isinstance(value,(str,int,float)):
+        raise ValueError(f'{key}: expected integer')
+    if isinstance(value,float) and (not math.isfinite(value) or not value.is_integer() or abs(value)>2**53):
+        raise ValueError(f'{key}: expected whole number')
+    number=int(value)
+    if not -(2**63) <= number < 2**63: raise ValueError(f'{key}: outside BIGINT range')
+    return number
+
+def parse_float(obj,key):
+    value=obj.get(key)
+    if value is None or value=='': return None
     if isinstance(value,bool): raise ValueError(f'{key}: unexpected bool')
-    return int(value)
+    number=float(value)
+    if not math.isfinite(number): raise ValueError(f'{key}: non-finite number')
+    return number
 
 def field_values(row,fields,Jsonb):
     result=[]
     for f in fields:
         value=row.get(f['api_field'])
-        if value is not None and f['sql_type']=='JSONB':
-            value=Jsonb(value)
+        if value is not None:
+            typ=f['sql_type']
+            if typ=='JSONB':
+                if f['api_field']=='kosulList' and (not isinstance(value,list) or
+                        not all(isinstance(entry,dict) and all(code.strip() and
+                            (description is None or isinstance(description,str))
+                            for code,description in entry.items()) for entry in value)):
+                    raise ValueError('kosulList: expected condition code/description objects')
+                value=Jsonb(value)
+            elif typ=='BIGINT': value=parse_int(row,f['api_field'])
+            elif typ=='DOUBLE PRECISION': value=parse_float(row,f['api_field'])
+            elif typ=='TEXT':
+                if isinstance(value,(bool,dict,list)): raise ValueError(f"{f['api_field']}: expected text/scalar")
+                value=str(value)
         result.append(value)
     return result
 
@@ -144,17 +172,28 @@ def canonical_upsert(cur,entity,row,srid,run_id,Jsonb,stats):
              remaining_fields=EXCLUDED.remaining_fields,ingested_at=now()
            RETURNING program_version_id''',(
             code,year,uni,city,g,row['puanTuru'],parse_int(row,'birimId'),row['birimAdi'],
-            parse_int(row,'fymkId'),row.get('minPuan'),parse_int(row,'basariSirasi'),
+            parse_int(row,'fymkId'),parse_float(row,'minPuan'),parse_int(row,'basariSirasi'),
             parse_int(row,'kontenjan'),srid,Jsonb(row)))
         pvid=cur.fetchone()[0]
         conditions=row.get('kosulList')
         if isinstance(conditions,list):
+            if not all(isinstance(entry,dict) for entry in conditions):
+                raise ValueError('kosulList: expected a list of objects')
+            cur.execute('DELETE FROM core.program_conditions WHERE program_version_id=%s',(pvid,))
             for entry in conditions:
-                if not isinstance(entry,dict): continue
                 for condition_code,description in entry.items():
-                    cur.execute('''INSERT INTO core.conditions (condition_code,description)
-                        VALUES (%s,%s) ON CONFLICT (condition_code) DO NOTHING''',
-                        (str(condition_code),str(description) if description is not None else None))
+                    cur.execute('''INSERT INTO core.conditions AS c (condition_code,description,raw_details)
+                        VALUES (%s,%s,%s) ON CONFLICT (condition_code) DO UPDATE SET
+                        description=CASE WHEN coalesce((c.raw_details->>'description_year')::int,0)
+                            <=(EXCLUDED.raw_details->>'description_year')::int
+                            THEN EXCLUDED.description ELSE c.description END,
+                        raw_details=c.raw_details || jsonb_build_object(
+                            'description_year',greatest(coalesce((c.raw_details->>'description_year')::int,0),
+                                (EXCLUDED.raw_details->>'description_year')::int),
+                            'descriptions_by_year',coalesce(c.raw_details->'descriptions_by_year','{}'::jsonb)
+                                || (EXCLUDED.raw_details->'descriptions_by_year'))''',
+                        (str(condition_code),str(description) if description is not None else None,
+                         Jsonb({'description_year':year,'descriptions_by_year':{str(year):description}})))
                     cur.execute('''INSERT INTO core.program_conditions (program_version_id,condition_code)
                         VALUES (%s,%s) ON CONFLICT DO NOTHING''',(pvid,str(condition_code)))
     elif entity=='net_results':
@@ -170,11 +209,11 @@ def canonical_upsert(cur,entity,row,srid,run_id,Jsonb,stats):
           VALUES ('''+','.join(['%s']*26)+''') ON CONFLICT (kilavuz_kodu,yil,puan_turu) DO NOTHING
           RETURNING net_result_id''',(
            code,year,score,parse_int(row,'universiteId'),parse_int(row,'birimGrupId'),
-           row.get('tabanPuan'),row.get('katsayi'),row.get('obp'),
-           row.get('tytTrkNet'),row.get('tytSosNet'),row.get('tytMatNet'),row.get('tytFenNet'),
-           row.get('aytMatNet'),row.get('aytFizNet'),row.get('aytKimNet'),row.get('aytBioNet'),
-           row.get('aytTdeNet'),row.get('aytTrh1Net'),row.get('aytCog1Net'),row.get('aytTrh2Net'),
-           row.get('aytCog2Net'),row.get('aytFelNet'),row.get('aytDinNet'),row.get('ydtYdilNet'),
+           parse_float(row,'tabanPuan'),parse_float(row,'katsayi'),parse_float(row,'obp'),
+           parse_float(row,'tytTrkNet'),parse_float(row,'tytSosNet'),parse_float(row,'tytMatNet'),parse_float(row,'tytFenNet'),
+           parse_float(row,'aytMatNet'),parse_float(row,'aytFizNet'),parse_float(row,'aytKimNet'),parse_float(row,'aytBioNet'),
+           parse_float(row,'aytTdeNet'),parse_float(row,'aytTrh1Net'),parse_float(row,'aytCog1Net'),parse_float(row,'aytTrh2Net'),
+           parse_float(row,'aytCog2Net'),parse_float(row,'aytFelNet'),parse_float(row,'aytDinNet'),parse_float(row,'ydtYdilNet'),
            srid,Jsonb(row)))
         if cur.fetchone() is None:
             cur.execute('''SELECT sr.record FROM core.net_results n
@@ -187,91 +226,180 @@ def canonical_upsert(cur,entity,row,srid,run_id,Jsonb,stats):
                 stats['conflicting_net_duplicate']+=1
                 quarantine(cur,run_id,entity,'conflicting_net_natural_key',
                    {'kilavuzKodu':code,'yil':year,'puanTuru':score},srid,row,Jsonb)
+        cur.execute('''UPDATE core.net_results n SET program_version_id=(
+            SELECT p.program_version_id FROM core.program_versions p
+            WHERE p.kilavuz_kodu=n.kilavuz_kodu AND p.yil=n.yil AND p.puan_turu=n.puan_turu)
+            WHERE n.kilavuz_kodu=%s AND n.yil=%s AND n.puan_turu=%s''',(code,year,score))
 
-def main():
-    ap=argparse.ArgumentParser(description=__doc__)
-    ap.add_argument('--root',default='outputs/yokatlas_full',help='folder containing complete_data')
-    ap.add_argument('--env-file',default=None,help='path to DB .env (default: next to this package compose.yaml)')
-    ap.add_argument('--max-files',type=int,default=0,help='0=all, otherwise import only first N files')
-    ap.add_argument('--dry-run',action='store_true')
-    args=ap.parse_args()
-    root=Path(args.root)
+def import_archive(root, env_file=None, max_files=0, dry_run=False, on_progress=None):
+    """Import each page atomically; committed pages are safe to replay after a crash."""
+    root=Path(root).resolve()
     inputs=list(source_files(root))
-    if not inputs: ap.error(f'No JSON files under {root}/complete_data')
-    if args.max_files>0: inputs=inputs[:args.max_files]
-    print(f'Files found: {len(inputs)}; archive root: {root}')
-    if args.dry_run:
+    if not inputs: raise ValueError(f'No JSON files under {root}/complete_data')
+    total_inputs=len(inputs)
+    if max_files>0: inputs=inputs[:max_files]
+    if dry_run:
         counts=Counter()
         for entity,score,page,path in inputs:
             _,rows=parse_file(path,entity)
             counts[entity]+=len(rows)
-        print('Dry run row counts:',dict(counts)); return
-    try:
-        import psycopg
-        from psycopg import sql
-        from psycopg.types.json import Jsonb
-    except ImportError as exc:
-        raise SystemExit('Install requirements: python -m pip install -r requirements.txt') from exc
+        return dict(counts)
+    import psycopg
+    from psycopg import sql
+    from psycopg.types.json import Jsonb
     pkgroot=Path(__file__).resolve().parents[2]
-    env=read_env(Path(args.env_file) if args.env_file else pkgroot/'.env')
-    if not env.get('ATLAS_INGEST_PASSWORD'):
-        raise SystemExit('ATLAS_INGEST_PASSWORD missing; run scripts/setup.ps1')
-    contract=json.loads((pkgroot/'docs/database/data_contract_v1.json').read_text(encoding='utf-8'))
-    fields=contract['observed_field_metadata']
+    if env_file and not Path(env_file).is_file(): raise ValueError('Database env file does not exist')
+    env={**read_env(Path(env_file) if env_file else pkgroot/'.env'),**os.environ}
+    password=env.get('PGPASSWORD') or env.get('ATLAS_INGEST_PASSWORD')
+    if not password: raise ValueError('Set PGPASSWORD or ATLAS_INGEST_PASSWORD in the environment or env file')
+    fields=json.loads((pkgroot/'docs/database/data_contract_v1.json').read_text())['observed_field_metadata']
+    manifest_path=root/'manifest.json'
+    manifest=json.loads(manifest_path.read_text()) if manifest_path.exists() else None
+    if manifest and manifest.get('phase') not in ('collected','importing','completed','archived'):
+        raise ValueError('Snapshot collection is incomplete; resume collection before importing')
+    if manifest and total_inputs!=sum(part['pages'] for part in manifest['partitions'].values()):
+        raise ValueError('Snapshot is missing archived pages or contains unexpected pages')
     stats=Counter()
-    with psycopg.connect(host='127.0.0.1',port=int(env.get('POSTGRES_PORT',5433)),
-        dbname='yokatlas_intelligence',user='atlas_ingest',password=env['ATLAS_INGEST_PASSWORD'],
-        autocommit=True) as conn:
+    observations=[]
+    params=dict(host=env.get('PGHOST','127.0.0.1'),
+        port=int(env.get('PGPORT',env.get('POSTGRES_PORT','5433'))),
+        dbname=env.get('PGDATABASE','yokatlas_intelligence'),
+        user=env.get('PGUSER','atlas_ingest'),password=password,
+        connect_timeout=10,autocommit=True,
+        options='-c statement_timeout=60000 -c lock_timeout=10000')
+    for name,param in [('PGSSLMODE','sslmode'),('PGSSLROOTCERT','sslrootcert')]:
+        if env.get(name): params[param]=env[name]
+    with psycopg.connect(**params) as conn:
         with conn.cursor() as cur:
-            cur.execute('''INSERT INTO raw.ingestion_runs (source_system,scraper_version,details)
-                VALUES ('yokatlas','offline-archive-bootstrap-1',%s) RETURNING ingestion_run_id''',
+            cur.execute("SELECT pg_try_advisory_lock(hashtext('yokatlas_archive_loader'))")
+            if not cur.fetchone()[0]: raise RuntimeError('Another YOK Atlas importer is running')
+            cur.execute("""SELECT details->'observed_response_ids' FROM raw.ingestion_runs
+                WHERE scraper_version='yokatlas-archive-2' AND details->>'archive_root'=%s""",(str(root),))
+            completed_responses={response_id for row in cur.fetchall() for response_id in (row[0] or [])}
+            cur.execute("""UPDATE raw.ingestion_runs SET status='interrupted',completed_at=now()
+                WHERE status='running' AND scraper_version='yokatlas-archive-2'
+                  AND details->>'archive_root'=%s""",(str(root),))
+            cur.execute("""INSERT INTO raw.ingestion_runs (source_system,scraper_version,details)
+                VALUES ('yokatlas','yokatlas-archive-2',%s) RETURNING ingestion_run_id""",
                 (Jsonb({'archive_root':str(root),'source_files':len(inputs)}),))
             run_id=cur.fetchone()[0]
         try:
-            for fileidx,(entity,score,page,path) in enumerate(inputs,1):
+            for index,(entity,score,page,path) in enumerate(inputs,1):
+                if on_progress: on_progress(entity,score,page,index-1,len(inputs),dict(stats))
                 obj,rows=parse_file(path,entity)
-                payload_hash=digest(obj)
+                relative=path.relative_to(root).as_posix()
+                meta_path=path.with_suffix('.meta.json')
+                meta=json.loads(meta_path.read_text()) if manifest and meta_path.exists() else None
+                if manifest and not meta: raise ValueError(f'Missing archive receipt: {relative}')
+                # Bot archives retain exact response bytes; legacy archives keep their original identity convention.
+                payload_hash=hashlib.sha256(path.read_bytes()).hexdigest() if meta else digest(obj)
+                if meta and payload_hash!=meta['sha256']: raise ValueError(f'Archive checksum mismatch: {relative}')
                 method,endpoint=PATHS[entity]
+                delta=Counter()
                 with conn.transaction():
                     with conn.cursor() as cur:
-                        cur.execute('''INSERT INTO raw.api_responses
-                            (ingestion_run_id,endpoint,method,score_type,page_number,
+                        cur.execute("""INSERT INTO raw.api_responses
+                            (ingestion_run_id,endpoint,method,score_type,page_number,captured_at,
                              source_hash_sha256,http_status,payload,source_path)
-                             VALUES (%s,%s,%s,%s,%s,%s,200,%s,%s)
-                             ON CONFLICT DO NOTHING RETURNING api_response_id''',
-                            (run_id,endpoint,method,score,page,payload_hash,Jsonb(obj),str(path)))
-                        r=cur.fetchone()
-                        if r is None:
-                            stats['unchanged_files_skipped']+=1
-                            continue
-                        response_id=r[0]
-                        api_fields=fields[entity]
-                        for index,row in enumerate(rows):
-                            cur.execute('''INSERT INTO raw.source_records
-                                (api_response_id,source_entity,source_array_index,record,record_hash_sha256)
-                                VALUES (%s,%s,%s,%s,%s) RETURNING source_record_id''',
-                                (response_id,entity,index,Jsonb(row),digest(row)))
-                            srid=cur.fetchone()[0]
-                            colnames=[f['sql_column'] for f in api_fields]
-                            # Identifiers are derived from the checked-in contract, never API payload text.
+                             VALUES (%s,%s,%s,%s,%s,coalesce(%s::timestamptz,now()),%s,200,%s,%s)
+                             ON CONFLICT DO NOTHING RETURNING api_response_id""",
+                            (run_id,endpoint,method,score,page,meta['captured_at'] if meta else None,
+                             payload_hash,Jsonb(obj),str(path)))
+                        found=cur.fetchone()
+                        if found is None:
+                            cur.execute("""SELECT r.api_response_id,ir.details->>'archive_root'
+                                FROM raw.api_responses r JOIN raw.ingestion_runs ir USING (ingestion_run_id)
+                                WHERE endpoint=%s AND coalesce(score_type,'')=coalesce(%s,'')
+                                  AND coalesce(page_number,-1)=coalesce(%s,-1) AND source_hash_sha256=%s""",
+                                (endpoint,score,page,payload_hash))
+                            response_id,original_root=cur.fetchone()
+                            cur.execute('SELECT count(*) FROM raw.source_records WHERE api_response_id=%s',(response_id,))
+                            if cur.fetchone()[0]!=len(rows):
+                                raise ValueError(f'Existing RAW page is incomplete: {relative}')
+                            # A RAW-only writer must not make us skip ETL for an existing response.
+                            cur.execute(sql.SQL("""SELECT count(*) FROM raw.source_records r
+                                LEFT JOIN staging.{} s USING (source_record_id)
+                                WHERE r.api_response_id=%s AND s.source_record_id IS NULL
+                                  AND NOT EXISTS (SELECT 1 FROM quality.quarantined_records q
+                                      WHERE q.source_record_ids @> jsonb_build_array(r.source_record_id))""").format(sql.Identifier(entity)),(response_id,))
+                            if cur.fetchone()[0]: raise ValueError(f'Existing RAW page has unfinished ETL: {relative}')
+                            if original_root==str(root) or response_id in completed_responses:
+                                delta['unchanged_files_skipped']+=1
+                            else:
+                                # A later snapshot may revert to previously seen values; RAW dedup must not leave CORE stale.
+                                cur.execute(sql.SQL('''SELECT r.record,r.source_record_id
+                                    FROM raw.source_records r JOIN staging.{} s USING (source_record_id)
+                                    WHERE r.api_response_id=%s ORDER BY r.source_array_index''').format(sql.Identifier(entity)),(response_id,))
+                                for record,srid in cur.fetchall():
+                                    canonical_upsert(cur,entity,record,srid,run_id,Jsonb,delta)
+                                delta['files_reapplied']+=1
+                        else:
+                            response_id=found[0]
+                            api_fields=fields[entity]
                             query=sql.SQL('INSERT INTO {} ({}) VALUES ({})').format(
                                 sql.Identifier('staging',entity),
-                                sql.SQL(',').join(map(sql.Identifier,['source_record_id',*colnames,'source_payload'])),
-                                sql.SQL(',').join(sql.Placeholder() for _ in range(len(colnames)+2)))
-                            cur.execute(query,(srid,*field_values(row,api_fields,Jsonb),Jsonb(row)))
-                            canonical_upsert(cur,entity,row,srid,run_id,Jsonb,stats)
-                            stats[entity]+=1
-                stats['files_imported']+=1
-                if fileidx%20==0 or fileidx==len(inputs):
-                    print(f'{fileidx}/{len(inputs)} files, {sum(stats[k] for k in ENTITIES)} rows staged',flush=True)
+                                sql.SQL(',').join(map(sql.Identifier,['source_record_id',*[f['sql_column'] for f in api_fields],'source_payload'])),
+                                sql.SQL(',').join(sql.Placeholder() for _ in range(len(api_fields)+2)))
+                            for row_index,row in enumerate(rows):
+                                cur.execute("""INSERT INTO raw.source_records
+                                    (api_response_id,source_entity,source_array_index,record,record_hash_sha256)
+                                    VALUES (%s,%s,%s,%s,%s) RETURNING source_record_id""",
+                                    (response_id,entity,row_index,Jsonb(row),digest(row)))
+                                srid=cur.fetchone()[0]
+                                try: values=field_values(row,api_fields,Jsonb)
+                                except (ValueError,TypeError,OverflowError):
+                                    quarantine(cur,run_id,entity,'invalid_field_type',
+                                        {'source_array_index':row_index},srid,row,Jsonb)
+                                    continue
+                                cur.execute(query,(srid,*values,Jsonb(row)))
+                                canonical_upsert(cur,entity,row,srid,run_id,Jsonb,delta)
+                                delta[entity]+=1
+                            delta['files_imported']+=1
+                        cur.execute("""SELECT count(*) FROM quality.quarantined_records q
+                            WHERE EXISTS (SELECT 1 FROM raw.source_records r
+                                WHERE r.api_response_id=%s AND q.source_record_ids @> jsonb_build_array(r.source_record_id))""",(response_id,))
+                        delta['quarantined_records']+=cur.fetchone()[0]
+                stats.update(delta)
+                observations.append(response_id)
+                details={'archive_root':str(root),'source_files':len(inputs),'processed_files':index,
+                    'observed_response_ids':observations,'source_parameters':manifest.get('parameters',{}) if manifest else {},
+                    'stats':dict(stats)}
+                with conn.cursor() as cur:
+                    cur.execute('UPDATE raw.ingestion_runs SET details=%s WHERE ingestion_run_id=%s',(Jsonb(details),run_id))
+                if on_progress: on_progress(entity,score,page,index,len(inputs),dict(stats))
+            issues=any(stats[key] for key in ('quarantined_records','unresolved_program_group','unresolved_city'))
+            status=('partial' if len(inputs)<total_inputs else 'completed_with_issues' if issues else 'completed')
             with conn.cursor() as cur:
-                cur.execute('''UPDATE raw.ingestion_runs SET status='completed',completed_at=now(),
-                    details=%s WHERE ingestion_run_id=%s''',(Jsonb(dict(stats)),run_id))
-        except Exception as e:
-            with conn.cursor() as cur:
-                cur.execute('''UPDATE raw.ingestion_runs SET status='failed',completed_at=now(),
-                    details=%s WHERE ingestion_run_id=%s''',(Jsonb({'error':str(e),**stats}),run_id))
+                cur.execute("""INSERT INTO quality.data_quality_checks
+                    (ingestion_run_id,check_name,status,observed_value) VALUES (%s,%s,%s,%s)""",
+                    (run_id,'archive_import','passed' if status=='completed' else 'warning',Jsonb(dict(stats))))
+                cur.execute("""UPDATE raw.ingestion_runs SET status=%s,completed_at=now(),details=%s
+                    WHERE ingestion_run_id=%s""",(status,Jsonb(details),run_id))
+            return {'run_id':run_id,'status':status,**stats}
+        except BaseException as exc:
+            # Avoid logging credentials/connection strings carried by driver exceptions.
+            if not conn.closed:
+                try:
+                    with conn.cursor() as cur:
+                        cur.execute("""UPDATE raw.ingestion_runs SET status='failed',completed_at=now(),details=%s
+                            WHERE ingestion_run_id=%s""",(Jsonb({'archive_root':str(root),
+                            'error_type':type(exc).__name__,'observed_response_ids':observations,'stats':dict(stats)}),run_id))
+                except psycopg.Error: pass
             raise
-    print('Finished:',json.dumps(dict(stats),ensure_ascii=False))
+
+
+def main(argv=None):
+    ap=argparse.ArgumentParser(description=__doc__)
+    ap.add_argument('--root',default='outputs/yokatlas_full',help='folder containing complete_data')
+    ap.add_argument('--env-file',default=None,help='database env file (environment variables take precedence)')
+    ap.add_argument('--max-files',type=int,default=0,help='0=all, otherwise import only first N files')
+    ap.add_argument('--dry-run',action='store_true')
+    args=ap.parse_args(argv)
+    try:
+        result=import_archive(args.root,args.env_file,args.max_files,args.dry_run)
+    except ImportError as exc:
+        raise SystemExit('Install requirements: python -m pip install -r database/requirements.txt') from exc
+    print('Finished:',json.dumps(result,ensure_ascii=False))
+
 
 if __name__=='__main__': main()

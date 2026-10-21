@@ -6,10 +6,13 @@ from typing import Annotated, Literal
 import psycopg
 from dotenv import dotenv_values
 from fastapi import Depends, FastAPI, HTTPException, Path as ApiPath, Query
+from fastapi.encoders import jsonable_encoder
 from fastapi.responses import RedirectResponse, Response
+from fastapi.staticfiles import StaticFiles
 from fastapi.security import APIKeyHeader
 from psycopg.rows import dict_row
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints
+from backend.tuik_admin import router as tuik_admin_router
 
 
 CONFIG = dotenv_values(Path(__file__).resolve().parents[1] / ".env")
@@ -35,6 +38,14 @@ app = FastAPI(
     ),
     swagger_ui_parameters={"defaultModelsExpandDepth": -1},
 )
+
+app.mount(
+    "/admin/tuik/assets",
+    StaticFiles(directory=Path(__file__).resolve().parents[1] / "frontend" / "tuik" / "assets"),
+    name="tuik-admin-assets",
+)
+
+app.include_router(tuik_admin_router)
 
 
 class University(BaseModel):
@@ -368,3 +379,55 @@ def net_results(
         {"yil": yil, "puan_turu": puan_turu, "code": kilavuz_kodu,
          "limit": limit, "offset": offset},
     )
+
+
+@app.get("/api/rapor-yayinlari", tags=["5. SEGE ve URAP"], summary="Kontrolleri geçip yayımlanmış raporlar")
+def report_publications() -> list[dict]:
+    return query("SELECT * FROM api.report_publications ORDER BY source_system, edition DESC, report_id")
+
+
+@app.get("/api/sege", tags=["5. SEGE ve URAP"], summary="SEGE il, ilçe ve bölge sonuçları")
+def sege_results(
+    duzey: Literal['il', 'ilce', 'bolge'] = 'il',
+    yil: Year = None,
+    il_kodu: Annotated[int | None, Query(ge=1, le=81)] = None,
+    kademe: Annotated[int | None, Query(ge=1, le=6)] = None,
+    q: Annotated[str | None, Query(max_length=100)] = None,
+    limit: Limit = 100,
+    offset: Offset = 0,
+) -> list[dict]:
+    return jsonable_encoder(query(
+        """SELECT * FROM api.sege_results
+           WHERE yerlesim_duzeyi=%(duzey)s
+             AND yil=coalesce(%(yil)s::int,
+                 (SELECT max(yil) FROM api.sege_results WHERE yerlesim_duzeyi=%(duzey)s))
+             AND (%(il_kodu)s::bigint IS NULL OR il_kodu=%(il_kodu)s)
+             AND (%(kademe)s::int IS NULL OR kademe=%(kademe)s)
+             AND (%(q)s::text IS NULL OR yerlesim_adi ILIKE %(q)s)
+           ORDER BY sira LIMIT %(limit)s OFFSET %(offset)s""",
+        {'duzey': duzey, 'yil': yil, 'il_kodu': il_kodu, 'kademe': kademe,
+         'q': f'%{q}%' if q else None, 'limit': limit, 'offset': offset},
+    ))
+
+
+@app.get("/api/urap", tags=["5. SEGE ve URAP"], summary="URAP Türkiye genel sıralaması ve puan bileşenleri")
+def urap_rankings(
+    donem: Annotated[str | None, Query(pattern=r'^20\d{2}-20\d{2}$')] = None,
+    universite_id: Annotated[int | None, Query(gt=0, le=9223372036854775807)] = None,
+    il_kodu: Annotated[int | None, Query(ge=1, le=81)] = None,
+    q: Annotated[str | None, Query(max_length=100)] = None,
+    limit: Limit = 100,
+    offset: Offset = 0,
+) -> list[dict]:
+    if donem and int(donem[5:]) != int(donem[:4]) + 1:
+        raise HTTPException(status_code=422, detail='URAP dönemi ardışık iki yıl olmalı.')
+    return jsonable_encoder(query(
+        """SELECT * FROM api.urap_rankings
+           WHERE donem=coalesce(%(donem)s::text,(SELECT max(donem) FROM api.urap_rankings))
+             AND (%(universite_id)s::bigint IS NULL OR universite_id=%(universite_id)s)
+             AND (%(il_kodu)s::bigint IS NULL OR il_kodu=%(il_kodu)s)
+             AND (%(q)s::text IS NULL OR universite_adi ILIKE %(q)s)
+           ORDER BY sira LIMIT %(limit)s OFFSET %(offset)s""",
+        {'donem': donem, 'universite_id': universite_id, 'il_kodu': il_kodu,
+         'q': f'%{q}%' if q else None, 'limit': limit, 'offset': offset},
+    ))

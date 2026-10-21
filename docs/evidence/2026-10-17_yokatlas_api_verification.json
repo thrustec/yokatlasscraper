@@ -1,0 +1,3116 @@
+{
+  "verification_date": "2026-10-17",
+  "timezone": "Europe/Istanbul",
+  "scope": "Read-only, bounded live GET/POST sampling; not a full export or rate-limit test. TLS verification enabled by curl. Two-second spacing between probes. Observations are descriptive, not an official API contract.",
+  "home": {
+    "url": "https://yokatlas.yok.gov.tr/",
+    "status": 200,
+    "bundle": "/static/js/main.0694672d.js"
+  },
+  "checks": {
+    "all_probes_http_200": true,
+    "body_hashes_matched": true,
+    "paging_metadata_consistent": true,
+    "page0_page1_samples_disjoint": true,
+    "sampled_year_and_score_filters_respected": true
+  },
+  "summary": {
+    "universities": 228,
+    "program_groups": 612,
+    "location_codes": 83,
+    "additional_locations": [
+      {
+        "ilAdi": "BOSNA-HERSEK",
+        "ilKodu": 992
+      },
+      {
+        "ilAdi": "KIBRIS",
+        "ilKodu": 999
+      }
+    ],
+    "program_catalog_year": 2026,
+    "program_catalog_total_reported": 21493,
+    "net_total_reported": 63063,
+    "net_years_with_nonempty_SAY_samples": [
+      2023,
+      2024,
+      2025
+    ],
+    "net_years_with_empty_unfiltered_response": [
+      2022,
+      2026
+    ]
+  },
+  "observed_program_fields": [
+    "akreditasyon",
+    "akreditasyonAck",
+    "arGor",
+    "basariSirasi",
+    "basariSirasi1",
+    "basariSirasi2",
+    "basariSirasi3",
+    "birimAdi",
+    "birimGrupAdi",
+    "birimGrupId",
+    "birimHiyerarsi",
+    "birimId",
+    "birimTuruAdi",
+    "birimTuruId",
+    "bursOraniAdi",
+    "bursOraniId",
+    "doc",
+    "donem",
+    "dou",
+    "eskiKilavuzKodu",
+    "fymkAdi",
+    "fymkId",
+    "fymkIlAdi",
+    "fymkIlKodu",
+    "fymkIlceAdi",
+    "fymkIlceKodu",
+    "gk1",
+    "gk2",
+    "gk3",
+    "gkY",
+    "ilAdi",
+    "ilKodu",
+    "ilceAdi",
+    "ilceKodu",
+    "kilAciklama",
+    "kilavuzKodu",
+    "kontenjan",
+    "kontenjanObs",
+    "kontenjanSgy",
+    "kosul",
+    "kosulList",
+    "kpss1",
+    "minBasariSirasi",
+    "minBasariSirasiKosul",
+    "minPuan",
+    "minPuan1",
+    "minPuan2",
+    "minPuan3",
+    "obkY",
+    "ogrenimDiliAdi",
+    "ogrenimDiliId",
+    "ogrenimSuresi",
+    "ogrenimTuruAdi",
+    "ogrenimTuruId",
+    "osymKilavuzId",
+    "prof",
+    "puanTuru",
+    "sgyY",
+    "sinav",
+    "tabloTuru",
+    "tamBursBirimId",
+    "tusktp",
+    "tustt1",
+    "tyc",
+    "ucret",
+    "uniAkreditasyon",
+    "uniIlAdi",
+    "uniIlKodu",
+    "uniIlceAdi",
+    "uniIlceKodu",
+    "uniKilAciklama",
+    "universiteAdi",
+    "universiteId",
+    "universiteTuru",
+    "uygulamaliEgitimModeli",
+    "yil"
+  ],
+  "observed_net_fields": [
+    "aytBioNet",
+    "aytCog1Net",
+    "aytCog2Net",
+    "aytDinNet",
+    "aytFelNet",
+    "aytFizNet",
+    "aytKimNet",
+    "aytMatNet",
+    "aytTdeNet",
+    "aytTrh1Net",
+    "aytTrh2Net",
+    "birimAdi",
+    "birimGrupAdi",
+    "birimGrupId",
+    "birimId",
+    "birimTuruAdi",
+    "birimTuruId",
+    "katsayi",
+    "kilavuzKodu",
+    "obp",
+    "puanTuru",
+    "tabanPuan",
+    "tytFenNet",
+    "tytMatNet",
+    "tytSosNet",
+    "tytTrkNet",
+    "universiteAdi",
+    "universiteId",
+    "universiteTuru",
+    "ydtYdilNet",
+    "yil"
+  ],
+  "requests": [
+    {
+      "label": "bundle",
+      "method": "GET",
+      "url": "https://yokatlas.yok.gov.tr/static/js/main.0694672d.js",
+      "request": null,
+      "status": "200",
+      "curl_returncode": 0,
+      "bytes": 1308152,
+      "sha256": "b5289b1c6131249ec6176701cf92e4dab70e1b778100ba8f5db41e0af7dcc147",
+      "headers": {
+        "content-type": "application/javascript",
+        "etag": "\"6a856902-13f5f8\"",
+        "last-modified": "Wed, 19 Aug 2026 08:27:46 GMT"
+      }
+    },
+    {
+      "label": "robots",
+      "method": "GET",
+      "url": "https://yokatlas.yok.gov.tr/robots.txt",
+      "request": null,
+      "status": "200",
+      "curl_returncode": 0,
+      "bytes": 15675,
+      "sha256": "e12cb10920c018dc7723ceeb91a365bac3abf5ef28564bde4d8c461b69bf0696",
+      "headers": {
+        "content-type": "text/plain",
+        "etag": "\"6a8568e7-3d3b\"",
+        "last-modified": "Wed, 19 Aug 2026 08:27:19 GMT"
+      },
+      "interpretation": "Response is React Native source text, not a usable robots.txt policy; no allow/disallow conclusion drawn."
+    },
+    {
+      "label": "universities",
+      "method": "GET",
+      "url": "https://yokatlas.yok.gov.tr/api/tercih-kilavuz/universiteler",
+      "request": null,
+      "status": "200",
+      "curl_returncode": 0,
+      "bytes": 18478,
+      "sha256": "21da2356488fc0a09dd985b624b9651721cb1955d5e51d2210b00b63de7fb10b",
+      "headers": {
+        "content-type": "application/json",
+        "x-content-type-options": "nosniff"
+      },
+      "json_type": "list",
+      "count": 228,
+      "sample_records": [
+        {
+          "universiteAdi": "ABDULLAH GÜL ÜNİVERSİTESİ (KAYSERİ)",
+          "universiteId": 173499
+        },
+        {
+          "universiteAdi": "ACIBADEM MEHMET ALİ AYDINLAR ÜNİVERSİTESİ (İSTANBUL)",
+          "universiteId": 326654
+        }
+      ]
+    },
+    {
+      "label": "program_groups",
+      "method": "GET",
+      "url": "https://yokatlas.yok.gov.tr/api/tercih-kilavuz/universite-programlar",
+      "request": null,
+      "status": "200",
+      "curl_returncode": 0,
+      "bytes": 49917,
+      "sha256": "abc0fa36675dfe4ba7b96d73abb8ed8999bc5ef9263b57935665fc23855ae261",
+      "headers": {
+        "content-type": "application/json",
+        "x-content-type-options": "nosniff"
+      },
+      "json_type": "list",
+      "count": 612,
+      "sample_records": [
+        {
+          "birimGrupId": 1685,
+          "birimGrupAdi": "Abaza Dili ve Edebiyatı",
+          "puanTuru": "SÖZ"
+        },
+        {
+          "birimGrupId": 1686,
+          "birimGrupAdi": "Acil Durum ve Afet Yönetimi",
+          "puanTuru": "TYT"
+        }
+      ]
+    },
+    {
+      "label": "cities",
+      "method": "GET",
+      "url": "https://yokatlas.yok.gov.tr/api/tercih-kilavuz/universite-iller",
+      "request": null,
+      "status": "200",
+      "curl_returncode": 0,
+      "bytes": 2687,
+      "sha256": "4354a83bf8b3cac7d53ab9d47cd5ff81035c245463594d2eeb247fffd6673e3a",
+      "headers": {
+        "content-type": "application/json",
+        "x-content-type-options": "nosniff"
+      },
+      "json_type": "list",
+      "count": 83,
+      "sample_records": [
+        {
+          "ilAdi": "ADANA",
+          "ilKodu": 1
+        },
+        {
+          "ilAdi": "ADIYAMAN",
+          "ilKodu": 2
+        }
+      ]
+    },
+    {
+      "label": "programs",
+      "method": "POST",
+      "url": "https://yokatlas.yok.gov.tr/api/tercih-kilavuz/search",
+      "request": {
+        "filters": {
+          "puanTuru": "SAY"
+        },
+        "page": 0,
+        "size": 2,
+        "sortBy": "basariSirasi",
+        "direction": "ASC"
+      },
+      "status": "200",
+      "curl_returncode": 0,
+      "bytes": 14718,
+      "sha256": "f66cacfe3545b14a2f2f62f7d13030e2d5cdc1adf81178639e176db77250761a",
+      "headers": {
+        "content-type": "application/json",
+        "x-content-type-options": "nosniff"
+      },
+      "json_type": "dict",
+      "keys": [
+        "content",
+        "empty",
+        "first",
+        "last",
+        "number",
+        "numberOfElements",
+        "size",
+        "totalElements",
+        "totalPages",
+        "yil",
+        "source"
+      ],
+      "record_keys": [
+        "akreditasyon",
+        "akreditasyonAck",
+        "arGor",
+        "basariSirasi",
+        "basariSirasi1",
+        "basariSirasi2",
+        "birimAdi",
+        "birimGrupAdi",
+        "birimGrupId",
+        "birimHiyerarsi",
+        "birimId",
+        "birimTuruAdi",
+        "birimTuruId",
+        "bursOraniAdi",
+        "bursOraniId",
+        "doc",
+        "donem",
+        "dou",
+        "eskiKilavuzKodu",
+        "fymkAdi",
+        "fymkId",
+        "fymkIlAdi",
+        "fymkIlKodu",
+        "fymkIlceAdi",
+        "fymkIlceKodu",
+        "gk1",
+        "gk2",
+        "gk3",
+        "gkY",
+        "ilAdi",
+        "ilKodu",
+        "ilceAdi",
+        "ilceKodu",
+        "kilAciklama",
+        "kilavuzKodu",
+        "kontenjan",
+        "kosul",
+        "kosulList",
+        "kpss1",
+        "minBasariSirasi",
+        "minBasariSirasiKosul",
+        "minPuan",
+        "minPuan1",
+        "minPuan2",
+        "minPuan3",
+        "ogrenimDiliAdi",
+        "ogrenimDiliId",
+        "ogrenimSuresi",
+        "ogrenimTuruAdi",
+        "ogrenimTuruId",
+        "osymKilavuzId",
+        "prof",
+        "puanTuru",
+        "sinav",
+        "tabloTuru",
+        "tamBursBirimId",
+        "tusktp",
+        "tustt1",
+        "tyc",
+        "ucret",
+        "uniAkreditasyon",
+        "uniIlAdi",
+        "uniIlKodu",
+        "uniIlceAdi",
+        "uniIlceKodu",
+        "uniKilAciklama",
+        "universiteAdi",
+        "universiteId",
+        "universiteTuru",
+        "yil"
+      ],
+      "metadata": {
+        "empty": false,
+        "first": true,
+        "last": false,
+        "number": 0,
+        "numberOfElements": 2,
+        "size": 2,
+        "totalElements": 5744,
+        "totalPages": 2872,
+        "yil": 2026,
+        "source": "snapshot"
+      },
+      "sample_identities": [
+        {
+          "kilavuzKodu": 203110477,
+          "yil": 2026,
+          "puanTuru": "SAY",
+          "katsayi": null
+        },
+        {
+          "kilavuzKodu": 203101291,
+          "yil": 2026,
+          "puanTuru": "SAY",
+          "katsayi": null
+        }
+      ],
+      "observed_field_types": {
+        "akreditasyon": [
+          "str"
+        ],
+        "akreditasyonAck": [
+          "str"
+        ],
+        "arGor": [
+          "int"
+        ],
+        "basariSirasi": [
+          "int"
+        ],
+        "basariSirasi1": [
+          "int"
+        ],
+        "basariSirasi2": [
+          "int"
+        ],
+        "birimAdi": [
+          "str"
+        ],
+        "birimGrupAdi": [
+          "str"
+        ],
+        "birimGrupId": [
+          "int"
+        ],
+        "birimHiyerarsi": [
+          "str"
+        ],
+        "birimId": [
+          "int"
+        ],
+        "birimTuruAdi": [
+          "str"
+        ],
+        "birimTuruId": [
+          "int"
+        ],
+        "bursOraniAdi": [
+          "str"
+        ],
+        "bursOraniId": [
+          "int"
+        ],
+        "doc": [
+          "int"
+        ],
+        "donem": [
+          "str"
+        ],
+        "dou": [
+          "int"
+        ],
+        "eskiKilavuzKodu": [
+          "int"
+        ],
+        "fymkAdi": [
+          "str"
+        ],
+        "fymkId": [
+          "int"
+        ],
+        "fymkIlAdi": [
+          "str"
+        ],
+        "fymkIlKodu": [
+          "int"
+        ],
+        "fymkIlceAdi": [
+          "str"
+        ],
+        "fymkIlceKodu": [
+          "int"
+        ],
+        "gk1": [
+          "int"
+        ],
+        "gk2": [
+          "int"
+        ],
+        "gk3": [
+          "int"
+        ],
+        "gkY": [
+          "int"
+        ],
+        "ilAdi": [
+          "str"
+        ],
+        "ilKodu": [
+          "int"
+        ],
+        "ilceAdi": [
+          "str"
+        ],
+        "ilceKodu": [
+          "int"
+        ],
+        "kilAciklama": [
+          "str"
+        ],
+        "kilavuzKodu": [
+          "int"
+        ],
+        "kontenjan": [
+          "int"
+        ],
+        "kosul": [
+          "str"
+        ],
+        "kosulList": [
+          "list"
+        ],
+        "kpss1": [
+          "str"
+        ],
+        "minBasariSirasi": [
+          "str"
+        ],
+        "minBasariSirasiKosul": [
+          "str"
+        ],
+        "minPuan": [
+          "float"
+        ],
+        "minPuan1": [
+          "str"
+        ],
+        "minPuan2": [
+          "str"
+        ],
+        "minPuan3": [
+          "str"
+        ],
+        "ogrenimDiliAdi": [
+          "str"
+        ],
+        "ogrenimDiliId": [
+          "int"
+        ],
+        "ogrenimSuresi": [
+          "int"
+        ],
+        "ogrenimTuruAdi": [
+          "str"
+        ],
+        "ogrenimTuruId": [
+          "int"
+        ],
+        "osymKilavuzId": [
+          "int"
+        ],
+        "prof": [
+          "int"
+        ],
+        "puanTuru": [
+          "str"
+        ],
+        "sinav": [
+          "str"
+        ],
+        "tabloTuru": [
+          "str"
+        ],
+        "tamBursBirimId": [
+          "int"
+        ],
+        "tusktp": [
+          "str"
+        ],
+        "tustt1": [
+          "str"
+        ],
+        "tyc": [
+          "str"
+        ],
+        "ucret": [
+          "int"
+        ],
+        "uniAkreditasyon": [
+          "str"
+        ],
+        "uniIlAdi": [
+          "str"
+        ],
+        "uniIlKodu": [
+          "int"
+        ],
+        "uniIlceAdi": [
+          "str"
+        ],
+        "uniIlceKodu": [
+          "int"
+        ],
+        "uniKilAciklama": [
+          "str"
+        ],
+        "universiteAdi": [
+          "str"
+        ],
+        "universiteId": [
+          "int"
+        ],
+        "universiteTuru": [
+          "str"
+        ],
+        "yil": [
+          "int"
+        ]
+      }
+    },
+    {
+      "label": "nets",
+      "method": "POST",
+      "url": "https://yokatlas.yok.gov.tr/api/netler/search",
+      "request": {
+        "filters": {
+          "puanTuru": "SAY"
+        },
+        "page": 0,
+        "size": 2
+      },
+      "status": "200",
+      "curl_returncode": 0,
+      "bytes": 1116,
+      "sha256": "3b2d6ca28885260c324000ecab81b43735fc5f3d034078b6d81683ad2090d155",
+      "headers": {
+        "content-type": "application/json",
+        "x-content-type-options": "nosniff"
+      },
+      "json_type": "dict",
+      "keys": [
+        "content",
+        "empty",
+        "first",
+        "last",
+        "number",
+        "numberOfElements",
+        "size",
+        "totalElements",
+        "totalPages",
+        "source"
+      ],
+      "record_keys": [
+        "aytBioNet",
+        "aytFizNet",
+        "aytKimNet",
+        "aytMatNet",
+        "birimAdi",
+        "birimGrupAdi",
+        "birimGrupId",
+        "birimId",
+        "birimTuruAdi",
+        "birimTuruId",
+        "katsayi",
+        "kilavuzKodu",
+        "obp",
+        "puanTuru",
+        "tabanPuan",
+        "tytFenNet",
+        "tytMatNet",
+        "tytSosNet",
+        "tytTrkNet",
+        "universiteAdi",
+        "universiteId",
+        "universiteTuru",
+        "yil"
+      ],
+      "metadata": {
+        "empty": false,
+        "first": true,
+        "last": false,
+        "number": 0,
+        "numberOfElements": 2,
+        "size": 2,
+        "totalElements": 15436,
+        "totalPages": 7718,
+        "source": "snapshot"
+      },
+      "sample_identities": [
+        {
+          "kilavuzKodu": 203110477,
+          "yil": 2025,
+          "puanTuru": "SAY",
+          "katsayi": 0.12
+        },
+        {
+          "kilavuzKodu": 203910699,
+          "yil": 2025,
+          "puanTuru": "SAY",
+          "katsayi": 0.12
+        }
+      ],
+      "observed_field_types": {
+        "aytBioNet": [
+          "float"
+        ],
+        "aytFizNet": [
+          "float"
+        ],
+        "aytKimNet": [
+          "float"
+        ],
+        "aytMatNet": [
+          "float"
+        ],
+        "birimAdi": [
+          "str"
+        ],
+        "birimGrupAdi": [
+          "str"
+        ],
+        "birimGrupId": [
+          "int"
+        ],
+        "birimId": [
+          "int"
+        ],
+        "birimTuruAdi": [
+          "str"
+        ],
+        "birimTuruId": [
+          "int"
+        ],
+        "katsayi": [
+          "float"
+        ],
+        "kilavuzKodu": [
+          "int"
+        ],
+        "obp": [
+          "float"
+        ],
+        "puanTuru": [
+          "str"
+        ],
+        "tabanPuan": [
+          "float"
+        ],
+        "tytFenNet": [
+          "float"
+        ],
+        "tytMatNet": [
+          "float"
+        ],
+        "tytSosNet": [
+          "float"
+        ],
+        "tytTrkNet": [
+          "float"
+        ],
+        "universiteAdi": [
+          "str"
+        ],
+        "universiteId": [
+          "int"
+        ],
+        "universiteTuru": [
+          "str"
+        ],
+        "yil": [
+          "int"
+        ]
+      }
+    },
+    {
+      "label": "year",
+      "method": "GET",
+      "url": "https://yokatlas.yok.gov.tr/api/parameters/yil",
+      "request": null,
+      "status": "200",
+      "curl_returncode": 0,
+      "bytes": 4,
+      "sha256": "158a323a7ba44870f23d96f1516dd70aa48e9a72db4ebb026b0a89e212a208ab",
+      "headers": {
+        "content-type": "application/json",
+        "x-content-type-options": "nosniff"
+      },
+      "json_type": "int",
+      "value": 2026
+    },
+    {
+      "label": "results_announced",
+      "method": "GET",
+      "url": "https://yokatlas.yok.gov.tr/api/parameters/sonuc-aciklandi",
+      "request": null,
+      "status": "200",
+      "curl_returncode": 0,
+      "bytes": 1,
+      "sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+      "headers": {
+        "content-type": "application/json",
+        "x-content-type-options": "nosniff"
+      },
+      "json_type": "int",
+      "value": 1
+    },
+    {
+      "label": "program_all",
+      "method": "POST",
+      "url": "https://yokatlas.yok.gov.tr/api/tercih-kilavuz/search",
+      "request": {
+        "filters": {},
+        "page": 0,
+        "size": 2,
+        "sortBy": "basariSirasi",
+        "direction": "ASC"
+      },
+      "status": "200",
+      "curl_returncode": 0,
+      "bytes": 14720,
+      "sha256": "ca4bad923829909f66290f7d87a830080aae91eb087804748db88a9114f07549",
+      "record_keys": [
+        "akreditasyon",
+        "akreditasyonAck",
+        "arGor",
+        "basariSirasi",
+        "basariSirasi1",
+        "basariSirasi2",
+        "birimAdi",
+        "birimGrupAdi",
+        "birimGrupId",
+        "birimHiyerarsi",
+        "birimId",
+        "birimTuruAdi",
+        "birimTuruId",
+        "bursOraniAdi",
+        "bursOraniId",
+        "doc",
+        "donem",
+        "dou",
+        "eskiKilavuzKodu",
+        "fymkAdi",
+        "fymkId",
+        "fymkIlAdi",
+        "fymkIlKodu",
+        "fymkIlceAdi",
+        "fymkIlceKodu",
+        "gk1",
+        "gk2",
+        "gk3",
+        "gkY",
+        "ilAdi",
+        "ilKodu",
+        "ilceAdi",
+        "ilceKodu",
+        "kilAciklama",
+        "kilavuzKodu",
+        "kontenjan",
+        "kosul",
+        "kosulList",
+        "kpss1",
+        "minBasariSirasi",
+        "minBasariSirasiKosul",
+        "minPuan",
+        "minPuan1",
+        "minPuan2",
+        "minPuan3",
+        "ogrenimDiliAdi",
+        "ogrenimDiliId",
+        "ogrenimSuresi",
+        "ogrenimTuruAdi",
+        "ogrenimTuruId",
+        "osymKilavuzId",
+        "prof",
+        "puanTuru",
+        "sinav",
+        "tabloTuru",
+        "tamBursBirimId",
+        "tusktp",
+        "tustt1",
+        "tyc",
+        "ucret",
+        "uniAkreditasyon",
+        "uniIlAdi",
+        "uniIlKodu",
+        "uniIlceAdi",
+        "uniIlceKodu",
+        "uniKilAciklama",
+        "universiteAdi",
+        "universiteId",
+        "universiteTuru",
+        "yil"
+      ],
+      "row_years": [
+        2026
+      ],
+      "metadata": {
+        "empty": false,
+        "first": true,
+        "last": false,
+        "number": 0,
+        "numberOfElements": 2,
+        "size": 2,
+        "totalElements": 21493,
+        "totalPages": 10747,
+        "yil": 2026,
+        "source": "snapshot"
+      },
+      "sample_identities": [
+        {
+          "kilavuzKodu": 203110477,
+          "yil": 2026,
+          "puanTuru": "SAY",
+          "katsayi": null
+        },
+        {
+          "kilavuzKodu": 203101291,
+          "yil": 2026,
+          "puanTuru": "SAY",
+          "katsayi": null
+        }
+      ],
+      "observed_field_types": {
+        "akreditasyon": [
+          "str"
+        ],
+        "akreditasyonAck": [
+          "str"
+        ],
+        "arGor": [
+          "int"
+        ],
+        "basariSirasi": [
+          "int"
+        ],
+        "basariSirasi1": [
+          "int"
+        ],
+        "basariSirasi2": [
+          "int"
+        ],
+        "birimAdi": [
+          "str"
+        ],
+        "birimGrupAdi": [
+          "str"
+        ],
+        "birimGrupId": [
+          "int"
+        ],
+        "birimHiyerarsi": [
+          "str"
+        ],
+        "birimId": [
+          "int"
+        ],
+        "birimTuruAdi": [
+          "str"
+        ],
+        "birimTuruId": [
+          "int"
+        ],
+        "bursOraniAdi": [
+          "str"
+        ],
+        "bursOraniId": [
+          "int"
+        ],
+        "doc": [
+          "int"
+        ],
+        "donem": [
+          "str"
+        ],
+        "dou": [
+          "int"
+        ],
+        "eskiKilavuzKodu": [
+          "int"
+        ],
+        "fymkAdi": [
+          "str"
+        ],
+        "fymkId": [
+          "int"
+        ],
+        "fymkIlAdi": [
+          "str"
+        ],
+        "fymkIlKodu": [
+          "int"
+        ],
+        "fymkIlceAdi": [
+          "str"
+        ],
+        "fymkIlceKodu": [
+          "int"
+        ],
+        "gk1": [
+          "int"
+        ],
+        "gk2": [
+          "int"
+        ],
+        "gk3": [
+          "int"
+        ],
+        "gkY": [
+          "int"
+        ],
+        "ilAdi": [
+          "str"
+        ],
+        "ilKodu": [
+          "int"
+        ],
+        "ilceAdi": [
+          "str"
+        ],
+        "ilceKodu": [
+          "int"
+        ],
+        "kilAciklama": [
+          "str"
+        ],
+        "kilavuzKodu": [
+          "int"
+        ],
+        "kontenjan": [
+          "int"
+        ],
+        "kosul": [
+          "str"
+        ],
+        "kosulList": [
+          "list"
+        ],
+        "kpss1": [
+          "str"
+        ],
+        "minBasariSirasi": [
+          "str"
+        ],
+        "minBasariSirasiKosul": [
+          "str"
+        ],
+        "minPuan": [
+          "float"
+        ],
+        "minPuan1": [
+          "str"
+        ],
+        "minPuan2": [
+          "str"
+        ],
+        "minPuan3": [
+          "str"
+        ],
+        "ogrenimDiliAdi": [
+          "str"
+        ],
+        "ogrenimDiliId": [
+          "int"
+        ],
+        "ogrenimSuresi": [
+          "int"
+        ],
+        "ogrenimTuruAdi": [
+          "str"
+        ],
+        "ogrenimTuruId": [
+          "int"
+        ],
+        "osymKilavuzId": [
+          "int"
+        ],
+        "prof": [
+          "int"
+        ],
+        "puanTuru": [
+          "str"
+        ],
+        "sinav": [
+          "str"
+        ],
+        "tabloTuru": [
+          "str"
+        ],
+        "tamBursBirimId": [
+          "int"
+        ],
+        "tusktp": [
+          "str"
+        ],
+        "tustt1": [
+          "str"
+        ],
+        "tyc": [
+          "str"
+        ],
+        "ucret": [
+          "int"
+        ],
+        "uniAkreditasyon": [
+          "str"
+        ],
+        "uniIlAdi": [
+          "str"
+        ],
+        "uniIlKodu": [
+          "int"
+        ],
+        "uniIlceAdi": [
+          "str"
+        ],
+        "uniIlceKodu": [
+          "int"
+        ],
+        "uniKilAciklama": [
+          "str"
+        ],
+        "universiteAdi": [
+          "str"
+        ],
+        "universiteId": [
+          "int"
+        ],
+        "universiteTuru": [
+          "str"
+        ],
+        "yil": [
+          "int"
+        ]
+      }
+    },
+    {
+      "label": "net_all",
+      "method": "POST",
+      "url": "https://yokatlas.yok.gov.tr/api/netler/search",
+      "request": {
+        "filters": {},
+        "page": 0,
+        "size": 2
+      },
+      "status": "200",
+      "curl_returncode": 0,
+      "bytes": 1117,
+      "sha256": "37ab00555c9014ae5b154e3fc870c921c11d04658841ca96f8d4c7bdbeb0c2ea",
+      "record_keys": [
+        "aytBioNet",
+        "aytFizNet",
+        "aytKimNet",
+        "aytMatNet",
+        "birimAdi",
+        "birimGrupAdi",
+        "birimGrupId",
+        "birimId",
+        "birimTuruAdi",
+        "birimTuruId",
+        "katsayi",
+        "kilavuzKodu",
+        "obp",
+        "puanTuru",
+        "tabanPuan",
+        "tytFenNet",
+        "tytMatNet",
+        "tytSosNet",
+        "tytTrkNet",
+        "universiteAdi",
+        "universiteId",
+        "universiteTuru",
+        "yil"
+      ],
+      "row_years": [
+        2025
+      ],
+      "metadata": {
+        "empty": false,
+        "first": true,
+        "last": false,
+        "number": 0,
+        "numberOfElements": 2,
+        "size": 2,
+        "totalElements": 63063,
+        "totalPages": 31532,
+        "source": "snapshot"
+      },
+      "sample_identities": [
+        {
+          "kilavuzKodu": 203110477,
+          "yil": 2025,
+          "puanTuru": "SAY",
+          "katsayi": 0.12
+        },
+        {
+          "kilavuzKodu": 203910699,
+          "yil": 2025,
+          "puanTuru": "SAY",
+          "katsayi": 0.12
+        }
+      ],
+      "observed_field_types": {
+        "aytBioNet": [
+          "float"
+        ],
+        "aytFizNet": [
+          "float"
+        ],
+        "aytKimNet": [
+          "float"
+        ],
+        "aytMatNet": [
+          "float"
+        ],
+        "birimAdi": [
+          "str"
+        ],
+        "birimGrupAdi": [
+          "str"
+        ],
+        "birimGrupId": [
+          "int"
+        ],
+        "birimId": [
+          "int"
+        ],
+        "birimTuruAdi": [
+          "str"
+        ],
+        "birimTuruId": [
+          "int"
+        ],
+        "katsayi": [
+          "float"
+        ],
+        "kilavuzKodu": [
+          "int"
+        ],
+        "obp": [
+          "float"
+        ],
+        "puanTuru": [
+          "str"
+        ],
+        "tabanPuan": [
+          "float"
+        ],
+        "tytFenNet": [
+          "float"
+        ],
+        "tytMatNet": [
+          "float"
+        ],
+        "tytSosNet": [
+          "float"
+        ],
+        "tytTrkNet": [
+          "float"
+        ],
+        "universiteAdi": [
+          "str"
+        ],
+        "universiteId": [
+          "int"
+        ],
+        "universiteTuru": [
+          "str"
+        ],
+        "yil": [
+          "int"
+        ]
+      }
+    },
+    {
+      "label": "program_TYT",
+      "method": "POST",
+      "url": "https://yokatlas.yok.gov.tr/api/tercih-kilavuz/search",
+      "request": {
+        "filters": {
+          "puanTuru": "TYT"
+        },
+        "page": 0,
+        "size": 2,
+        "sortBy": "basariSirasi",
+        "direction": "ASC"
+      },
+      "status": "200",
+      "curl_returncode": 0,
+      "bytes": 11461,
+      "sha256": "bb9cc46de563484cafccf31da0322097d8b4264b241d6df69ed69a0385340c0c",
+      "record_keys": [
+        "basariSirasi",
+        "basariSirasi1",
+        "basariSirasi2",
+        "basariSirasi3",
+        "birimAdi",
+        "birimGrupAdi",
+        "birimGrupId",
+        "birimHiyerarsi",
+        "birimId",
+        "birimTuruAdi",
+        "birimTuruId",
+        "bursOraniAdi",
+        "bursOraniId",
+        "donem",
+        "fymkAdi",
+        "fymkId",
+        "fymkIlAdi",
+        "fymkIlKodu",
+        "fymkIlceAdi",
+        "fymkIlceKodu",
+        "gk1",
+        "gk2",
+        "gk3",
+        "gkY",
+        "ilAdi",
+        "ilKodu",
+        "ilceAdi",
+        "ilceKodu",
+        "kilAciklama",
+        "kilavuzKodu",
+        "kontenjan",
+        "kontenjanObs",
+        "kontenjanSgy",
+        "kosul",
+        "kosulList",
+        "minPuan",
+        "minPuan1",
+        "minPuan2",
+        "minPuan3",
+        "obkY",
+        "ogrenimDiliAdi",
+        "ogrenimDiliId",
+        "ogrenimSuresi",
+        "ogrenimTuruAdi",
+        "ogrenimTuruId",
+        "osymKilavuzId",
+        "puanTuru",
+        "sgyY",
+        "sinav",
+        "tabloTuru",
+        "tamBursBirimId",
+        "ucret",
+        "uniIlAdi",
+        "uniIlKodu",
+        "uniIlceAdi",
+        "uniIlceKodu",
+        "uniKilAciklama",
+        "universiteAdi",
+        "universiteId",
+        "universiteTuru",
+        "uygulamaliEgitimModeli",
+        "yil"
+      ],
+      "row_years": [
+        2026
+      ],
+      "metadata": {
+        "empty": false,
+        "first": true,
+        "last": false,
+        "number": 0,
+        "numberOfElements": 2,
+        "size": 2,
+        "totalElements": 9254,
+        "totalPages": 4627,
+        "yil": 2026,
+        "source": "snapshot"
+      },
+      "sample_identities": [
+        {
+          "kilavuzKodu": 111091387,
+          "yil": 2026,
+          "puanTuru": "TYT",
+          "katsayi": null
+        },
+        {
+          "kilavuzKodu": 205750101,
+          "yil": 2026,
+          "puanTuru": "TYT",
+          "katsayi": null
+        }
+      ],
+      "observed_field_types": {
+        "basariSirasi": [
+          "int"
+        ],
+        "basariSirasi1": [
+          "int"
+        ],
+        "basariSirasi2": [
+          "int"
+        ],
+        "basariSirasi3": [
+          "int"
+        ],
+        "birimAdi": [
+          "str"
+        ],
+        "birimGrupAdi": [
+          "str"
+        ],
+        "birimGrupId": [
+          "int"
+        ],
+        "birimHiyerarsi": [
+          "str"
+        ],
+        "birimId": [
+          "int"
+        ],
+        "birimTuruAdi": [
+          "str"
+        ],
+        "birimTuruId": [
+          "int"
+        ],
+        "bursOraniAdi": [
+          "str"
+        ],
+        "bursOraniId": [
+          "int"
+        ],
+        "donem": [
+          "str"
+        ],
+        "fymkAdi": [
+          "str"
+        ],
+        "fymkId": [
+          "int"
+        ],
+        "fymkIlAdi": [
+          "str"
+        ],
+        "fymkIlKodu": [
+          "int"
+        ],
+        "fymkIlceAdi": [
+          "str"
+        ],
+        "fymkIlceKodu": [
+          "int"
+        ],
+        "gk1": [
+          "int"
+        ],
+        "gk2": [
+          "int"
+        ],
+        "gk3": [
+          "int"
+        ],
+        "gkY": [
+          "int"
+        ],
+        "ilAdi": [
+          "str"
+        ],
+        "ilKodu": [
+          "int"
+        ],
+        "ilceAdi": [
+          "str"
+        ],
+        "ilceKodu": [
+          "int"
+        ],
+        "kilAciklama": [
+          "str"
+        ],
+        "kilavuzKodu": [
+          "int"
+        ],
+        "kontenjan": [
+          "int"
+        ],
+        "kontenjanObs": [
+          "int"
+        ],
+        "kontenjanSgy": [
+          "int"
+        ],
+        "kosul": [
+          "str"
+        ],
+        "kosulList": [
+          "list"
+        ],
+        "minPuan": [
+          "float"
+        ],
+        "minPuan1": [
+          "str"
+        ],
+        "minPuan2": [
+          "str"
+        ],
+        "minPuan3": [
+          "str"
+        ],
+        "obkY": [
+          "int"
+        ],
+        "ogrenimDiliAdi": [
+          "str"
+        ],
+        "ogrenimDiliId": [
+          "int"
+        ],
+        "ogrenimSuresi": [
+          "int"
+        ],
+        "ogrenimTuruAdi": [
+          "str"
+        ],
+        "ogrenimTuruId": [
+          "int"
+        ],
+        "osymKilavuzId": [
+          "int"
+        ],
+        "puanTuru": [
+          "str"
+        ],
+        "sgyY": [
+          "int"
+        ],
+        "sinav": [
+          "str"
+        ],
+        "tabloTuru": [
+          "str"
+        ],
+        "tamBursBirimId": [
+          "int"
+        ],
+        "ucret": [
+          "int"
+        ],
+        "uniIlAdi": [
+          "str"
+        ],
+        "uniIlKodu": [
+          "int"
+        ],
+        "uniIlceAdi": [
+          "str"
+        ],
+        "uniIlceKodu": [
+          "int"
+        ],
+        "uniKilAciklama": [
+          "str"
+        ],
+        "universiteAdi": [
+          "str"
+        ],
+        "universiteId": [
+          "int"
+        ],
+        "universiteTuru": [
+          "str"
+        ],
+        "uygulamaliEgitimModeli": [
+          "str"
+        ],
+        "yil": [
+          "int"
+        ]
+      }
+    },
+    {
+      "label": "net_EA",
+      "method": "POST",
+      "url": "https://yokatlas.yok.gov.tr/api/netler/search",
+      "request": {
+        "filters": {
+          "puanTuru": "EA"
+        },
+        "page": 0,
+        "size": 2
+      },
+      "status": "200",
+      "curl_returncode": 0,
+      "bytes": 1132,
+      "sha256": "1456d9eb55e641a464a8f281335fc774bfd8108175abed96a2be768e7e9102fa",
+      "record_keys": [
+        "aytCog1Net",
+        "aytMatNet",
+        "aytTdeNet",
+        "aytTrh1Net",
+        "birimAdi",
+        "birimGrupAdi",
+        "birimGrupId",
+        "birimId",
+        "birimTuruAdi",
+        "birimTuruId",
+        "katsayi",
+        "kilavuzKodu",
+        "obp",
+        "puanTuru",
+        "tabanPuan",
+        "tytFenNet",
+        "tytMatNet",
+        "tytSosNet",
+        "tytTrkNet",
+        "universiteAdi",
+        "universiteId",
+        "universiteTuru",
+        "yil"
+      ],
+      "row_years": [
+        2025
+      ],
+      "metadata": {
+        "empty": false,
+        "first": true,
+        "last": false,
+        "number": 0,
+        "numberOfElements": 2,
+        "size": 2,
+        "totalElements": 11284,
+        "totalPages": 5642,
+        "source": "snapshot"
+      },
+      "sample_identities": [
+        {
+          "kilavuzKodu": 203910275,
+          "yil": 2025,
+          "puanTuru": "EA",
+          "katsayi": 0.12
+        },
+        {
+          "kilavuzKodu": 203910309,
+          "yil": 2025,
+          "puanTuru": "EA",
+          "katsayi": 0.12
+        }
+      ],
+      "observed_field_types": {
+        "aytCog1Net": [
+          "float"
+        ],
+        "aytMatNet": [
+          "float"
+        ],
+        "aytTdeNet": [
+          "float"
+        ],
+        "aytTrh1Net": [
+          "float"
+        ],
+        "birimAdi": [
+          "str"
+        ],
+        "birimGrupAdi": [
+          "str"
+        ],
+        "birimGrupId": [
+          "int"
+        ],
+        "birimId": [
+          "int"
+        ],
+        "birimTuruAdi": [
+          "str"
+        ],
+        "birimTuruId": [
+          "int"
+        ],
+        "katsayi": [
+          "float"
+        ],
+        "kilavuzKodu": [
+          "int"
+        ],
+        "obp": [
+          "float"
+        ],
+        "puanTuru": [
+          "str"
+        ],
+        "tabanPuan": [
+          "float"
+        ],
+        "tytFenNet": [
+          "float"
+        ],
+        "tytMatNet": [
+          "float"
+        ],
+        "tytSosNet": [
+          "float"
+        ],
+        "tytTrkNet": [
+          "float"
+        ],
+        "universiteAdi": [
+          "str"
+        ],
+        "universiteId": [
+          "int"
+        ],
+        "universiteTuru": [
+          "str"
+        ],
+        "yil": [
+          "int"
+        ]
+      }
+    },
+    {
+      "label": "net_SÖZ",
+      "method": "POST",
+      "url": "https://yokatlas.yok.gov.tr/api/netler/search",
+      "request": {
+        "filters": {
+          "puanTuru": "SÖZ"
+        },
+        "page": 0,
+        "size": 2
+      },
+      "status": "200",
+      "curl_returncode": 0,
+      "bytes": 1267,
+      "sha256": "a1302d5efe6289872f344a65e2333b9891442df34c0f83d94fd3e7531ead8672",
+      "record_keys": [
+        "aytCog1Net",
+        "aytCog2Net",
+        "aytDinNet",
+        "aytFelNet",
+        "aytTdeNet",
+        "aytTrh1Net",
+        "aytTrh2Net",
+        "birimAdi",
+        "birimGrupAdi",
+        "birimGrupId",
+        "birimId",
+        "birimTuruAdi",
+        "birimTuruId",
+        "katsayi",
+        "kilavuzKodu",
+        "obp",
+        "puanTuru",
+        "tabanPuan",
+        "tytFenNet",
+        "tytMatNet",
+        "tytSosNet",
+        "tytTrkNet",
+        "universiteAdi",
+        "universiteId",
+        "universiteTuru",
+        "yil"
+      ],
+      "row_years": [
+        2025
+      ],
+      "metadata": {
+        "empty": false,
+        "first": true,
+        "last": false,
+        "number": 0,
+        "numberOfElements": 2,
+        "size": 2,
+        "totalElements": 5895,
+        "totalPages": 2948,
+        "source": "snapshot"
+      },
+      "sample_identities": [
+        {
+          "kilavuzKodu": 203910187,
+          "yil": 2025,
+          "puanTuru": "SÖZ",
+          "katsayi": 0.12
+        },
+        {
+          "kilavuzKodu": 203910724,
+          "yil": 2025,
+          "puanTuru": "SÖZ",
+          "katsayi": 0.12
+        }
+      ],
+      "observed_field_types": {
+        "aytCog1Net": [
+          "float"
+        ],
+        "aytCog2Net": [
+          "float"
+        ],
+        "aytDinNet": [
+          "float"
+        ],
+        "aytFelNet": [
+          "float"
+        ],
+        "aytTdeNet": [
+          "float"
+        ],
+        "aytTrh1Net": [
+          "float"
+        ],
+        "aytTrh2Net": [
+          "float"
+        ],
+        "birimAdi": [
+          "str"
+        ],
+        "birimGrupAdi": [
+          "str"
+        ],
+        "birimGrupId": [
+          "int"
+        ],
+        "birimId": [
+          "int"
+        ],
+        "birimTuruAdi": [
+          "str"
+        ],
+        "birimTuruId": [
+          "int"
+        ],
+        "katsayi": [
+          "float"
+        ],
+        "kilavuzKodu": [
+          "int"
+        ],
+        "obp": [
+          "float"
+        ],
+        "puanTuru": [
+          "str"
+        ],
+        "tabanPuan": [
+          "float"
+        ],
+        "tytFenNet": [
+          "float"
+        ],
+        "tytMatNet": [
+          "float"
+        ],
+        "tytSosNet": [
+          "float"
+        ],
+        "tytTrkNet": [
+          "float"
+        ],
+        "universiteAdi": [
+          "str"
+        ],
+        "universiteId": [
+          "int"
+        ],
+        "universiteTuru": [
+          "str"
+        ],
+        "yil": [
+          "int"
+        ]
+      }
+    },
+    {
+      "label": "net_DİL",
+      "method": "POST",
+      "url": "https://yokatlas.yok.gov.tr/api/netler/search",
+      "request": {
+        "filters": {
+          "puanTuru": "DİL"
+        },
+        "page": 0,
+        "size": 2
+      },
+      "status": "200",
+      "curl_returncode": 0,
+      "bytes": 1162,
+      "sha256": "edda2e8fd5eab997df09d6bb5b3ec01b2468b7daf9fe76f3d61f742e5c631c99",
+      "record_keys": [
+        "birimAdi",
+        "birimGrupAdi",
+        "birimGrupId",
+        "birimId",
+        "birimTuruAdi",
+        "birimTuruId",
+        "katsayi",
+        "kilavuzKodu",
+        "obp",
+        "puanTuru",
+        "tabanPuan",
+        "tytFenNet",
+        "tytMatNet",
+        "tytSosNet",
+        "tytTrkNet",
+        "universiteAdi",
+        "universiteId",
+        "universiteTuru",
+        "ydtYdilNet",
+        "yil"
+      ],
+      "row_years": [
+        2025
+      ],
+      "metadata": {
+        "empty": false,
+        "first": true,
+        "last": false,
+        "number": 0,
+        "numberOfElements": 2,
+        "size": 2,
+        "totalElements": 1975,
+        "totalPages": 988,
+        "source": "snapshot"
+      },
+      "sample_identities": [
+        {
+          "kilavuzKodu": 203910830,
+          "yil": 2025,
+          "puanTuru": "DİL",
+          "katsayi": 0.12
+        },
+        {
+          "kilavuzKodu": 202190179,
+          "yil": 2025,
+          "puanTuru": "DİL",
+          "katsayi": 0.12
+        }
+      ],
+      "observed_field_types": {
+        "birimAdi": [
+          "str"
+        ],
+        "birimGrupAdi": [
+          "str"
+        ],
+        "birimGrupId": [
+          "int"
+        ],
+        "birimId": [
+          "int"
+        ],
+        "birimTuruAdi": [
+          "str"
+        ],
+        "birimTuruId": [
+          "int"
+        ],
+        "katsayi": [
+          "float"
+        ],
+        "kilavuzKodu": [
+          "int"
+        ],
+        "obp": [
+          "float"
+        ],
+        "puanTuru": [
+          "str"
+        ],
+        "tabanPuan": [
+          "float"
+        ],
+        "tytFenNet": [
+          "float"
+        ],
+        "tytMatNet": [
+          "float"
+        ],
+        "tytSosNet": [
+          "float"
+        ],
+        "tytTrkNet": [
+          "float"
+        ],
+        "universiteAdi": [
+          "str"
+        ],
+        "universiteId": [
+          "int"
+        ],
+        "universiteTuru": [
+          "str"
+        ],
+        "ydtYdilNet": [
+          "float"
+        ],
+        "yil": [
+          "int"
+        ]
+      }
+    },
+    {
+      "label": "net_TYT",
+      "method": "POST",
+      "url": "https://yokatlas.yok.gov.tr/api/netler/search",
+      "request": {
+        "filters": {
+          "puanTuru": "TYT"
+        },
+        "page": 0,
+        "size": 2
+      },
+      "status": "200",
+      "curl_returncode": 0,
+      "bytes": 1080,
+      "sha256": "462efa172ff8dfb7ee4f768fb94925e7cb6d67ce41782e51a69728828e4d19de",
+      "record_keys": [
+        "birimAdi",
+        "birimGrupAdi",
+        "birimGrupId",
+        "birimId",
+        "birimTuruAdi",
+        "birimTuruId",
+        "katsayi",
+        "kilavuzKodu",
+        "obp",
+        "puanTuru",
+        "tabanPuan",
+        "tytFenNet",
+        "tytMatNet",
+        "tytSosNet",
+        "tytTrkNet",
+        "universiteAdi",
+        "universiteId",
+        "universiteTuru",
+        "yil"
+      ],
+      "row_years": [
+        2025
+      ],
+      "metadata": {
+        "empty": false,
+        "first": true,
+        "last": false,
+        "number": 0,
+        "numberOfElements": 2,
+        "size": 2,
+        "totalElements": 28473,
+        "totalPages": 14237,
+        "source": "snapshot"
+      },
+      "sample_identities": [
+        {
+          "kilavuzKodu": 105590209,
+          "yil": 2025,
+          "puanTuru": "TYT",
+          "katsayi": 0.12
+        },
+        {
+          "kilavuzKodu": 205750101,
+          "yil": 2025,
+          "puanTuru": "TYT",
+          "katsayi": 0.12
+        }
+      ],
+      "observed_field_types": {
+        "birimAdi": [
+          "str"
+        ],
+        "birimGrupAdi": [
+          "str"
+        ],
+        "birimGrupId": [
+          "int"
+        ],
+        "birimId": [
+          "int"
+        ],
+        "birimTuruAdi": [
+          "str"
+        ],
+        "birimTuruId": [
+          "int"
+        ],
+        "katsayi": [
+          "float"
+        ],
+        "kilavuzKodu": [
+          "int"
+        ],
+        "obp": [
+          "float"
+        ],
+        "puanTuru": [
+          "str"
+        ],
+        "tabanPuan": [
+          "float"
+        ],
+        "tytFenNet": [
+          "float"
+        ],
+        "tytMatNet": [
+          "float"
+        ],
+        "tytSosNet": [
+          "float"
+        ],
+        "tytTrkNet": [
+          "float"
+        ],
+        "universiteAdi": [
+          "str"
+        ],
+        "universiteId": [
+          "int"
+        ],
+        "universiteTuru": [
+          "str"
+        ],
+        "yil": [
+          "int"
+        ]
+      }
+    },
+    {
+      "label": "net_SAY_2023",
+      "method": "POST",
+      "url": "https://yokatlas.yok.gov.tr/api/netler/search",
+      "request": {
+        "filters": {
+          "puanTuru": "SAY",
+          "yil": 2023
+        },
+        "page": 0,
+        "size": 2
+      },
+      "status": "200",
+      "curl_returncode": 0,
+      "bytes": 1115,
+      "sha256": "3ca6eeea905a18a97b0fde407472fe681212b74d8e151d7351af94cd8d617c47",
+      "record_keys": [
+        "aytBioNet",
+        "aytFizNet",
+        "aytKimNet",
+        "aytMatNet",
+        "birimAdi",
+        "birimGrupAdi",
+        "birimGrupId",
+        "birimId",
+        "birimTuruAdi",
+        "birimTuruId",
+        "katsayi",
+        "kilavuzKodu",
+        "obp",
+        "puanTuru",
+        "tabanPuan",
+        "tytFenNet",
+        "tytMatNet",
+        "tytSosNet",
+        "tytTrkNet",
+        "universiteAdi",
+        "universiteId",
+        "universiteTuru",
+        "yil"
+      ],
+      "row_years": [
+        2023
+      ],
+      "metadata": {
+        "empty": false,
+        "first": true,
+        "last": false,
+        "number": 0,
+        "numberOfElements": 2,
+        "size": 2,
+        "totalElements": 5036,
+        "totalPages": 2518,
+        "source": "snapshot"
+      },
+      "sample_identities": [
+        {
+          "kilavuzKodu": 203110477,
+          "yil": 2023,
+          "puanTuru": "SAY",
+          "katsayi": 0.12
+        },
+        {
+          "kilavuzKodu": 203910699,
+          "yil": 2023,
+          "puanTuru": "SAY",
+          "katsayi": 0.12
+        }
+      ],
+      "observed_field_types": {
+        "aytBioNet": [
+          "float"
+        ],
+        "aytFizNet": [
+          "float"
+        ],
+        "aytKimNet": [
+          "float"
+        ],
+        "aytMatNet": [
+          "float"
+        ],
+        "birimAdi": [
+          "str"
+        ],
+        "birimGrupAdi": [
+          "str"
+        ],
+        "birimGrupId": [
+          "int"
+        ],
+        "birimId": [
+          "int"
+        ],
+        "birimTuruAdi": [
+          "str"
+        ],
+        "birimTuruId": [
+          "int"
+        ],
+        "katsayi": [
+          "float"
+        ],
+        "kilavuzKodu": [
+          "int"
+        ],
+        "obp": [
+          "float"
+        ],
+        "puanTuru": [
+          "str"
+        ],
+        "tabanPuan": [
+          "float"
+        ],
+        "tytFenNet": [
+          "float"
+        ],
+        "tytMatNet": [
+          "float"
+        ],
+        "tytSosNet": [
+          "float"
+        ],
+        "tytTrkNet": [
+          "float"
+        ],
+        "universiteAdi": [
+          "str"
+        ],
+        "universiteId": [
+          "int"
+        ],
+        "universiteTuru": [
+          "str"
+        ],
+        "yil": [
+          "int"
+        ]
+      }
+    },
+    {
+      "label": "net_SAY_2024",
+      "method": "POST",
+      "url": "https://yokatlas.yok.gov.tr/api/netler/search",
+      "request": {
+        "filters": {
+          "puanTuru": "SAY",
+          "yil": 2024
+        },
+        "page": 0,
+        "size": 2
+      },
+      "status": "200",
+      "curl_returncode": 0,
+      "bytes": 1117,
+      "sha256": "8813f4f149dc41027546d31cd0350984fd45313e7ef4a5ba7070a933d5968d59",
+      "record_keys": [
+        "aytBioNet",
+        "aytFizNet",
+        "aytKimNet",
+        "aytMatNet",
+        "birimAdi",
+        "birimGrupAdi",
+        "birimGrupId",
+        "birimId",
+        "birimTuruAdi",
+        "birimTuruId",
+        "katsayi",
+        "kilavuzKodu",
+        "obp",
+        "puanTuru",
+        "tabanPuan",
+        "tytFenNet",
+        "tytMatNet",
+        "tytSosNet",
+        "tytTrkNet",
+        "universiteAdi",
+        "universiteId",
+        "universiteTuru",
+        "yil"
+      ],
+      "row_years": [
+        2024
+      ],
+      "metadata": {
+        "empty": false,
+        "first": true,
+        "last": false,
+        "number": 0,
+        "numberOfElements": 2,
+        "size": 2,
+        "totalElements": 5136,
+        "totalPages": 2568,
+        "source": "snapshot"
+      },
+      "sample_identities": [
+        {
+          "kilavuzKodu": 203910699,
+          "yil": 2024,
+          "puanTuru": "SAY",
+          "katsayi": 0.12
+        },
+        {
+          "kilavuzKodu": 203910054,
+          "yil": 2024,
+          "puanTuru": "SAY",
+          "katsayi": 0.12
+        }
+      ],
+      "observed_field_types": {
+        "aytBioNet": [
+          "float"
+        ],
+        "aytFizNet": [
+          "float"
+        ],
+        "aytKimNet": [
+          "float"
+        ],
+        "aytMatNet": [
+          "float"
+        ],
+        "birimAdi": [
+          "str"
+        ],
+        "birimGrupAdi": [
+          "str"
+        ],
+        "birimGrupId": [
+          "int"
+        ],
+        "birimId": [
+          "int"
+        ],
+        "birimTuruAdi": [
+          "str"
+        ],
+        "birimTuruId": [
+          "int"
+        ],
+        "katsayi": [
+          "float"
+        ],
+        "kilavuzKodu": [
+          "int"
+        ],
+        "obp": [
+          "float"
+        ],
+        "puanTuru": [
+          "str"
+        ],
+        "tabanPuan": [
+          "float"
+        ],
+        "tytFenNet": [
+          "float"
+        ],
+        "tytMatNet": [
+          "float"
+        ],
+        "tytSosNet": [
+          "float"
+        ],
+        "tytTrkNet": [
+          "float"
+        ],
+        "universiteAdi": [
+          "str"
+        ],
+        "universiteId": [
+          "int"
+        ],
+        "universiteTuru": [
+          "str"
+        ],
+        "yil": [
+          "int"
+        ]
+      }
+    },
+    {
+      "label": "net_SAY_2025",
+      "method": "POST",
+      "url": "https://yokatlas.yok.gov.tr/api/netler/search",
+      "request": {
+        "filters": {
+          "puanTuru": "SAY",
+          "yil": 2025
+        },
+        "page": 0,
+        "size": 2
+      },
+      "status": "200",
+      "curl_returncode": 0,
+      "bytes": 1115,
+      "sha256": "9245c08de8d8d2fc73646a7f8a0d5ad7ac296812f2ece46ff2096ef6882ef233",
+      "record_keys": [
+        "aytBioNet",
+        "aytFizNet",
+        "aytKimNet",
+        "aytMatNet",
+        "birimAdi",
+        "birimGrupAdi",
+        "birimGrupId",
+        "birimId",
+        "birimTuruAdi",
+        "birimTuruId",
+        "katsayi",
+        "kilavuzKodu",
+        "obp",
+        "puanTuru",
+        "tabanPuan",
+        "tytFenNet",
+        "tytMatNet",
+        "tytSosNet",
+        "tytTrkNet",
+        "universiteAdi",
+        "universiteId",
+        "universiteTuru",
+        "yil"
+      ],
+      "row_years": [
+        2025
+      ],
+      "metadata": {
+        "empty": false,
+        "first": true,
+        "last": false,
+        "number": 0,
+        "numberOfElements": 2,
+        "size": 2,
+        "totalElements": 5264,
+        "totalPages": 2632,
+        "source": "snapshot"
+      },
+      "sample_identities": [
+        {
+          "kilavuzKodu": 203110477,
+          "yil": 2025,
+          "puanTuru": "SAY",
+          "katsayi": 0.12
+        },
+        {
+          "kilavuzKodu": 203910699,
+          "yil": 2025,
+          "puanTuru": "SAY",
+          "katsayi": 0.12
+        }
+      ],
+      "observed_field_types": {
+        "aytBioNet": [
+          "float"
+        ],
+        "aytFizNet": [
+          "float"
+        ],
+        "aytKimNet": [
+          "float"
+        ],
+        "aytMatNet": [
+          "float"
+        ],
+        "birimAdi": [
+          "str"
+        ],
+        "birimGrupAdi": [
+          "str"
+        ],
+        "birimGrupId": [
+          "int"
+        ],
+        "birimId": [
+          "int"
+        ],
+        "birimTuruAdi": [
+          "str"
+        ],
+        "birimTuruId": [
+          "int"
+        ],
+        "katsayi": [
+          "float"
+        ],
+        "kilavuzKodu": [
+          "int"
+        ],
+        "obp": [
+          "float"
+        ],
+        "puanTuru": [
+          "str"
+        ],
+        "tabanPuan": [
+          "float"
+        ],
+        "tytFenNet": [
+          "float"
+        ],
+        "tytMatNet": [
+          "float"
+        ],
+        "tytSosNet": [
+          "float"
+        ],
+        "tytTrkNet": [
+          "float"
+        ],
+        "universiteAdi": [
+          "str"
+        ],
+        "universiteId": [
+          "int"
+        ],
+        "universiteTuru": [
+          "str"
+        ],
+        "yil": [
+          "int"
+        ]
+      }
+    },
+    {
+      "label": "net_SAY_2026",
+      "method": "POST",
+      "url": "https://yokatlas.yok.gov.tr/api/netler/search",
+      "request": {
+        "filters": {
+          "puanTuru": "SAY",
+          "yil": 2026
+        },
+        "page": 0,
+        "size": 2
+      },
+      "status": "200",
+      "curl_returncode": 0,
+      "bytes": 146,
+      "sha256": "a85c591894ccb92c3f7ea1b6080b6f430fe6802352e3c768b8beacc5a7f0f63a",
+      "record_keys": [],
+      "row_years": [],
+      "metadata": {
+        "empty": true,
+        "first": true,
+        "last": true,
+        "number": 0,
+        "numberOfElements": 0,
+        "size": 2,
+        "totalElements": 0,
+        "totalPages": 0,
+        "source": "snapshot"
+      },
+      "sample_identities": [],
+      "observed_field_types": {}
+    },
+    {
+      "label": "program_page1",
+      "method": "POST",
+      "url": "https://yokatlas.yok.gov.tr/api/tercih-kilavuz/search",
+      "request": {
+        "filters": {
+          "puanTuru": "SAY"
+        },
+        "page": 1,
+        "size": 2,
+        "sortBy": "basariSirasi",
+        "direction": "ASC"
+      },
+      "status": "200",
+      "curl_returncode": 0,
+      "bytes": 17104,
+      "sha256": "5052a8b0b8b15307a1726311aeff43a333f6fc5c89eed6c8eff2b8f30e35ace7",
+      "record_keys": [
+        "akreditasyon",
+        "akreditasyonAck",
+        "arGor",
+        "basariSirasi",
+        "basariSirasi1",
+        "basariSirasi2",
+        "basariSirasi3",
+        "birimAdi",
+        "birimGrupAdi",
+        "birimGrupId",
+        "birimHiyerarsi",
+        "birimId",
+        "birimTuruAdi",
+        "birimTuruId",
+        "bursOraniAdi",
+        "bursOraniId",
+        "doc",
+        "donem",
+        "dou",
+        "fymkAdi",
+        "fymkId",
+        "fymkIlAdi",
+        "fymkIlKodu",
+        "fymkIlceAdi",
+        "fymkIlceKodu",
+        "gk1",
+        "gk2",
+        "gk3",
+        "gkY",
+        "ilAdi",
+        "ilKodu",
+        "ilceAdi",
+        "ilceKodu",
+        "kilAciklama",
+        "kilavuzKodu",
+        "kontenjan",
+        "kontenjanSgy",
+        "kosul",
+        "kosulList",
+        "minBasariSirasi",
+        "minBasariSirasiKosul",
+        "minPuan",
+        "minPuan1",
+        "minPuan2",
+        "minPuan3",
+        "ogrenimDiliAdi",
+        "ogrenimDiliId",
+        "ogrenimSuresi",
+        "ogrenimTuruAdi",
+        "ogrenimTuruId",
+        "osymKilavuzId",
+        "prof",
+        "puanTuru",
+        "sgyY",
+        "sinav",
+        "tabloTuru",
+        "tamBursBirimId",
+        "tyc",
+        "ucret",
+        "uniAkreditasyon",
+        "uniIlAdi",
+        "uniIlKodu",
+        "uniIlceAdi",
+        "uniIlceKodu",
+        "uniKilAciklama",
+        "universiteAdi",
+        "universiteId",
+        "universiteTuru",
+        "yil"
+      ],
+      "identities": [
+        {
+          "kilavuzKodu": 203910699,
+          "yil": 2026,
+          "puanTuru": "SAY",
+          "katsayi": null
+        },
+        {
+          "kilavuzKodu": 203910399,
+          "yil": 2026,
+          "puanTuru": "SAY",
+          "katsayi": null
+        }
+      ],
+      "metadata": {
+        "empty": false,
+        "first": false,
+        "last": false,
+        "number": 1,
+        "numberOfElements": 2,
+        "size": 2,
+        "totalElements": 5744,
+        "totalPages": 2872,
+        "yil": 2026,
+        "source": "snapshot"
+      },
+      "sample_identities": [
+        {
+          "kilavuzKodu": 203910699,
+          "yil": 2026,
+          "puanTuru": "SAY",
+          "katsayi": null
+        },
+        {
+          "kilavuzKodu": 203910399,
+          "yil": 2026,
+          "puanTuru": "SAY",
+          "katsayi": null
+        }
+      ],
+      "observed_field_types": {
+        "akreditasyon": [
+          "str"
+        ],
+        "akreditasyonAck": [
+          "str"
+        ],
+        "arGor": [
+          "int"
+        ],
+        "basariSirasi": [
+          "int"
+        ],
+        "basariSirasi1": [
+          "int"
+        ],
+        "basariSirasi2": [
+          "int"
+        ],
+        "basariSirasi3": [
+          "int"
+        ],
+        "birimAdi": [
+          "str"
+        ],
+        "birimGrupAdi": [
+          "str"
+        ],
+        "birimGrupId": [
+          "int"
+        ],
+        "birimHiyerarsi": [
+          "str"
+        ],
+        "birimId": [
+          "int"
+        ],
+        "birimTuruAdi": [
+          "str"
+        ],
+        "birimTuruId": [
+          "int"
+        ],
+        "bursOraniAdi": [
+          "str"
+        ],
+        "bursOraniId": [
+          "int"
+        ],
+        "doc": [
+          "int"
+        ],
+        "donem": [
+          "str"
+        ],
+        "dou": [
+          "int"
+        ],
+        "fymkAdi": [
+          "str"
+        ],
+        "fymkId": [
+          "int"
+        ],
+        "fymkIlAdi": [
+          "str"
+        ],
+        "fymkIlKodu": [
+          "int"
+        ],
+        "fymkIlceAdi": [
+          "str"
+        ],
+        "fymkIlceKodu": [
+          "int"
+        ],
+        "gk1": [
+          "int"
+        ],
+        "gk2": [
+          "int"
+        ],
+        "gk3": [
+          "int"
+        ],
+        "gkY": [
+          "int"
+        ],
+        "ilAdi": [
+          "str"
+        ],
+        "ilKodu": [
+          "int"
+        ],
+        "ilceAdi": [
+          "str"
+        ],
+        "ilceKodu": [
+          "int"
+        ],
+        "kilAciklama": [
+          "str"
+        ],
+        "kilavuzKodu": [
+          "int"
+        ],
+        "kontenjan": [
+          "int"
+        ],
+        "kontenjanSgy": [
+          "int"
+        ],
+        "kosul": [
+          "str"
+        ],
+        "kosulList": [
+          "list"
+        ],
+        "minBasariSirasi": [
+          "str"
+        ],
+        "minBasariSirasiKosul": [
+          "str"
+        ],
+        "minPuan": [
+          "float"
+        ],
+        "minPuan1": [
+          "str"
+        ],
+        "minPuan2": [
+          "str"
+        ],
+        "minPuan3": [
+          "str"
+        ],
+        "ogrenimDiliAdi": [
+          "str"
+        ],
+        "ogrenimDiliId": [
+          "int"
+        ],
+        "ogrenimSuresi": [
+          "int"
+        ],
+        "ogrenimTuruAdi": [
+          "str"
+        ],
+        "ogrenimTuruId": [
+          "int"
+        ],
+        "osymKilavuzId": [
+          "int"
+        ],
+        "prof": [
+          "int"
+        ],
+        "puanTuru": [
+          "str"
+        ],
+        "sgyY": [
+          "int"
+        ],
+        "sinav": [
+          "str"
+        ],
+        "tabloTuru": [
+          "str"
+        ],
+        "tamBursBirimId": [
+          "int"
+        ],
+        "tyc": [
+          "str"
+        ],
+        "ucret": [
+          "int"
+        ],
+        "uniAkreditasyon": [
+          "str"
+        ],
+        "uniIlAdi": [
+          "str"
+        ],
+        "uniIlKodu": [
+          "int"
+        ],
+        "uniIlceAdi": [
+          "str"
+        ],
+        "uniIlceKodu": [
+          "int"
+        ],
+        "uniKilAciklama": [
+          "str"
+        ],
+        "universiteAdi": [
+          "str"
+        ],
+        "universiteId": [
+          "int"
+        ],
+        "universiteTuru": [
+          "str"
+        ],
+        "yil": [
+          "int"
+        ]
+      }
+    },
+    {
+      "label": "net_page1",
+      "method": "POST",
+      "url": "https://yokatlas.yok.gov.tr/api/netler/search",
+      "request": {
+        "filters": {
+          "puanTuru": "SAY"
+        },
+        "page": 1,
+        "size": 2
+      },
+      "status": "200",
+      "curl_returncode": 0,
+      "bytes": 1190,
+      "sha256": "4fd469de0ce1bed8cb5adae26dbcf6fa199fa7f5d83e2f4d1016adc9265454c9",
+      "record_keys": [
+        "aytBioNet",
+        "aytFizNet",
+        "aytKimNet",
+        "aytMatNet",
+        "birimAdi",
+        "birimGrupAdi",
+        "birimGrupId",
+        "birimId",
+        "birimTuruAdi",
+        "birimTuruId",
+        "katsayi",
+        "kilavuzKodu",
+        "obp",
+        "puanTuru",
+        "tabanPuan",
+        "tytFenNet",
+        "tytMatNet",
+        "tytSosNet",
+        "tytTrkNet",
+        "universiteAdi",
+        "universiteId",
+        "universiteTuru",
+        "yil"
+      ],
+      "identities": [
+        {
+          "kilavuzKodu": 203910363,
+          "yil": 2025,
+          "puanTuru": "SAY",
+          "katsayi": 0.12
+        },
+        {
+          "kilavuzKodu": 200110071,
+          "yil": 2025,
+          "puanTuru": "SAY",
+          "katsayi": 0.12
+        }
+      ],
+      "metadata": {
+        "empty": false,
+        "first": false,
+        "last": false,
+        "number": 1,
+        "numberOfElements": 2,
+        "size": 2,
+        "totalElements": 15436,
+        "totalPages": 7718,
+        "source": "snapshot"
+      },
+      "sample_identities": [
+        {
+          "kilavuzKodu": 203910363,
+          "yil": 2025,
+          "puanTuru": "SAY",
+          "katsayi": 0.12
+        },
+        {
+          "kilavuzKodu": 200110071,
+          "yil": 2025,
+          "puanTuru": "SAY",
+          "katsayi": 0.12
+        }
+      ],
+      "observed_field_types": {
+        "aytBioNet": [
+          "float"
+        ],
+        "aytFizNet": [
+          "float"
+        ],
+        "aytKimNet": [
+          "float"
+        ],
+        "aytMatNet": [
+          "float"
+        ],
+        "birimAdi": [
+          "str"
+        ],
+        "birimGrupAdi": [
+          "str"
+        ],
+        "birimGrupId": [
+          "int"
+        ],
+        "birimId": [
+          "int"
+        ],
+        "birimTuruAdi": [
+          "str"
+        ],
+        "birimTuruId": [
+          "int"
+        ],
+        "katsayi": [
+          "float"
+        ],
+        "kilavuzKodu": [
+          "int"
+        ],
+        "obp": [
+          "float"
+        ],
+        "puanTuru": [
+          "str"
+        ],
+        "tabanPuan": [
+          "float"
+        ],
+        "tytFenNet": [
+          "float"
+        ],
+        "tytMatNet": [
+          "float"
+        ],
+        "tytSosNet": [
+          "float"
+        ],
+        "tytTrkNet": [
+          "float"
+        ],
+        "universiteAdi": [
+          "str"
+        ],
+        "universiteId": [
+          "int"
+        ],
+        "universiteTuru": [
+          "str"
+        ],
+        "yil": [
+          "int"
+        ]
+      }
+    },
+    {
+      "label": "net_all_2022",
+      "method": "POST",
+      "url": "https://yokatlas.yok.gov.tr/api/netler/search",
+      "request": {
+        "filters": {
+          "yil": 2022
+        },
+        "page": 0,
+        "size": 2
+      },
+      "status": "200",
+      "curl_returncode": 0,
+      "bytes": 146,
+      "sha256": "a85c591894ccb92c3f7ea1b6080b6f430fe6802352e3c768b8beacc5a7f0f63a",
+      "record_keys": [],
+      "identities": [],
+      "metadata": {
+        "empty": true,
+        "first": true,
+        "last": true,
+        "number": 0,
+        "numberOfElements": 0,
+        "size": 2,
+        "totalElements": 0,
+        "totalPages": 0,
+        "source": "snapshot"
+      },
+      "sample_identities": [],
+      "observed_field_types": {}
+    },
+    {
+      "label": "net_all_2026",
+      "method": "POST",
+      "url": "https://yokatlas.yok.gov.tr/api/netler/search",
+      "request": {
+        "filters": {
+          "yil": 2026
+        },
+        "page": 0,
+        "size": 2
+      },
+      "status": "200",
+      "curl_returncode": 0,
+      "bytes": 146,
+      "sha256": "a85c591894ccb92c3f7ea1b6080b6f430fe6802352e3c768b8beacc5a7f0f63a",
+      "record_keys": [],
+      "identities": [],
+      "metadata": {
+        "empty": true,
+        "first": true,
+        "last": true,
+        "number": 0,
+        "numberOfElements": 0,
+        "size": 2,
+        "totalElements": 0,
+        "totalPages": 0,
+        "source": "snapshot"
+      },
+      "sample_identities": [],
+      "observed_field_types": {}
+    }
+  ]
+}

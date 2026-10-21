@@ -1,0 +1,45 @@
+{
+  "date_local": "2026-10-17",
+  "timezone": "Europe/Istanbul",
+  "tests_run": 27,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "database": "isolated PostgreSQL 17 Docker container; real atlas_ingest grants including migration 005",
+  "production_database_touched": false,
+  "live_smoke": {
+    "mode": "bounded archive-only",
+    "main_group_pages_saved": 5,
+    "status": "paused",
+    "next_page": {
+      "entity": "programs",
+      "score": "SAY",
+      "page": 2
+    },
+    "parameters": {
+      "catalog_year": 2026,
+      "results_announced": 1
+    },
+    "result": "First attempt saved lookups and SAY page 0; second attempt downloaded only SAY page 1. Budget stops exited 2 as expected."
+  },
+  "coverage": [
+    "HTTP retry and Retry-After",
+    "blocked access stops",
+    "download resume at failed page",
+    "DB failure does not refetch HTTP",
+    "page transaction rollback and replay",
+    "checksum and missing page detection",
+    "nested and unknown fields preserved",
+    "historical net years and exact year/score links",
+    "typed invalid records quarantined",
+    "distinct score types preserved",
+    "net conflicts quarantined",
+    "reverting source values refresh CORE while reusing RAW",
+    "condition links replaced and descriptions kept by year",
+    "OS and database lock exclusion",
+    "least-privilege DELETE scope",
+    "default collection-to-PostgreSQL cycle",
+    "unresolved optional lookups raise a visible quality warning",
+    "committed pages of a resumed snapshot skip CORE replay even when RAW originated in an older snapshot"
+  ]
+}

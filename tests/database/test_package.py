@@ -51,5 +51,10 @@ class ContractTests(unittest.TestCase):
         self.assertIn('healthcheck',service)
         self.assertTrue((ROOT/'scripts/database/setup.ps1').exists())
         self.assertTrue((ROOT/'scripts/database/verify.ps1').exists())
+        for entry in ('database/init/10-bootstrap.sh','scripts/database/apply-migrations.ps1'):
+            source=(ROOT/entry).read_text()
+            self.assertIn('005_bot_condition_sync.sql',source)
+            self.assertIn('006_tuik_population_by_province.sql',source)
+            self.assertIn('007_sege_urap_reports.sql',source)
 
 if __name__ == '__main__': unittest.main()

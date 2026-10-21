@@ -13,4 +13,7 @@ psql -X -1 -v ON_ERROR_STOP=1 \
   -f /opt/atlas/migrations/002_api_views.sql \
   -f /opt/atlas/migrations/003_privileges.sql \
   -f /opt/atlas/migrations/004_archive_idempotency.sql \
+  -f /opt/atlas/migrations/005_bot_condition_sync.sql \
+  -f /opt/atlas/migrations/006_tuik_population_by_province.sql \
+  -f /opt/atlas/migrations/007_sege_urap_reports.sql \
   -f /opt/atlas/checks/smoke.sql

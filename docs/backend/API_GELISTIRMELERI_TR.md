@@ -86,7 +86,7 @@ demo uçlarıyla değiştirilmez.
 
 Yerel demo kurulumu iki ek görünüm ve bir sınırlı rol oluşturur. SQL tanımı
 `backend/demo-write.sql` içindedir; genel migration akışına eklenmemiştir.
-Veritabanında 17 tablo ve bu demo görünümleri dahil 10 API görünümü bulunur.
+Veritabanında 18 tablo ve bu demo görünümleri dahil 11 API görünümü bulunur.
 
 `core.net_results` tablosunda TYT/AYT/YDT netleri, OBP, taban puan, yıl ve
 program kodu alanları vardır. Mevcut net endpoint'i program kodu, yıl, puan türü,

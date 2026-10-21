@@ -1,5 +1,12 @@
 # YÖK Atlas Intelligence — API demosu
 
+YÖK Atlas verilerini toplamak ve PostgreSQL'e otomatik dağıtmak için
+[bot kullanım rehberini](scraper/README.md) kullan. Bot sayfa bazında devam eder,
+ham JSON arşivi tutar ve istenirse veritabanı olmadan yalnızca arşiv oluşturur.
+
+SEGE ve URAP PDF botları, panel komutları ve migration 007 için
+[SEGE/URAP kurulum rehberini](docs/backend/SEGE_URAP_BOTS_TR.md) kullan.
+
 Docker PostgreSQL üzerindeki görünümleri kullanan küçük bir FastAPI uygulaması.
 Üniversite arama, program filtreleme, net sonuçları ve demo üniversitesi/programı
 ekleme/güncelleme/silme işlemlerini Swagger'da gösterebiliriz.
@@ -15,7 +22,8 @@ powershell -ExecutionPolicy Bypass -File .\backend\run-demo.ps1
 Tarayıcı: http://127.0.0.1:8000/docs
 
 Endpoint yolları: `/status`, `/api/veri-kapsami`, `/api/universiteler`,
-`/api/programlar`, `/api/net-sonuclari`. Üniversite ve program ayrıntıları
+`/api/programlar`, `/api/net-sonuclari`, `/api/sege`, `/api/urap`,
+`/api/rapor-yayinlari`. Üniversite ve program ayrıntıları
 aynı yolların sonuna ilgili ID eklenerek okunur. Üniversite ve program ekleme
 için `POST`, güncelleme için `PUT`, silme için `DELETE` kullanılır.
 Program güncelleme/silme isteklerinde `yil` parametresi zorunludur.
@@ -23,9 +31,11 @@ Program güncelleme/silme isteklerinde `yil` parametresi zorunludur.
 Yerel kurulum ve kısa sunum akışı: [DEMO_TR.md](docs/backend/DEMO_TR.md).
 API geliştirmelerinin tamamı ve istek örnekleri:
 [API_GELISTIRMELERI_TR.md](docs/backend/API_GELISTIRMELERI_TR.md).
+TÜİK bot ekranı `http://127.0.0.1:8000/admin/tuik` adresindedir. Sunucu `.env` dosyasında `TUIK_API_KEY` ve `BOT_ADMIN_API_KEY` tanımlanmalı; bot endpoint’lerinin ortak sözleşmesi [BOT_INTEGRATION_CONTRACT_TR.md](docs/backend/BOT_INTEGRATION_CONTRACT_TR.md) içindedir.
+macOS/Linux'ta PostgreSQL ve `.env` hazır olduktan sonra API'yi `python3 -m pip install -r backend/requirements.txt` ve `python3 -m uvicorn backend.main:app --host 127.0.0.1 --port 8000` komutlarıyla açabilirsin.
 Çalışan API sözleşmesi `/openapi.json` adresindedir. Önceki kapsamlı mimari ve
 sözleşme belgeleri ilerideki geliştirmeler için taslaktır; bu küçük demonun kapsamı
-yedi okuma ve altı üniversite/program yazma işlemidir. Yazma işlemleri için `.env.demo`
+on okuma ve altı üniversite/program yazma işlemidir. Yazma işlemleri için `.env.demo`
 dosyasındaki `DEMO_API_KEY` değerini Swagger **Authorize** alanına gir.
 
 ## Veritabanı şeması

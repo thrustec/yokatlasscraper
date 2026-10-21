@@ -67,7 +67,7 @@ forwarded headers yalnız konfigüre proxy'den kabul edilir.
 
 | Hesap | İzin verilen erişim | Verilmeyecek yetki |
 |---|---|---|
-| `atlas_api` (mevcut) | 8 mevcut `api.*` view SELECT; yeni sanitized publication status view SELECT | RAW, CORE/STAGING doğrudan erişim, platform credential/audit, yazma, DDL |
+| `atlas_api` (mevcut) | 9 mevcut `api.*` view SELECT (TÜİK il nüfusu dahil); yeni sanitized publication status view SELECT | RAW, CORE/STAGING doğrudan erişim, platform credential/audit, yazma, DDL |
 | `atlas_ingest` (daraltılacak) | RAW SELECT/INSERT; run status/completed_at/details UPDATE; gerekli ownership/response/observation/artifact/idempotency metadata; audit INSERT; identity sequence USAGE | STAGING/CORE/QUALITY yazma/okuma, genel DELETE/TRUNCATE/DDL, credential digest erişimi |
 | `atlas_platform` (yeni) | Açık platform tablo/grants listesi; auth registry SELECT; job/publication/idempotency/audit işlemleri; sanitized ingestion/quality ops view SELECT | CORE/STAGING/RAW payload yazma, app-time DDL, genel kalite çözümü |
 | `atlas_etl` (yeni) | RAW SELECT; onaylı STAGING/CORE/QUALITY SELECT/INSERT/UPDATE ve sequences; gate/lease metadata'nın dar görünümü | RAW body değiştirme, credential erişimi, platform grants/DDL, genel DELETE/TRUNCATE |

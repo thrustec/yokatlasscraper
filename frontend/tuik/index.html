@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f7fb">
+  <title>TÜİK Veri Botu · YÖK Atlas Intelligence</title>
+  <link rel="stylesheet" href="assets/admin.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="./" aria-label="YÖK Atlas Intelligence ana sayfa">
+        <span class="brand-mark">Y</span>
+        <span><strong>YÖK Atlas</strong><small>INTELLIGENCE</small></span>
+      </a>
+      <div class="nav-label">ÇALIŞMA ALANI</div>
+      <nav class="side-nav" aria-label="Ana menü">
+        <a href="#overview"><span class="nav-icon">◫</span>Genel görünüm</a>
+        <a class="active" href="#tuik"><span class="nav-icon">▦</span>Veri botları</a>
+        <a class="sub active-sub" href="#tuik">TÜİK Veri Botu</a>
+        <a class="sub muted" href="#yokatlas" aria-disabled="true">YÖK Atlas Botu</a>
+        <div class="nav-divider"></div>
+        <a href="#runs"><span class="nav-icon">◷</span>Çalışma geçmişi</a>
+        <a href="#settings"><span class="nav-icon">⚙</span>Ayarlar</a>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="connection-card">
+          <div class="connection-heading"><span class="lock-icon">⌑</span><strong>Yönetici bağlantısı</strong></div>
+          <label for="adminKey">Admin API anahtarı</label>
+          <input id="adminKey" type="password" autocomplete="off" placeholder="X-API-Key">
+          <button id="connectButton" class="button button-quiet" type="button">Bağlan</button>
+          <p id="connectionState" class="connection-state">Anahtar bu sekmede bellekte tutulur.</p>
+        </div>
+        <div class="user-row"><span class="avatar">EA</span><span><strong>Emre</strong><small>Proje yöneticisi</small></span><span class="more">···</span></div>
+      </div>
+    </aside>
+
+    <main class="main-content" id="tuik">
+      <header class="topbar">
+        <div class="breadcrumbs">YÖK Atlas <span>/</span> Veri botları <span>/</span> <strong>TÜİK</strong></div>
+        <div class="top-actions"><span class="env-badge"><i></i> Geliştirme ortamı</span><button class="icon-button" type="button" aria-label="Bildirimler">♧</button></div>
+      </header>
+
+      <div class="page-wrap">
+        <section class="page-heading">
+          <div>
+            <div class="eyebrow"><span class="eyebrow-dot"></span>VERİ KAYNAĞI</div>
+            <h1>TÜİK Veri Botu</h1>
+            <p>Resmî istatistikleri seç, yılı belirle ve veri çekimini başlat.</p>
+          </div>
+          <div class="bot-state"><span class="pulse"></span><span><strong id="botState">Bağlantı bekleniyor</strong><small>SDMX servis durumu</small></span><button id="refreshButton" class="icon-button refresh" type="button" title="Yenile" aria-label="Yenile">↻</button></div>
+        </section>
+
+        <section class="metric-grid" aria-label="Bot özeti">
+          <article class="metric-card"><div class="metric-top"><span>SON ÇALIŞMA</span><span class="metric-symbol blue">↗</span></div><strong id="lastRun">—</strong><small id="lastRunMeta">Henüz çalışma yok</small></article>
+          <article class="metric-card"><div class="metric-top"><span>SONUÇ KAYDI</span><span class="metric-symbol violet">▤</span></div><strong id="recordCount">—</strong><small id="recordMeta">TÜİK gözlemi</small></article>
+          <article class="metric-card"><div class="metric-top"><span>VERİ KATEGORİSİ</span><span class="metric-symbol green">⌘</span></div><strong id="categoryCount">—</strong><small id="datasetCount">TÜİK kataloğundan</small></article>
+          <article class="metric-card"><div class="metric-top"><span>ÇALIŞMA MODU</span><span class="metric-symbol amber">◷</span></div><strong>Manuel</strong><small>Otomatik planlama sonraki aşamada</small></article>
+        </section>
+
+        <div class="content-grid">
+          <section class="panel fetch-panel" aria-labelledby="fetchTitle">
+            <div class="panel-heading">
+              <div><span class="section-kicker">YENİ ÇALIŞMA</span><h2 id="fetchTitle">Veri çekimini yapılandır</h2></div>
+              <span class="step-mark">01 <span>/</span> 02</span>
+            </div>
+            <p class="panel-intro">Bir istatistik konusu ve veri seti seç. Bot, belirttiğin yılı TÜİK SDMX servisinden alır.</p>
+
+            <label class="field-label" for="categorySelect">İstatistik kategorisi</label>
+            <div class="select-wrap"><span class="field-icon">▦</span><select id="categorySelect" disabled><option>Önce yönetici bağlantısı kur</option></select><span class="select-chevron">⌄</span></div>
+
+            <label class="field-label" for="datasetSelect">Veri seti</label>
+            <div class="select-wrap"><span class="field-icon">▤</span><select id="datasetSelect" disabled><option>Kategori seçilmedi</option></select><span class="select-chevron">⌄</span></div>
+            <div id="datasetInfo" class="dataset-info empty-info">Katalog bağlantısı kurulduğunda veri seti bilgileri burada görünür.</div>
+
+            <div class="year-row">
+              <div class="year-field"><label class="field-label" for="yearInput">Referans yılı</label><div class="year-input-wrap"><span class="field-icon">▣</span><input id="yearInput" type="number" min="1900" max="2100" value="2025" inputmode="numeric"></div></div>
+              <div class="year-help"><span class="help-icon">i</span><span>Akış aylık veya üç aylıksa seçilen yılın tüm dönemleri alınır.</span></div>
+            </div>
+
+            <div class="run-note"><span class="note-icon">↳</span><span>Ham TÜİK yanıtı arşivlenir. Tanımlı eşlemesi olan veri setleri staging tablosuna da aktarılır.</span></div>
+            <div class="form-footer"><p id="runMessage" class="run-message" role="status"></p><button id="runButton" class="button button-primary" type="button" disabled><span>▶</span> Şimdi veri çek</button></div>
+          </section>
+
+          <section class="panel catalog-panel" aria-labelledby="catalogTitle">
+            <div class="panel-heading">
+              <div><span class="section-kicker">TÜİK SDMX</span><h2 id="catalogTitle">Katalogdan seç</h2></div>
+              <span id="catalogCount" class="catalog-count">— veri seti</span>
+            </div>
+            <label class="search-box" for="datasetSearch"><span>⌕</span><input id="datasetSearch" type="search" placeholder="Veri seti veya kod ara" disabled></label>
+            <div id="catalogList" class="catalog-list"><div class="catalog-empty"><div class="empty-icon">▦</div><strong>Katalog henüz yüklenmedi</strong><span>Yönetici API anahtarını girip bağlan.</span></div></div>
+            <div class="catalog-footer"><span class="live-dot"></span> Veri akışı isimleri TÜİK SDMX kataloğundan alınır</div>
+          </section>
+        </div>
+
+        <section class="panel history-panel" id="runs">
+          <div class="panel-heading history-heading">
+            <div><span class="section-kicker">İZLEME</span><h2>Son bot çalışmaları</h2></div>
+            <button id="historyRefresh" class="text-button" type="button">↻ Yenile</button>
+          </div>
+          <div class="table-scroll">
+            <table><thead><tr><th>VERİ SETİ</th><th>YIL</th><th>BAŞLANGIÇ</th><th>HAM KAYIT</th><th>STAGING</th><th>DURUM</th></tr></thead><tbody id="runRows"><tr><td colspan="6" class="table-empty">Çalışma geçmişini görmek için yönetici bağlantısı kur.</td></tr></tbody></table>
+          </div>
+          <div class="history-foot"><span>Son 20 çalışma gösteriliyor</span><span>Çalışma kimlikleri ve kaynak özeti veritabanından okunur</span></div>
+        </section>
+
+        <footer class="page-footer"><span>YÖK Atlas Intelligence <span class="footer-sep">·</span> TÜİK Veri Botu</span><span>Veri çekimleri raw → staging → api katmanlarında izlenir</span></footer>
+      </div>
+    </main>
+  </div>
+  <script src="assets/admin.js" defer></script>
+</body>
+</html>

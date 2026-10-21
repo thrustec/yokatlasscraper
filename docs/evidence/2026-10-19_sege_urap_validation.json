@@ -1,0 +1,68 @@
+{
+  "review_date": "2026-10-19",
+  "environment": "isolated PostgreSQL 17; test_yokatlas_reports",
+  "identity_fixture": "Temporary IDs seeded from official source names. Production YÖKAtlas identities were not verified.",
+  "counts": {
+    "published_reports": 3,
+    "provinces": 81,
+    "regions": 26,
+    "districts": 973,
+    "universities": 198
+  },
+  "replay_new_records": [
+    0,
+    0,
+    0
+  ],
+  "live_pdf_downloads": "All three configured official sources returned valid PDFs and matched the local archives.",
+  "checks": [
+    "official PDF coverage and reference values",
+    "district appendix cross-check and province ranks",
+    "database import with atlas_ingest role",
+    "API queries with atlas_api role and full pagination",
+    "no synthetic 2026 SEGE values",
+    "idempotent second import",
+    "public API excludes raw archive paths",
+    "PostgreSQL NUMERIC scores serialize as JSON numbers"
+  ],
+  "first_imports": [
+    {
+      "report_id": "sege-il-2025",
+      "counts": {
+        "bolge": 26,
+        "il": 81
+      },
+      "records": 107,
+      "new_records": 107,
+      "published": true,
+      "status": "completed"
+    },
+    {
+      "report_id": "sege-ilce-2022",
+      "counts": {
+        "ilce": 973
+      },
+      "records": 973,
+      "new_records": 973,
+      "published": true,
+      "status": "completed"
+    },
+    {
+      "report_id": "urap-tr-2025-2026",
+      "counts": {
+        "universite": 198
+      },
+      "records": 198,
+      "new_records": 198,
+      "published": true,
+      "status": "completed"
+    }
+  ],
+  "tests": {
+    "report_tests": 20,
+    "report_api_tests": 5,
+    "database_package_tests": 4,
+    "existing_scraper_and_panel_unit_tests": 19,
+    "legacy_database_tests": "12 opt-in YÖKAtlas database tests were not run; the new report database tests ran against PostgreSQL 17."
+  }
+}

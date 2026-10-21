@@ -1,8 +1,10 @@
 erDiagram
     RAW_API_RESPONSES ||--o{ RAW_SOURCE_RECORDS : contains
     RAW_INGESTION_RUNS ||--o{ RAW_API_RESPONSES : captures
+    RAW_SOURCE_RECORDS ||--o| TUIK_POPULATION_STAGING : stages
     UNIVERSITIES ||--o{ PROGRAM_VERSIONS : hosts
     CITIES ||--o{ PROGRAM_VERSIONS : locates
+    CITIES ||--o{ TUIK_POPULATION_STAGING : enriches
     PROGRAM_GROUPS ||--o{ PROGRAM_VERSIONS : categorizes
     PROGRAM_VERSIONS ||--o{ PROGRAM_CONDITIONS : has
     CONDITIONS ||--o{ PROGRAM_CONDITIONS : defines
@@ -55,4 +57,13 @@ erDiagram
       bigint source_record_id PK
       bigint api_response_id FK
       jsonb record
+    }
+    TUIK_POPULATION_STAGING {
+      bigint staging_id PK
+      bigint source_record_id FK
+      bigint il_kodu FK
+      int yil
+      text yas_grubu_kodu
+      text cinsiyet_kodu
+      bigint nufus
     }

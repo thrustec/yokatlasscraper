@@ -1,0 +1,13 @@
+--- a/adminpanel/web.py
++++ b/adminpanel/web.py
+@@ -489,8 +489,10 @@
+     ("YÖK Atlas", "Net sonuçları", "core.net_results", None),
+     ("YÖK Atlas", "Ham API cevapları", "raw.api_responses", "captured_at"),
+     ("YÖK Atlas", "Ham kayıtlar", "raw.source_records", None),
++    ("SEGE", "Yayımlanmış sıralama satırları", "api.sege_results", "source_captured_at"),
+     ("SEGE", "Sıralama satırları", "raw.sege_ranking_rows", None),
+     ("SEGE", "Yayın (PDF) kaydı", "raw.sege_artifacts", "captured_at"),
++    ("URAP", "Yayımlanmış sıralama satırları", "api.urap_rankings", "source_captured_at"),
+     ("URAP", "Sıralama satırları", "raw.urap_ranking_rows", None),
+     ("URAP", "Ölçüt puanları", "raw.urap_metric_scores", None),
+     ("URAP", "Yayın (PDF) kaydı", "raw.urap_artifacts", "captured_at"),

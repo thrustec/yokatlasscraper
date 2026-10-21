@@ -74,21 +74,22 @@ docker compose --progress quiet up -d --wait --wait-timeout 180 postgres
 ## Uygulanan şema
 
 Yeni veri klasöründe `database/init/10-bootstrap.sh`, tek transaction içinde
-`000_roles.sql` ile `004_archive_idempotency.sql` arasındaki beş dosyayı ve
+`000_roles.sql` ile `006_tuik_population_by_province.sql` arasındaki yedi dosyayı ve
 `database/checks/smoke.sql` kontrolünü yürütür. İlk kurulum sonrası envanter:
 
 | Şema | Fiziksel tablo | View |
 |---|---:|---:|
 | `raw` | 3 | 0 |
-| `staging` | 5 | 0 |
+| `staging` | 6 | 0 |
 | `core` | 7 | 0 |
 | `quality` | 2 | 0 |
 | `analytics` | 0 | 0 |
-| `api` | 0 | 8 |
-| Toplam | 17 | 8 |
+| `api` | 0 | 9 |
+| Toplam | 18 | 9 |
 
 PostgreSQL'in standart `public` şeması ayrıca vardır. STAGING tablolarında
-124 tipli kaynak alanı doğrulanmıştır. Kaynak tablolarındaki kayıt sayıları 0'dır.
+134 tipli kaynak alanı doğrulanmıştır. Yeni kurulumlarda kaynak tabloları boştur;
+TÜİK örnek gözlemleri yalnız mevcut geliştirme veritabanına yüklenmiştir.
 Dokümanlarda belirtilen başka ortama ait veri snapshot'ı bu kurulumla taşınmaz.
 
 Roller: `atlas_owner`, `atlas_ingest`, `atlas_api`, `atlas_analytics`.
