@@ -1,0 +1,19 @@
+[Unit]
+Description=YOK Atlas collection and PostgreSQL ingestion
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=atlas
+WorkingDirectory=/opt/yokatlas-intelligence
+EnvironmentFile=/etc/yokatlas-bot.env
+ExecStart=/opt/yokatlas-intelligence/.venv/bin/python -m scraper.bot run --continuous --root /var/lib/yokatlas-bot
+StateDirectory=yokatlas-bot
+UMask=0077
+Restart=on-failure
+RestartPreventExitStatus=3 4
+RestartSec=60
+
+[Install]
+WantedBy=multi-user.target

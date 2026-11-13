@@ -4,3 +4,4 @@ requests
 httpx
 beautifulsoup4
 pandas
+pdfplumber>=0.11,<0.12
