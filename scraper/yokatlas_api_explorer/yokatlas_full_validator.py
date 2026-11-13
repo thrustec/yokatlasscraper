@@ -8,6 +8,7 @@ import argparse
 import csv
 import hashlib
 import json
+import os
 import re
 import sys
 import time
@@ -44,7 +45,10 @@ def now(): return datetime.now(timezone.utc).isoformat()
 def dump(path, value):
     path.parent.mkdir(parents=True,exist_ok=True)
     temp=path.with_suffix(path.suffix+'.tmp')
-    temp.write_text(json.dumps(value,ensure_ascii=False,indent=2,default=str),encoding='utf-8')
+    with temp.open('w',encoding='utf-8') as stream:
+        stream.write(json.dumps(value,ensure_ascii=False,indent=2,default=str))
+        stream.flush()
+        os.fsync(stream.fileno())
     temp.replace(path)
 def read_json(path, default=None):
     try: return json.loads(path.read_text(encoding='utf-8-sig'))
